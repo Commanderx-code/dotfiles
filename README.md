@@ -13,8 +13,6 @@ It gives me:
 
 This repo is both my **dotfiles** and my **“mini config management system”**.
 
----
-
 ## 🔧 Repo Layout
 
 ```text
