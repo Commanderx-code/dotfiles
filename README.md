@@ -31,10 +31,6 @@ MyFish/
     brew_packages.txt    # Homebrew packages
     flatpaks.txt         # Flatpak apps
 
-  secrets/
-    encrypted/           # (optional) .gpg files
-    plain/               # decrypted secrets (git-ignored)
-
   systemd/
     user/                # user-level systemd units (autosync, etc.)
 
@@ -44,10 +40,9 @@ MyFish/
     rebuild.sh           # full MyFish rebuild on a new system
     diff_report.sh       # compare live system vs repo
     sync.sh              # run backup + git sync
-    secrets_encrypt.sh   # (optional) encrypt sensitive files
-    secrets_decrypt.sh   # (optional) decrypt sensitive files
 
   backups/               # .tar.gz archives of configs + packages
   autosync.log           # log from sync/autobackup (in .gitignore)
   README.md
   .gitignore
+```
