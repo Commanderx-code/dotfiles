@@ -29,3 +29,6 @@ secrets_plain/
 *.gpg
 *.bak
 *.copy
+
+# plaintext secrets (never commit)
+secrets_plain/
