@@ -19,8 +19,6 @@ mkdir -p "$REPO/configs/icons"
 mkdir -p "$REPO/configs/fonts"
 
 mkdir -p "$REPO/pkgs"
-mkdir -p "$REPO/secrets/plain"
-mkdir -p "$REPO/secrets/encrypted"
 mkdir -p "$REPO/systemd/user"
 
 # -------------------------------------------------------------------
@@ -67,20 +65,14 @@ cp -r ~/.config/systemd/user/* "$REPO/systemd/user/" 2>/dev/null || true
 # -------------------------------------------------------------------
 echo "[+] Saving package lists..."
 
-dpkg --get-selections | awk '{print $1}' | sort > "$REPO/pkgs/packages.txt"
+dpkg --get-selections | awk '{print $1}' | sort >"$REPO/pkgs/packages.txt"
 
 if command -v brew >/dev/null 2>&1; then
-    brew leaves > "$REPO/pkgs/brew_packages.txt"
+  brew leaves >"$REPO/pkgs/brew_packages.txt"
 fi
 
 if command -v flatpak >/dev/null 2>&1; then
-    flatpak list --app --columns=application > "$REPO/pkgs/flatpaks.txt"
+  flatpak list --app --columns=application >"$REPO/pkgs/flatpaks.txt"
 fi
-
-# -------------------------------------------------------------------
-# WIFI + SSH SECRET ENCRYPTION
-# -------------------------------------------------------------------
-echo "[+] Encrypting WiFi + SSH secrets..."
-"$REPO/scripts/secrets_encrypt.sh"
 
 echo "[✓] Backup complete!"

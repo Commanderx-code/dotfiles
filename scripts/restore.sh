@@ -55,38 +55,29 @@ systemctl --user daemon-reload || true
 systemctl --user enable --now autosync.timer 2>/dev/null || true
 
 # -----------------------------
-# Secrets (WiFi + SSH)
-# -----------------------------
-if [ -x "$REPO/scripts/secrets_decrypt.sh" ]; then
-    echo "[+] Restoring secrets (WiFi/SSH)..."
-    "$REPO/scripts/secrets_decrypt.sh"
-fi
-
-# -----------------------------
 # Packages
 # -----------------------------
 echo "[+] Restoring APT/Nala packages..."
 if [ -f "$REPO/pkgs/packages.txt" ]; then
-    if command -v nala >/dev/null 2>&1; then
-        xargs -a "$REPO/pkgs/packages.txt" sudo nala install -y || true
-    else
-        xargs -a "$REPO/pkgs/packages.txt" sudo apt install -y || true
-    fi
+  if command -v nala >/dev/null 2>&1; then
+    xargs -a "$REPO/pkgs/packages.txt" sudo nala install -y || true
+  else
+    xargs -a "$REPO/pkgs/packages.txt" sudo apt install -y || true
+  fi
 fi
 
 if command -v brew >/dev/null 2>&1 && [ -f "$REPO/pkgs/brew_packages.txt" ]; then
-    echo "[+] Restoring Homebrew packages..."
-    while read pkg; do
-        [[ -n "$pkg" ]] && brew install "$pkg"
-    done < "$REPO/pkgs/brew_packages.txt"
+  echo "[+] Restoring Homebrew packages..."
+  while read pkg; do
+    [[ -n "$pkg" ]] && brew install "$pkg"
+  done <"$REPO/pkgs/brew_packages.txt"
 fi
 
 if command -v flatpak >/dev/null 2>&1 && [ -f "$REPO/pkgs/flatpaks.txt" ]; then
-    echo "[+] Restoring Flatpak apps..."
-    while read pkg; do
-        [[ -n "$pkg" ]] && flatpak install -y "$pkg"
-    done < "$REPO/pkgs/flatpaks.txt"
+  echo "[+] Restoring Flatpak apps..."
+  while read pkg; do
+    [[ -n "$pkg" ]] && flatpak install -y "$pkg"
+  done <"$REPO/pkgs/flatpaks.txt"
 fi
 
 echo "[✓] Restore complete."
-
