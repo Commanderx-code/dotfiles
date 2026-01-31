@@ -1,0 +1,80 @@
+cat > .chezmoiscripts/run_once_before_10-install-arch.sh.tmpl <<'EOF'
+{{- $id := (.chezmoi.osRelease.id | default "" | lower) -}}
+{{- $like := (.chezmoi.osRelease.idLike | default "" | lower) -}}
+
+{{- if or (eq $id "arch") (eq $id "garuda") (contains $like "arch") -}}
+#!/usr/bin/env bash
+set -euo pipefail
+
+log(){ printf "\n[arch-install] %s\n" "$*"; }
+
+if ! command -v pacman >/dev/null 2>&1; then
+  log "pacman not found; skipping."
+  exit 0
+fi
+
+log "Updating system..."
+sudo pacman -Syu --noconfirm
+
+CORE_PKGS=(
+  # core tooling
+  git curl wget unzip zip tar
+  base-devel
+
+  # shell + UX
+  fish starship zoxide fzf ripgrep
+  eza bat fd
+
+  # editors/tools
+  neovim tmux ranger
+
+  # system info
+  fastfetch
+
+  # misc
+  python python-pip
+  openssh
+  rsync
+
+  # media (optional but handy)
+  ffmpeg
+)
+
+log "Installing core packages..."
+for p in "${CORE_PKGS[@]}"; do
+  if sudo pacman -S --needed --noconfirm "$p" >/dev/null 2>&1; then
+    log "Installed: $p"
+  else
+    log "Not found / failed: $p (continuing)"
+  fi
+done
+
+AUR_PKGS=(
+  # Optional extras — only installed if AUR helper is present
+  lazygit
+  yazi
+  topgrade
+)
+
+if command -v paru >/dev/null 2>&1; then
+  log "paru detected; installing optional AUR packages..."
+  for p in "${AUR_PKGS[@]}"; do
+    if paru -S --needed --noconfirm "$p" >/dev/null 2>&1; then
+      log "Installed (AUR): $p"
+    else
+      log "Not found / failed (AUR): $p (continuing)"
+    fi
+  done
+else
+  log "paru not found; skipping AUR installs (lazygit/yazi/topgrade)."
+  log "On Garuda, you can usually install paru with: sudo pacman -S --needed paru"
+fi
+
+log "Done."
+exit 0
+{{- else -}}
+#!/usr/bin/env bash
+# Not Arch-based; do nothing.
+exit 0
+{{- end -}}
+EOF
