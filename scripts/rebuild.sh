@@ -1,41 +1,47 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-REPO="$HOME/MyFish"
+REPO_SSH="git@github.com:Commanderx-code/dotfiles.git"
+REPO_HTTPS="https://github.com/Commanderx-code/dotfiles.git"
 
-echo "[+] MyFish full rebuild starting..."
+echo "[+] Dotfiles rebuild starting..."
 
-# Ensure base tools
-echo "[+] Installing base packages (git, curl, fish, nala, flatpak)..."
+echo "[+] Updating apt + installing base tools..."
 sudo apt update -y
-sudo apt install -y git curl fish nala flatpak
+sudo apt install -y git curl fish flatpak
 
-# Clone repo if missing
-if [ ! -d "$REPO/.git" ]; then
-  echo "[+] Cloning MyFish repo..."
-  git clone git@github.com:Commanderx-code/MyFish.git "$REPO" ||
-    git clone https://github.com/Commanderx-code/MyFish.git "$REPO"
+# Install nala if you want it as your daily driver
+sudo apt install -y nala || true
+
+# Install chezmoi if missing
+if ! command -v chezmoi >/dev/null 2>&1; then
+  echo "[+] Installing chezmoi..."
+  if command -v snap >/dev/null 2>&1; then
+    sudo snap install chezmoi --classic
+  else
+    echo "[!] snap not available. Install chezmoi another way (tell me your preference)."
+    exit 1
+  fi
 fi
 
-cd "$REPO"
-
-# Homebrew install if missing
-if ! command -v brew >/dev/null 2>&1; then
-  echo "[+] Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+echo "[+] Initializing chezmoi..."
+# Use SSH if it works; fall back to HTTPS
+if chezmoi init --apply "$REPO_SSH"; then
+  true
+else
+  chezmoi init --apply "$REPO_HTTPS"
 fi
 
-# Add brew to PATH for current session
-if [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+echo "[+] (Optional) Install recommended CLI goodies..."
+if command -v nala >/dev/null 2>&1; then
+  sudo nala install -y fzf ripgrep ffmpeg || true
+else
+  sudo apt install -y fzf ripgrep ffmpeg || true
 fi
 
-# Run restore
-"$REPO/scripts/restore.sh"
-
-echo "[+] Setting default shell to fish (you may need to log out/in)..."
+echo "[+] Setting default shell to fish (logout/login after)..."
 if command -v fish >/dev/null 2>&1; then
   chsh -s "$(command -v fish)" "$USER" || true
 fi
 
-echo "[✓] Rebuild complete. Open a new terminal to use your environment."
+echo "[✓] Done. Open a new terminal."

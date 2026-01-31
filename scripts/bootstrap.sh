@@ -76,7 +76,4 @@ if [ -f "$REPO/flatpaks.txt" ]; then
   done <"$REPO/flatpaks.txt"
 fi
 
-# -----------------------------
-# Restore Secrets (WiFi, SSH, etc.)
-# -----------------------------
 echo "[✓] Full rebuild complete!"
