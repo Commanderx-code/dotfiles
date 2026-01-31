@@ -1,0 +1,108 @@
+cat > .chezmoiscripts/run_once_before_10-install-debian.sh.tmpl <<'EOF'
+{{- $id := (.chezmoi.osRelease.id | default "" | lower) -}}
+{{- $like := (.chezmoi.osRelease.idLike | default "" | lower) -}}
+
+{{- if or (eq $id "debian") (eq $id "ubuntu") (eq $id "zorin") (contains $like "debian") (contains $like "ubuntu") -}}
+#!/usr/bin/env bash
+set -euo pipefail
+
+log(){ printf "\n[debian-install] %s\n" "$*"; }
+
+if ! command -v apt-get >/dev/null 2>&1; then
+  log "apt-get not found; skipping."
+  exit 0
+fi
+
+log "Updating package lists..."
+sudo apt-get update -y
+
+# Try to ensure nala exists (optional, but nice)
+if ! command -v nala >/dev/null 2>&1; then
+  log "nala not found; attempting to install it..."
+  sudo apt-get install -y nala >/dev/null 2>&1 || log "Could not install nala (continuing with apt-get)."
+fi
+
+PM="apt-get"
+if command -v nala >/dev/null 2>&1; then
+  PM="nala"
+fi
+log "Using package manager: $PM"
+
+# Core packages (you can add/remove freely)
+CORE_PKGS=(
+  # core tooling
+  git curl wget ca-certificates
+  unzip zip tar
+  build-essential
+
+  # shell + UX
+  fish
+  fzf
+  ripgrep
+  zoxide
+
+  # editors/tools
+  neovim
+  tmux
+  ranger
+
+  # system info
+  fastfetch
+
+  # misc
+  python3 python3-pip
+  openssh-client
+  rsync
+
+  # media
+  ffmpeg
+
+  # common niceties (names differ on Debian)
+  bat
+  fd-find
+  eza
+)
+
+install_pkg() {
+  local p="$1"
+  if sudo "$PM" install -y "$p" >/dev/null 2>&1; then
+    log "Installed: $p"
+  else
+    log "Not found / failed: $p (continuing)"
+  fi
+}
+
+log "Installing core packages..."
+for p in "${CORE_PKGS[@]}"; do
+  install_pkg "$p"
+done
+
+# Optional extras (nice-to-have)
+EXTRA_PKGS=(
+  lazygit
+  yazi
+  topgrade
+)
+
+log "Installing optional extras (best-effort)..."
+for p in "${EXTRA_PKGS[@]}"; do
+  install_pkg "$p"
+done
+
+# Helpful notes for Debian naming quirks
+if command -v batcat >/dev/null 2>&1 && ! command -v bat >/dev/null 2>&1; then
+  log "Note: 'bat' command is 'batcat' on Debian/Ubuntu. Consider aliasing bat->batcat."
+fi
+
+if command -v fdfind >/dev/null 2>&1 && ! command -v fd >/dev/null 2>&1; then
+  log "Note: 'fd' command is 'fdfind' on Debian/Ubuntu. Consider aliasing fd->fdfind."
+fi
+
+log "Done."
+exit 0
+{{- else -}}
+#!/usr/bin/env bash
+# Not Debian-based; do nothing.
+exit 0
+{{- end -}}
+EOF
