@@ -1,0 +1,22 @@
+# General behavior
+assume_yes = true
+cleanup = true
+no_retry = false
+skip_notify = true
+
+# Use nala instead of apt
+apt_command = "nala"
+
+# Disable things you probably don't need
+disable = [
+  "pip",
+  "pip3",
+  "gem",
+  "node",
+  "yarn",
+  "pnpm",
+  "composer"
+]
+
+# Flatpak behavior
+flatpak = true
