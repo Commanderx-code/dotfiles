@@ -1,0 +1,15 @@
+[alias]
+  s = status -sb
+  l = log --oneline --decorate --graph -n 20
+  a = add -A
+  c = commit
+  cm = commit -m
+  p = push
+  pu = push -u origin HEAD
+  up = pull --rebase --autostash
+  d = diff
+  ds = diff --staged
+  sw = switch
+  br = branch
+  prune = fetch --prune
+  undo = reset --soft HEAD~1
