@@ -21,10 +21,12 @@
   ];
 
   programs.git = {
-    enable = true;
-    userName = "Commanderx-code";
-    userEmail = "65996567+Commanderx-code@users.noreply.github.com";
+  enable = true;
+  settings = {
+    user.name = "Commanderx-code";
+    user.email = "65996567+Commanderx-code@users.noreply.github.com";
   };
+};
 
   programs.fish.enable = true;
   programs.starship.enable = true;
