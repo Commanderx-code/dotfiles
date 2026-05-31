@@ -21,10 +21,12 @@
   ];
 
   programs.git = {
-    enable = true;
-    userName = "Matthew March";
-    userEmail = "dirtyprodigy@protonmail.com";
+  enable = true;
+  settings = {
+    user.name = "Commanderx-code";
+    user.email = "dirtyprodigy@protonmail.com";
   };
+};
 
   programs.fish.enable = true;
   programs.starship.enable = true;
