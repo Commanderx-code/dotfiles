@@ -18,16 +18,54 @@
     btop
     fastfetch
     lazygit
+    chafa
+    jq
+    unzip
+    wget
+    curl
   ];
 
   programs.git = {
-  enable = true;
-  settings = {
-    user.name = "Commanderx-code";
-    user.email = "65996567+Commanderx-code@users.noreply.github.com";
+    enable = true;
+    settings = {
+      user.name = "Commanderx-code";
+      user.email = "65996567+Commanderx-code@users.noreply.github.com";
+      init.defaultBranch = "main";
+      pull.rebase = false;
+    };
   };
-};
 
-  programs.fish.enable = true;
-  programs.starship.enable = true;
+  programs.starship = {
+    enable = true;
+    enableFishIntegration = true;
+  };
+
+  programs.fish = {
+    enable = true;
+
+    shellAliases = {
+      ll = "eza -lah --icons";
+      la = "eza -la --icons";
+      lt = "eza --tree --level=2 --icons";
+      cat = "bat";
+      grep = "rg";
+      gs = "git status";
+      ga = "git add";
+      gc = "git commit";
+      gp = "git push";
+      gl = "git pull";
+      lg = "lazygit";
+      update = "sudo pacman -Syu && paru -Sua";
+      hms = "home-manager switch";
+    };
+
+    interactiveShellInit = ''
+      zoxide init fish | source
+      fzf --fish | source
+    '';
+  };
+
+  programs.fastfetch = {
+    enable = true;
+  };
 }
