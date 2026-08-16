@@ -1,0 +1,24 @@
+MenuBar=Disabled
+
+[Desktop Entry]
+DefaultProfile=Garuda.profile
+
+[General]
+ConfigVersion=1
+
+[KonsoleWindow]
+RememberWindowSize=true
+ShowMenuBarByDefault=false
+
+[MainWindow]
+MenuBar=Enabled
+RestorePositionForNextInstance=true
+StatusBar=Disabled
+
+[Notification Messages]
+CloseAllEmptyTabs=false
+CloseAllTabs=true
+CloseSingleTab=true
+
+[UiSettings]
+ColorScheme=

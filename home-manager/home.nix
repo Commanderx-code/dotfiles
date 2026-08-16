@@ -2,15 +2,15 @@
 
 {
   imports = [
-    ./modules/packages.nix
-    ./modules/git.nix
-    ./modules/fish.nix
-    ./modules/starship.nix
-    ./modules/fastfetch.nix
-    ./modules/nvim.nix
-    ./modules/topgrade.nix
-  ];
-
+  ./modules/packages.nix
+  ./modules/git.nix
+  ./modules/fish.nix
+  ./modules/starship.nix
+  ./modules/fastfetch.nix
+  ./modules/nvim.nix
+  ./modules/topgrade.nix
+  ./modules/terminal.nix
+];
   home.username = "commander";
   home.homeDirectory = "/home/commander";
 
