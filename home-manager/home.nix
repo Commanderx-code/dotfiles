@@ -25,6 +25,17 @@
     curl
   ];
 
+  # Install helper scripts managed by Home Manager.
+  home.file.".local/bin/backup-sddm" = {
+    source = ./scripts/backup-sddm.sh;
+    executable = true;
+  };
+
+  home.file.".local/bin/restore-sddm" = {
+    source = ./scripts/restore-sddm.sh;
+    executable = true;
+  };
+
   programs.git = {
     enable = true;
     settings = {
@@ -56,7 +67,7 @@
       gl = "git pull";
       lg = "lazygit";
       update = "sudo pacman -Syu && paru -Sua";
-      hms = "home-manager switch";
+      hms = "home-manager switch --flake ~/dotfiles/home-manager#commander";
     };
 
     interactiveShellInit = ''
