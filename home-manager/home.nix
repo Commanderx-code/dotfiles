@@ -39,7 +39,7 @@
   programs.git = {
     enable = true;
     settings = {
-      user.name = "Matthew March";
+      user.name = "Commanderx-code";
       user.email = "dirtyprodigy@protonmail.com";
       init.defaultBranch = "main";
       pull.rebase = false;
