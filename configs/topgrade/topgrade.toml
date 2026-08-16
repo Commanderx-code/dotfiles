@@ -1,0 +1,38 @@
+[misc]
+# Don't ask for confirmation before each update.
+assume_yes = true
+
+# Clean up temporary/old files after supported update steps.
+cleanup = true
+
+# Allow retrying failed steps.
+no_retry = false
+
+# Don't send a completion notification.
+skip_notify = true
+
+# Don't print hundreds of skipped steps.
+show_skipped = false
+
+# Prefer nh when available, otherwise use standard Nix tooling.
+nix_handler = "autodetect"
+
+# Skip legacy nix-channel / nix-env upgrades.
+disable = [
+  "nix"
+]
+
+
+[linux]
+# Use Garuda's normal update mechanism for system packages.
+arch_package_manager = "garuda_update"
+
+# Tell Topgrade where our Home Manager flake lives.
+home_manager_arguments = [
+  "--flake",
+  "/home/commander/dotfiles/home-manager#commander"
+]
+
+
+[flatpak]
+use_sudo = false

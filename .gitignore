@@ -32,3 +32,6 @@ secrets_plain/
 
 # plaintext secrets (never commit)
 secrets_plain/
+
+# Nix build output
+/result
