@@ -1,3 +1,3 @@
 function spotatui-ghostty
-    ghostty -e fish -c 'exec spotatui'
+    env START_SPOTATUI=1 ghostty
 end
