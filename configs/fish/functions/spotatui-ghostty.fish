@@ -1,3 +1,4 @@
 function spotatui-ghostty
-    env START_SPOTATUI=1 ghostty
+    touch "$XDG_RUNTIME_DIR/spotatui-autostart"
+    ghostty +new-window
 end
