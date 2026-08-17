@@ -37,4 +37,9 @@ home.file.".local/bin/backup-secrets" = {
   source = ./scripts/backup-secrets.fish;
   executable = true;
 };
+
+home.file.".local/bin/backup-personal" = {
+  source = ./scripts/backup-personal.fish;
+  executable = true;
+};
 }
