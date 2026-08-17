@@ -18,13 +18,18 @@
 
   programs.home-manager.enable = true;
 
-  home.file.".local/bin/backup-sddm" = {
-    source = ./scripts/backup-sddm.sh;
-    executable = true;
-  };
+home.file.".local/bin/backup-sddm" = {
+  source = ./scripts/backup-sddm.sh;
+  executable = true;
+};
 
-  home.file.".local/bin/restore-sddm" = {
-    source = ./scripts/restore-sddm.sh;
-    executable = true;
-  };
+home.file.".local/bin/restore-sddm" = {
+  source = ./scripts/restore-sddm.sh;
+  executable = true;
+};
+
+home.file.".local/bin/backup-system-state" = {
+  source = ./scripts/backup-system-state.fish;
+  executable = true;
+};
 }
