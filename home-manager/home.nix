@@ -32,4 +32,9 @@ home.file.".local/bin/backup-system-state" = {
   source = ./scripts/backup-system-state.fish;
   executable = true;
 };
+
+home.file.".local/bin/backup-secrets" = {
+  source = ./scripts/backup-secrets.fish;
+  executable = true;
+};
 }
