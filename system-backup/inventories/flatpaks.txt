@@ -1,0 +1,9 @@
+com.github.tchx84.Flatseal
+com.rtosta.zapzap
+com.rustdesk.RustDesk
+io.github.flattool.Warehouse
+io.missioncenter.MissionCenter
+it.mijorus.gearlever
+me.proton.Mail
+me.proton.Pass
+net.nokyan.Resources

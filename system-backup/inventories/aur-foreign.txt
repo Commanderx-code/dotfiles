@@ -1,0 +1,13 @@
+appimagelauncher
+ivpn
+ivpn-ui
+libpamac-aur
+linutil-bin
+lsparu
+pamac-aur
+psst-bin
+redhat-fonts
+sddm-silent-theme-git
+spotatui-bin
+stacer
+wireguard-gui-bin
