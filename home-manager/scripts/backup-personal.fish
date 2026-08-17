@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 
 set -l REPO "/run/media/$USER/Crucial X6/restic-backup"
-set -l PASSWORD_FILE "$HOME/.config/restic/password"
+set -l PASSWORD_COMMAND "kwallet-query -f Restic -r Crucial-X6 kdewallet"
 
 echo "==> Personal backup"
 echo "    Repository: $REPO"
@@ -12,17 +12,16 @@ if not command -q restic
     exit 1
 end
 
+if not command -q kwallet-query
+    echo "Error: kwallet-query is not installed."
+    exit 1
+end
+
 if not test -d "$REPO"
     echo "Error: Restic repository is not available:"
     echo "  $REPO"
     echo
     echo "Make sure the Crucial X6 is mounted."
-    exit 1
-end
-
-if not test -f "$PASSWORD_FILE"
-    echo "Error: Restic password file not found:"
-    echo "  $PASSWORD_FILE"
     exit 1
 end
 
@@ -59,7 +58,7 @@ echo
 
 restic \
     --repo "$REPO" \
-    --password-file "$PASSWORD_FILE" \
+    --password-command "$PASSWORD_COMMAND" \
     backup \
     $EXISTING
 
@@ -74,7 +73,7 @@ echo "==> Repository check"
 
 restic \
     --repo "$REPO" \
-    --password-file "$PASSWORD_FILE" \
+    --password-command "$PASSWORD_COMMAND" \
     check
 
 if test $status -ne 0
@@ -88,7 +87,7 @@ echo "==> Recent snapshots"
 
 restic \
     --repo "$REPO" \
-    --password-file "$PASSWORD_FILE" \
+    --password-command "$PASSWORD_COMMAND" \
     snapshots \
     --latest 5
 
