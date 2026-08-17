@@ -89,6 +89,9 @@ sudo chown -R "$USER":"$USER" \
 
 echo "==> Plasma configuration"
 
+rm -rf "$BACKUP/plasma/config"
+mkdir -p "$BACKUP/plasma/config"
+
 for f in \
     kdeglobals \
     kwinrc \
@@ -149,7 +152,7 @@ systemctl --user list-unit-files \
 echo
 echo "==> Backup sizes"
 
-du -sh "$BACKUP"/* 2>/dev/null
+du -sh "$BACKUP"/* 2>/dev/nvidia-modesetl
 
 echo
 echo "==> Git changes"
@@ -165,4 +168,4 @@ echo "  ~/.gnupg"
 echo "  KDE Wallet / keyrings"
 echo "  NetworkManager credentials"
 echo
-echo "Those should remain in a separate encrypted backup."
+echo "Those should remain in a separate encrypted backup"
