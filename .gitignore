@@ -1,37 +1,73 @@
-# Ignore OS files
+# ============================================================
+# OS / desktop junk
+# ============================================================
 .DS_Store
 Thumbs.db
 
-# Ignore compiled files
+
+# ============================================================
+# Editor / temporary files
+# ============================================================
 *.swp
+*.swo
 *.tmp
-
-# Ignore backup output
-autosync.log
-
-# Ignore sensitive unencrypted secrets
-secrets/plain/*
-
-# Allow encrypted secrets
-!secrets/encrypted/*.gpg
-
-# Ignore build artifacts
-*.iso
-*.img
-*.log
-
-# Ignore Homebrew cache
-brew-cache/
-
-# Never commit secrets to main
-secrets_plain/
-*.nmconnection
-*.gpg
+*~
 *.bak
 *.copy
 
-# plaintext secrets (never commit)
-secrets_plain/
 
-# Nix build output
-/result
+# ============================================================
+# Logs
+# ============================================================
+*.log
+autosync.log
+
+
+# ============================================================
+# Secrets / credentials
+# NEVER commit these to the dotfiles repository
+# ============================================================
+secrets/
+secrets_plain/
+secret-backup*/
+*.tar.gz.gpg
+*.gpg
+*.nmconnection
+
+# Common private-key / certificate formats
+*.key
+*.p12
+*.pfx
+
+# Environment files that may contain credentials
+.env
+.env.*
+!.env.example
+
+
+# ============================================================
+# Nix / Home Manager build output
+# ============================================================
+result
+result-*
+.direnv/
+
+
+# ============================================================
+# Large/generated disk images
+# ============================================================
+*.iso
+*.img
+
+
+# ============================================================
+# Package/cache directories
+# ============================================================
+brew-cache/
+
+
+# ============================================================
+# Temporary migration / restore files
+# ============================================================
+*.pre-home-manager
+*.hm-before-cleanup
