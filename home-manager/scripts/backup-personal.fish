@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-set -l REPO "/run/media/$USER/Crucial X6/restic-backup"
+set -l REPO "/run/media/$USER/Linux-Backup/restic"
 set -l PASSWORD_COMMAND "kwallet-query -f Restic -r Crucial-X6 kdewallet"
 
 echo "==> Personal backup"
