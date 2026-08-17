@@ -1,0 +1,12 @@
+[Daemon]
+Autolock=true
+LockGrace=60
+Timeout=20
+
+[Greeter]
+Theme=Sweet
+WallpaperPlugin=org.kde.image
+
+[Greeter][Wallpaper][org.kde.image][General]
+Image=/home/commander/Pictures/wallpapers/1gx4g47v37ma1.jpg
+PreviewImage=/home/commander/Pictures/wallpapers/1gx4g47v37ma1.jpg
