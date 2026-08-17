@@ -1,6 +1,7 @@
 #!/usr/bin/env fish
 
 set -l REPO "/run/media/$USER/Crucial X6/restic-backup"
+set -l PASSWORD_FILE "$HOME/.config/restic/password"
 
 echo "==> Personal backup"
 echo "    Repository: $REPO"
@@ -16,6 +17,12 @@ if not test -d "$REPO"
     echo "  $REPO"
     echo
     echo "Make sure the Crucial X6 is mounted."
+    exit 1
+end
+
+if not test -f "$PASSWORD_FILE"
+    echo "Error: Restic password file not found:"
+    echo "  $PASSWORD_FILE"
     exit 1
 end
 
@@ -52,6 +59,7 @@ echo
 
 restic \
     --repo "$REPO" \
+    --password-file "$PASSWORD_FILE" \
     backup \
     $EXISTING
 
@@ -66,6 +74,7 @@ echo "==> Repository check"
 
 restic \
     --repo "$REPO" \
+    --password-file "$PASSWORD_FILE" \
     check
 
 if test $status -ne 0
@@ -79,6 +88,7 @@ echo "==> Recent snapshots"
 
 restic \
     --repo "$REPO" \
+    --password-file "$PASSWORD_FILE" \
     snapshots \
     --latest 5
 
