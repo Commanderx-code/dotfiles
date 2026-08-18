@@ -40,4 +40,4 @@ Plugins=appimagethumbnail,audiothumbnail,glycin-heif,blenderthumbnail,comicbookt
 Location=Everywhere
 
 [kuick-move]
-Paths[$e]=$HOME/dotfiles/,/usr/share/grub/themes/Standby/
+Paths[$e]=/run/media/commander/Linux-Backup/,$HOME/dotfiles/,/usr/share/grub/themes/Standby/

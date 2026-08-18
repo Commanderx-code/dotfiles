@@ -10,6 +10,7 @@
   ./modules/nvim.nix
   ./modules/topgrade.nix
   ./modules/terminal.nix
+  ./modules/backup-automation.nix
 ];
   home.username = "commander";
   home.homeDirectory = "/home/commander";
@@ -40,6 +41,14 @@ home.file.".local/bin/backup-secrets" = {
 
 home.file.".local/bin/backup-personal" = {
   source = ./scripts/backup-personal.fish;
+  executable = true;
+};
+home.file.".local/bin/backup-everything" = {
+  source = ./scripts/backup-everything.fish;
+  executable = true;
+};
+home.file.".local/bin/backup-restic-credential" = {
+  source = ./scripts/backup-restic-credential.fish;
   executable = true;
 };
 }
