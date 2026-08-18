@@ -31,6 +31,12 @@ show_time=false
 DialogHeight=630
 DialogWidth=810
 
+[Containments][148][General]
+changedPositions={"desktop:/background.png":["1920x1080","3","0"],"desktop:/bookmarks_5_13_26.html":["1920x1080","2","0"],"desktop:/restic-backup":["1920x1080","1","0"]}
+lastResolution=1920x1080
+positions={"1920x1080":["1","17","desktop:/background.png","3","0","desktop:/restic-backup","1","0","desktop:/bookmarks_5_13_26.html","2","0","desktop:/_Linux","0","0"]}
+sortMode=-1
+
 [Containments][148][Wallpaper][org.kde.image][General]
 Image=/home/commander/Pictures/wallpapers/HSNePJz.jpeg
 
@@ -171,4 +177,4 @@ AppletOrder=150;151;152;153;154;166;167
 
 [ScreenMapping]
 itemsOnDisabledScreens=
-screenMapping=desktop:/background.png,0,865b7da5-0063-4189-a8c5-096f49bb448b
+screenMapping=

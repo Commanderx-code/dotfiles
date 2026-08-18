@@ -1,3 +1,4 @@
+backup-on-mount.path              enabled enabled
 app-com.mitchellh.ghostty.service enabled enabled
 appimagelauncherd.service         enabled enabled
 wireplumber.service               enabled enabled
@@ -6,3 +7,5 @@ p11-kit-server.socket             enabled enabled
 pipewire-pulse.socket             enabled enabled
 pipewire.socket                   enabled enabled
 ssh-agent.socket                  enabled enabled
+restic-deep-check.timer           enabled enabled
+restic-maintenance.timer          enabled enabled
