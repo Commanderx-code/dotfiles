@@ -272,7 +272,5 @@ toggle do not disturb=none,none,Toggle do not disturb
 _launch=none
 
 [services][org.kde.spectacle.desktop]
-CurrentMonitorScreenShot=none
-OpenWithoutScreenshot=none
 RectangularRegionScreenShot=Print
 _launch=Meta+Shift+S
