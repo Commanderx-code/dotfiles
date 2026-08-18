@@ -1,0 +1,2 @@
+/home/commander/Applications/appimagepool_bd665daf62dda529a4358d1cd26f6c0b.AppImage
+/home/commander/Applications/standard-notes-3.201.27-linux-x86_64_579b6499bcbe7ddd1190ea6c83c4253e.appimage

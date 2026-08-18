@@ -1,0 +1,11 @@
+appimagelauncher
+ivpn
+ivpn-ui
+linutil-bin
+lsparu
+pamac-aur
+psst-bin
+sddm-silent-theme-git
+spotatui-bin
+stacer
+wireguard-gui-bin
