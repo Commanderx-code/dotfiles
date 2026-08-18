@@ -69,4 +69,12 @@ home.file.".local/bin/hm-rebuild" = {
   source = ./scripts/hm-rebuild.fish;
   executable = true;
 };
+home.file.".local/bin/backup-app-inventory" = {
+  source = ./scripts/backup-app-inventory.fish;
+  executable = true;
+};
+home.file.".local/bin/restore-apps" = {
+  source = ./scripts/restore-apps.fish;
+  executable = true;
+};
 }

@@ -28,6 +28,18 @@ if test $status -ne 0
 end
 
 echo
+echo "==> Application inventory"
+echo
+
+backup-app-inventory
+
+if test $status -ne 0
+    echo
+    echo "ERROR: backup-app-inventory failed."
+    exit 1
+end
+
+echo
 echo "==> 2/4 Personal Restic backup"
 echo
 
