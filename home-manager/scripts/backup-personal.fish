@@ -18,10 +18,10 @@ if not command -q kwallet-query
 end
 
 if not test -d "$REPO"
-    echo "Error: Restic repository is not available:"
+    echo "Error: Restic repository not found:"
     echo "  $REPO"
     echo
-    echo "Make sure the Crucial X6 is mounted."
+    echo "Make sure Linux-Backup is unlocked and mounted."
     exit 1
 end
 
@@ -34,7 +34,8 @@ set -l PATHS \
     "$HOME/Music" \
     "$HOME/Projects" \
     "$HOME/Applications" \
-    "$HOME/dotfiles"
+    "$HOME/dotfiles" \
+    "$HOME/.cargo"
 
 set -l EXISTING
 
@@ -45,11 +46,12 @@ for path in $PATHS
 end
 
 if test (count $EXISTING) -eq 0
-    echo "Error: none of the configured backup paths exist."
+    echo "Error: No backup paths exist."
     exit 1
 end
 
 echo "==> Backing up:"
+
 for path in $EXISTING
     echo "    $path"
 end
@@ -59,12 +61,11 @@ echo
 restic \
     --repo "$REPO" \
     --password-command "$PASSWORD_COMMAND" \
-    backup \
-    $EXISTING
+    backup $EXISTING
 
 if test $status -ne 0
     echo
-    echo "Backup failed."
+    echo "ERROR: Personal Restic backup failed."
     exit 1
 end
 
@@ -78,7 +79,7 @@ restic \
 
 if test $status -ne 0
     echo
-    echo "WARNING: backup completed, but repository check failed."
+    echo "ERROR: Repository check failed."
     exit 1
 end
 
@@ -90,6 +91,12 @@ restic \
     --password-command "$PASSWORD_COMMAND" \
     snapshots \
     --latest 5
+
+if test $status -ne 0
+    echo
+    echo "ERROR: Could not list recent snapshots."
+    exit 1
+end
 
 echo
 echo "Personal backup complete."

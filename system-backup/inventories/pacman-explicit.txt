@@ -22,11 +22,9 @@ bottom
 brave-bin
 brave-origin-bin
 bridge-utils
-broot
 btrfs-assistant
 btrfs-progs
 bzip2
-chafa
 chaotic-keyring
 chaotic-mirrorlist
 coreutils
@@ -48,9 +46,7 @@ ethtool
 exfatprogs
 ex-vi-compat
 f2fs-tools
-fastfetch
 fatresize
-fd
 ffmpegthumbnailer
 ffmpegthumbs
 file
@@ -163,7 +159,6 @@ networkmanager-support
 nfs-utils
 nilfs-utils
 nmap
-nnn
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
@@ -192,7 +187,6 @@ plasma-nm
 plasma-pa
 plasma-systemmonitor
 plasma-thunderbolt
-playerctl
 plocate
 plymouth
 plymouth-theme-garuda-bgrt
@@ -200,7 +194,6 @@ powerdevil
 power-profiles-daemon
 powertop
 procps-ng
-procs
 psmisc
 psst-bin
 putty
@@ -236,9 +229,7 @@ tailscale
 tar
 terminus-font
 thunderbird
-topgrade
 traceroute
-trash-cli
 ttf-dejavu
 ttf-fantasque-sans-mono
 ttf-fira-sans
@@ -278,7 +269,5 @@ xorg-xwayland
 xsel
 xz
 yay
-yazi
 zed
 zip
-zoxide

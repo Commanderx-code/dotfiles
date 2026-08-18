@@ -51,4 +51,22 @@ home.file.".local/bin/backup-restic-credential" = {
   source = ./scripts/backup-restic-credential.fish;
   executable = true;
 };
+home.file.".local/bin/restore-system" = {
+  source = ./scripts/restore-system.fish;
+  executable = true;
+};
+home.file.".local/bin/pkg-owner" = {
+  source = ./scripts/pkg-owner.fish;
+  executable = true;
+};
+
+home.file.".local/bin/pkg-install" = {
+  source = ./scripts/pkg-install.fish;
+  executable = true;
+};
+
+home.file.".local/bin/hm-rebuild" = {
+  source = ./scripts/hm-rebuild.fish;
+  executable = true;
+};
 }
