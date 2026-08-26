@@ -2,37 +2,87 @@
 # Don't ask for confirmation before each update.
 assume_yes = true
 
-# Clean up temporary/old files after supported update steps.
+# Cache sudo credentials upfront.
+pre_sudo = true
+
+# Clean up temporary/old files.
 cleanup = true
 
-# Allow retrying failed steps.
+# Allow retries.
 no_retry = false
-
-# Don't send a completion notification.
-skip_notify = true
 
 # Don't print hundreds of skipped steps.
 show_skipped = false
 
-# Prefer nh when available, otherwise use standard Nix tooling.
+# Only notify when something fails.
+notify_end = "on_failure"
+
+# Prefer nh for Home Manager/Nix when available.
 nix_handler = "autodetect"
 
-# Skip legacy nix-channel / nix-env upgrades.
+# Disable things we don't want Topgrade managing.
 disable = [
-  "nix"
+  "nix",
+  "snap",
+  "firmware",
 ]
 
 
 [linux]
-# Use Garuda's normal update mechanism for system packages.
+# Use Garuda's normal system update mechanism.
 arch_package_manager = "garuda_update"
 
-# Tell Topgrade where our Home Manager flake lives.
+# Show relevant Arch news during upgrades.
+show_arch_news = true
+
+# Home Manager flake.
 home_manager_arguments = [
   "--flake",
   "/home/commander/dotfiles/home-manager#commander"
 ]
 
 
+[git]
+# Automatically update the dotfiles repository.
+repos = [
+  "~/dotfiles",
+]
+
+max_concurrency = 5
+
+# Rebase remote changes and temporarily stash local edits.
+arguments = "--rebase --autostash"
+
+
 [flatpak]
+# Update per-user Flatpaks.
 use_sudo = false
+
+
+[python]
+# Update pip-installed packages through pip-review.
+enable_pip_review = true
+
+
+[cargo]
+# Check Cargo packages installed from Git as well.
+git = true
+
+quiet = false
+
+
+[rustup]
+# Keep stable Rust updated.
+channels = [
+  "stable",
+]
+
+
+[go]
+# Update Go-installed tools through gup.
+gup_exclude = []
+
+
+[vscode]
+# Use the default VS Code profile.
+profile = ""
