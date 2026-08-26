@@ -4,231 +4,244 @@ category: Function
 managed_by: Home Manager
 source: ~/dotfiles/configs/fish/functions/config-index.fish
 runtime: ~/.config/fish/functions/config-index.fish
-tags: fish function
+tags: fish fzf documentation database config bible navigation
 status: active
-criticality: normal
+criticality: important
 last_verified: 2026-08-26
 ---
+
 # `config-index`
 
 ## Purpose
-Search the Commander configuration bible
 
-## Usage
-Inspect the live definition with:
-```fish
-type config-index
-functions config-index
+`config-index` is the main interactive interface for the Commander Config Bible.
+
+It searches all Markdown documentation beneath:
+
+```text
+~/dotfiles/docs
 ```
 
-## Modify / Apply
+and presents the results through `fzf`.
+
+## Basic Usage
+
 ```fish
-nvim ~/dotfiles/configs/fish/functions/config-index.fish
+config-index
+```
+
+Start with search terms:
+
+```fish
+config-index fish
+config-index neovim
+config-index grub
+config-index docker
+```
+
+## Quick Filters
+
+Critical pages:
+
+```fish
+config-index --critical
+```
+
+Planned items:
+
+```fish
+config-index --planned
+```
+
+Recovery-oriented search:
+
+```fish
+config-index --recovery
+```
+
+Help:
+
+```fish
+config-index --help
+```
+
+## Interface
+
+Each entry shows:
+
+```text
+icon/status/criticality
+title
+category
+status
+criticality
+relative documentation path
+```
+
+The metadata itself remains searchable even when some fields are visually compact.
+
+## Controls
+
+| Key | Action |
+|---|---|
+| `Enter` | Open documentation in Neovim |
+| `Ctrl-O` | Open documented source/config |
+| `Ctrl-D` | Change to source or documentation directory |
+| `Ctrl-Y` | Copy documentation path |
+| `Ctrl-X` | Copy documented source path |
+| `Ctrl-R` | Open recovery/backup/troubleshooting chooser |
+| `Ctrl-/` | Toggle preview |
+| `Esc` | Exit |
+
+## Category Icons
+
+Examples:
+
+```text
+📚 Index
+⚙  System
+🐟 Shell
+🛠 Function
+✎  Editor
+🖥 Desktop
+🚀 Boot
+💾 Backup
+🚑 Recovery
+🔐 Security
+🌐 Network
+🐳 Homelab
+🧰 Troubleshooting
+```
+
+## Status Indicators
+
+```text
+●   active
+↗   external / active-external
+⚠   duplicate active definition
+◌   planned
+◇   available
+◐   evolving
+🔒  sensitive
+```
+
+## Criticality
+
+```text
+🛑 critical
+!   important
+```
+
+## External Source Handling
+
+Some Bible entries describe configurations on another machine, such as:
+
+```text
+/DATA/compose
+/var/lib/casaos/apps
+```
+
+When `Ctrl-O` is used for one of those entries from the workstation, `config-index`
+does not treat the missing local path as an error in the documentation. It explains
+that the source belongs to an external host.
+
+Use `Ctrl-X` to copy the documented path for use over SSH.
+
+## Recovery Shortcut
+
+While viewing any entry, press:
+
+```text
+Ctrl-R
+```
+
+to open a second fuzzy selector containing only:
+
+```text
+docs/recovery/
+docs/backup/
+docs/troubleshooting/
+```
+
+The current page title is used as the initial recovery search.
+
+Examples:
+
+```text
+GRUB -> recovery/troubleshooting selector
+SSH -> recovery/troubleshooting selector
+ZimaBoard -> container recovery/troubleshooting selector
+```
+
+## Dependencies
+
+Required:
+
+```text
+fish
+fzf
+awk
+find
+nvim
+```
+
+Recommended:
+
+```text
+bat
+wl-clipboard
+```
+
+`bat` provides syntax-highlighted previews.
+
+`wl-copy` provides clipboard support for `Ctrl-Y` and `Ctrl-X`.
+
+## Source of Truth
+
+```text
+~/dotfiles/configs/fish/functions/config-index.fish
+```
+
+Runtime Home Manager link:
+
+```text
+~/.config/fish/functions/config-index.fish
+```
+
+## Apply Changes
+
+For an existing tracked function:
+
+```fish
+hms
+```
+
+For a new/untracked file:
+
+```fish
 cd ~/dotfiles
 git add configs/fish/functions/config-index.fish
 hms
 ```
 
-## Syntax Check
+## Validate
+
+Check Fish syntax:
+
 ```fish
 fish -n ~/dotfiles/configs/fish/functions/config-index.fish
 ```
 
-## Current Implementation
+Start a fresh shell:
+
 ```fish
-function config-index --description "Search the Commander configuration bible"
-    set -l docs_root "$HOME/dotfiles/docs"
+exec fish
+```
 
-    if not test -d "$docs_root"
-        echo "Config database not found:"
-        echo "  $docs_root"
-        return 1
-    end
+Then:
 
-    if not command -q fzf
-        echo "config-index requires fzf"
-        return 1
-    end
-
-    set -l query (string join " " $argv)
-    set -l database (mktemp)
-
-    # -------------------------------------------------------------------------
-    # Build searchable database
-    # -------------------------------------------------------------------------
-
-    for file in (command find "$docs_root" \
-        -type f \
-        -name '*.md' \
-        ! -name 'TEMPLATE.md' \
-        ! -name 'INDEX.md' \
-        | sort)
-
-        set -l title (command awk -F': ' '
-            $1 == "title" {
-                sub(/^title:[[:space:]]*/, "")
-                print
-                exit
-            }
-        ' "$file")
-
-        if test -z "$title"
-            set title (command awk '
-                /^# / {
-                    sub(/^# /, "")
-                    print
-                    exit
-                }
-            ' "$file")
-        end
-
-        if test -z "$title"
-            set title (path basename "$file" .md)
-        end
-
-        set -l category (command awk -F': ' '
-            $1 == "category" {
-                sub(/^category:[[:space:]]*/, "")
-                print
-                exit
-            }
-        ' "$file")
-
-        set -l tags (command awk -F': ' '
-            $1 == "tags" {
-                sub(/^tags:[[:space:]]*/, "")
-                print
-                exit
-            }
-        ' "$file")
-
-        set -l relative (string replace "$docs_root/" "" "$file")
-
-        printf '%s\t%s\t%s\t%s\t%s\n' \
-            "$title" \
-            "$category" \
-            "$tags" \
-            "$relative" \
-            "$file" \
-            >> "$database"
-    end
-
-    # -------------------------------------------------------------------------
-    # Preview command
-    # -------------------------------------------------------------------------
-
-    if command -q bat
-        set preview_command 'bat --style=plain --color=always --line-range=:300 {5}'
-    else
-        set preview_command 'sed -n "1,300p" {5}'
-    end
-
-    # -------------------------------------------------------------------------
-    # Launch fzf
-    # -------------------------------------------------------------------------
-
-    set -l result (
-        command cat "$database" |
-        fzf \
-            --delimiter='\t' \
-            --with-nth=1,2,3,4 \
-            --query="$query" \
-            --prompt='📚 Config Bible ❯ ' \
-            --pointer='▶' \
-            --marker='✓' \
-            --header='Enter: docs │ Ctrl-O: config │ Ctrl-D: directory │ Ctrl-Y: copy path' \
-            --preview="$preview_command" \
-            --preview-window='right:60%:wrap' \
-            --bind='ctrl-/:toggle-preview' \
-            --expect=ctrl-o,ctrl-d,ctrl-y
-    )
-
-    set -l fzf_status $status
-
-    command rm -f "$database"
-
-    if test $fzf_status -ne 0
-        return
-    end
-
-    if test (count $result) -lt 2
-        return
-    end
-
-    set -l action "$result[1]"
-    set -l selected "$result[2]"
-
-    set -l fields (string split \t "$selected")
-
-    set -l doc "$fields[5]"
-
-    if not test -f "$doc"
-        echo "Unable to locate documentation file."
-        return 1
-    end
-
-    # -------------------------------------------------------------------------
-    # Read source metadata
-    # -------------------------------------------------------------------------
-
-    set -l source_path (command awk -F': ' '
-        $1 == "source" {
-            sub(/^source:[[:space:]]*/, "")
-            print
-            exit
-        }
-    ' "$doc")
-
-    if test -n "$source_path"
-        set source_path (string replace -r '^~' "$HOME" "$source_path")
-    end
-
-    # -------------------------------------------------------------------------
-    # Handle selected action
-    # -------------------------------------------------------------------------
-
-    switch "$action"
-
-        case ctrl-o
-            if test -z "$source_path"
-                echo "No source path is documented for this entry."
-                return 1
-            end
-
-            if not test -e "$source_path"
-                echo "Documented source does not currently exist:"
-                echo "  $source_path"
-                return 1
-            end
-
-            nvim "$source_path"
-
-        case ctrl-d
-            if test -n "$source_path"
-                if test -d "$source_path"
-                    cd "$source_path"
-                else if test -e "$source_path"
-                    cd (path dirname "$source_path")
-                else
-                    cd (path dirname "$doc")
-                end
-            else
-                cd (path dirname "$doc")
-            end
-
-            commandline -f repaint
-
-        case ctrl-y
-            if command -q wl-copy
-                printf '%s' "$doc" | wl-copy
-                echo "Copied:"
-                echo "  $doc"
-            else
-                echo "$doc"
-            end
-
-        case '*'
-            nvim "$doc"
-    end
-end
+```fish
+type config-index
+config-index --help
+config-index
 ```
