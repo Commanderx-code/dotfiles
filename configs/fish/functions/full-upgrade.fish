@@ -1,26 +1,25 @@
-function full-upgrade --description "Full upgrade (pacman + paru + flatpak + topgrade)"
-    echo " Updating system..."
+function full-upgrade --description "Run full system and development environment upgrade"
+    echo " Running full system upgrade..."
+    echo
 
-    # Official repos
-    sudo pacman -Syu
-
-    # AUR
-    echo "📦 Updating AUR (paru)..."
-    paru -Syu
-
-    # Flatpak
-    if command -q flatpak
-        echo "📦 Updating Flatpaks..."
-        flatpak update -y
-    end
-
-    # Everything else (always)
-    if command -q topgrade
-        echo " Running Topgrade..."
-        topgrade
-    else
+    if not command -q topgrade
         echo "ℹ️ topgrade not installed (install: sudo pacman -S topgrade)"
+        return 1
     end
 
-    echo "✅ Full upgrade complete"
+    echo "📦 Updating system packages..."
+
+    echo " Running Topgrade..."
+    topgrade
+    set -l status_code $status
+
+    echo
+
+    if test $status_code -eq 0
+        echo "✅ Full upgrade complete"
+    else
+        echo "❌ Full upgrade finished with errors"
+    end
+
+    return $status_code
 end

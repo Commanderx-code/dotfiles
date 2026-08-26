@@ -1,3 +1,41 @@
+---
+title: full-upgrade-devel
+category: Function
+managed_by: Home Manager
+source: ~/dotfiles/configs/fish/functions/full-upgrade-devel.fish
+runtime: ~/.config/fish/functions/full-upgrade-devel.fish
+tags: fish function
+status: active
+criticality: normal
+last_verified: 2026-08-26
+---
+# `full-upgrade-devel`
+
+## Purpose
+Full upgrade including -git/VCS packages
+
+## Usage
+Inspect the live definition with:
+```fish
+type full-upgrade-devel
+functions full-upgrade-devel
+```
+
+## Modify / Apply
+```fish
+nvim ~/dotfiles/configs/fish/functions/full-upgrade-devel.fish
+cd ~/dotfiles
+git add configs/fish/functions/full-upgrade-devel.fish
+hms
+```
+
+## Syntax Check
+```fish
+fish -n ~/dotfiles/configs/fish/functions/full-upgrade-devel.fish
+```
+
+## Current Implementation
+```fish
 function full-upgrade-devel --description "Full upgrade including -git/VCS packages"
     echo " Updating development/VCS packages..."
     echo
@@ -32,3 +70,4 @@ function full-upgrade-devel --description "Full upgrade including -git/VCS packa
         return 1
     end
 end
+```
