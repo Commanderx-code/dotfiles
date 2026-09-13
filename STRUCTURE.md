@@ -32,9 +32,8 @@ Python, and jq are declared through Home Manager.
 
 The external Config Bible repository contains the full documentation collection.
 Its location comes from `configBibleDirectory`; its app must be built separately.
-Personal Restic backups include that directory. `docs.pre-bible-migration/` and
-`INSTALL-BATCH*.md` are migration leftovers, not inputs to Home Manager. Keep the
-old documentation until its replacement is verified, committed, and backed up.
+Personal Restic backups include that directory. The old batch-import instructions
+have been removed; use the Config Bible repository for its documentation workflow.
 
 ## Validation
 
