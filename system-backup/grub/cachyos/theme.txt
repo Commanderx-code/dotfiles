@@ -1,6 +1,6 @@
 # Main options
 title-text: ""
-desktop-image: "background.png"
+desktop-image: "bg.png"
 desktop-color: "#151b32"
 terminal-font: "Terminus Regular 18"
 terminal-left: "0"

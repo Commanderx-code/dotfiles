@@ -1,11 +1,13 @@
 appimagelauncher
 ivpn
 ivpn-ui
-linutil-bin
 lsparu
+openlogi
 pamac-aur
 psst-bin
 sddm-silent-theme-git
 spotatui-bin
+spotatui-bin-debug
 stacer
+termius
 wireguard-gui-bin
