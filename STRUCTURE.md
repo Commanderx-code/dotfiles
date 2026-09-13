@@ -144,3 +144,13 @@ same information for automation; exit 1 means attention or verification is neede
 Personal backup dates start being recorded after installing this version and
 completing a successful backup. An unknown date is not evidence of a failed backup.
 A personal backup older than 24 hours is flagged for review.
+
+Automatic personal backup and Restic maintenance services use systemd `OnFailure`
+to display a persistent critical desktop notification. The notification includes
+the failed service name and points to `backup-health`; journals remain available
+when no desktop notification session is running. Manual command failures continue
+to report their errors in the terminal.
+
+Captured system files are preserved verbatim, including upstream README files.
+The validator reports broken upstream links inside `system-backup/` without
+failing; broken links in maintained repository documentation still fail checks.

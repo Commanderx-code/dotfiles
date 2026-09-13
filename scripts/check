@@ -44,6 +44,9 @@ def main():
             path = unquote(urlsplit(link).path)
             target = ((ROOT / path.lstrip('/')) if path.startswith('/') else (document.parent / path)).resolve()
             if not target.exists():
+                if document.relative_to(ROOT).parts[0] == 'system-backup':
+                    print(f'Upstream snapshot documentation link: {document.relative_to(ROOT)} -> {link}')
+                    continue
                 raise SystemExit(f'Broken link in {document.name}: {link}')
     # A temporary path flake includes new, unstaged files without changing the Git index.
     # Keep configs beside home-manager because modules use ../.. relative sources.
