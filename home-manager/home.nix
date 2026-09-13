@@ -11,6 +11,7 @@
   ./modules/topgrade.nix
   ./modules/terminal.nix
   ./modules/backup-automation.nix
+  ./modules/config-bible.nix
 ];
   home.username = "commander";
   home.homeDirectory = "/home/commander";
