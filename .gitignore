@@ -83,3 +83,41 @@ restic-password*
 .system-backup.previous/
 .system-backup.lock
 __pycache__/
+
+# ============================================================
+# Private local data (keep recovery copies on the backup drive)
+# ============================================================
+# Captures can contain usernames, device IDs, desktop history and network rules.
+/system-backup/
+/personal/
+/private/
+
+# SSH/GnuPG keys, wallets and service credentials
+.ssh/
+.gnupg/
+.aws/
+.azure/
+.kube/
+.local/share/kwalletd/
+*.kwl
+*.wallet
+*.kdbx
+*.pem
+*.keystore
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+credentials.json
+service-account*.json
+.netrc
+.authinfo
+.authinfo.gpg
+.npmrc
+.pypirc
+
+# Local overrides; commit sanitized *.example files instead.
+*.local.json
+*.local.toml
+*.local.yaml
+*.local.yml
