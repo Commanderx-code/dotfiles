@@ -1,19 +1,22 @@
 function bible-secrets --description "Scan dotfiles and Config Bible for likely secrets without printing values"
 
-    if not set -q CONFIG_BIBLE_HOME
-        set -gx CONFIG_BIBLE_HOME "$HOME/github/projects/config-bible"
-    end
+    dotfiles-settings; or return 1
 
     if not command -q rg
         echo "bible-secrets requires ripgrep"
         return 1
     end
 
-    set -l roots "$HOME/dotfiles" "$CONFIG_BIBLE_HOME"
+    set -l roots "$DOTFILES_DIR" "$CONFIG_BIBLE_HOME"
     set -l temp (mktemp); or return 1
 
+    set -l failed 0
     for root in $roots
-        test -d "$root"; or continue
+        if not test -d "$root"
+            echo "Scan directory missing: $root" >&2
+            set failed 1
+            continue
+        end
         rg -l --hidden \
             --glob '!.git/**' \
             --glob '!node_modules/**' \
@@ -26,10 +29,20 @@ function bible-secrets --description "Scan dotfiles and Config Bible for likely 
             -e 'github_pat_[A-Za-z0-9_]{20,}' \
             -e 'sk-[A-Za-z0-9_-]{20,}' \
             "$root" 2>/dev/null >> "$temp"
+        set -l scan_status $status
+        if test $scan_status -gt 1
+            echo "Could not completely scan: $root" >&2
+            set failed 1
+        end
     end
 
     set -l matches (command sort -u "$temp")
+    set -l sort_status $status
     command rm -f "$temp"
+    if test $failed -ne 0; or test $sort_status -ne 0
+        echo "Secret scan incomplete; no clean result can be reported." >&2
+        return 2
+    end
 
     if test (count $matches) -eq 0
         echo "✓ No likely secrets detected"

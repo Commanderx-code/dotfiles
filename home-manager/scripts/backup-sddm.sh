@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_DIR="${HOME}/dotfiles/sddm"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+machine_config="${DOTFILES_MACHINE_CONFIG:-$script_dir/../machine.json}"
+if [[ ! -f "$machine_config" ]]; then
+  machine_config="${DOTFILES_MACHINE_CONFIG:-${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/machine.json}"
+fi
+DOTFILES_DIR="${DOTFILES_DIR:-$(jq -er '.dotfilesDirectory' "$machine_config")}"
+REPO_DIR="$DOTFILES_DIR/sddm"
 THEME_DIR="/usr/share/sddm/themes/silent"
 SDDM_CONF_DIR="/etc/sddm.conf.d"
 
@@ -37,4 +43,4 @@ else
 fi
 
 printf '\nSDDM backup synced to:\n  %s\n\n' "$REPO_DIR"
-printf 'Next:\n  cd ~/dotfiles\n  git status\n'
+printf 'Next:\n  cd %s\n  git status\n' "$DOTFILES_DIR"

@@ -24,6 +24,13 @@ This repository is both my **dotfiles collection** and a lightweight **configura
 
 ---
 
+## Maintenance and ownership
+
+See [STRUCTURE.md](STRUCTURE.md) for the deployment ownership map, shared machine
+settings, validation commands, restore previews, and snapshot provenance.
+Machine-specific values live in [home-manager/machine.json](home-manager/machine.json).
+The full Config Bible now lives in the separate repository configured there.
+
 ## Repository layout
 
 ```text
@@ -31,7 +38,8 @@ dotfiles/
 ├── configs/
 │   ├── fish/                  # Fish conf.d, functions, and shell configuration
 │   ├── fastfetch/             # Fastfetch configuration/assets
-│   ├── ghostty/               # Ghostty-specific configuration
+│   ├── fonts/                 # Attribution; font packages are declared in Home Manager
+│   ├── ghostty/               # Optional Ghostty profile
 │   ├── konsole/               # Konsole profile/theme/configuration
 │   ├── nvim/                  # Neovim / LazyVim configuration
 │   ├── scripts/               # Shared helper scripts
@@ -39,6 +47,7 @@ dotfiles/
 │
 ├── home-manager/
 │   ├── home.nix               # Main Home Manager configuration
+│   ├── machine.json           # Shared workstation paths and identifiers
 │   ├── flake.nix              # Home Manager flake
 │   ├── modules/               # Package and application-specific modules
 │   └── scripts/               # Managed backup/recovery/helper commands
@@ -52,6 +61,10 @@ dotfiles/
 │   ├── plymouth/              # Plymouth configuration + theme
 │   └── sddm/                  # SDDM configuration + Silent theme
 │
+├── sddm/                      # Customization-only SDDM backup/restore
+├── STRUCTURE.md               # Ownership and maintenance guide
+├── scripts/check              # Validation entry point
+├── tests/                     # Safe workflow fixtures
 ├── RECOVERY.md                # Full disaster-recovery procedure
 ├── README.md
 └── .gitignore
