@@ -40,6 +40,7 @@ set -l PATHS \
     "$HOME/Videos" \
     "$HOME/Music" \
     "$HOME/Projects" \
+    "$HOME/github" \
     "$HOME/Applications" \
     "$DOTFILES_DIR" \
     "$CONFIG_BIBLE_HOME" \
@@ -110,4 +111,10 @@ if test $status -ne 0
 end
 
 echo
+set -l recorder (path dirname (status filename))/restic-job.py
+if not test -f "$recorder"
+    set recorder "$HOME/.local/bin/restic-job"
+end
+python3 "$recorder" record-backup; or exit 1
+
 echo "Personal backup complete."

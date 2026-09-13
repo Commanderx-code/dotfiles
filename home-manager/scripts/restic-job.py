@@ -64,9 +64,22 @@ def run_job(job, if_due=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('job', choices=INTERVALS)
+    parser.add_argument('job', choices=[*INTERVALS, 'record-backup'])
     parser.add_argument('--if-due', action='store_true')
     args = parser.parse_args()
+    if args.job == 'record-backup':
+        repo = os.environ['RESTIC_REPOSITORY']
+        state_home = Path(os.environ.get('XDG_STATE_HOME') or str(Path.home() / '.local/state'))
+        identity = hashlib.sha256(os.fsencode(str(Path(repo).resolve()))).hexdigest()
+        state = state_home / 'dotfiles/restic' / identity
+        state.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(dir=state, delete=False) as stream:
+            temporary = Path(stream.name)
+        try:
+            temporary.replace(state / 'backup.success')
+        finally:
+            temporary.unlink(missing_ok=True)
+        return 0
     return run_job(args.job, args.if_due)
 
 
