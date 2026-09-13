@@ -45,10 +45,14 @@ if not vim.api.nvim_buf_is_valid(buf) then
                     return
                     end
 
-                    local filepath = vim.fn.expand("%:p")
-                    vim.api.nvim_buf_call(ev.buf, function()
-                    vim.cmd("silent! write")
+                    local filepath = vim.api.nvim_buf_get_name(ev.buf)
+                    local ok, err = pcall(vim.api.nvim_buf_call, ev.buf, function()
+                      vim.cmd("silent write")
                     end)
+                    if not ok or vim.bo[ev.buf].modified then
+                      vim.notify("AutoSave failed: " .. tostring(err or filepath), vim.log.levels.ERROR)
+                      return
+                    end
                     notify_saved(filepath)
                     end,
                 })

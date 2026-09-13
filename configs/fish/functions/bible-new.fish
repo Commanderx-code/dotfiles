@@ -1,8 +1,6 @@
 function bible-new --description "Create a new Config Bible page"
 
-    if not set -q CONFIG_BIBLE_HOME
-        set -gx CONFIG_BIBLE_HOME "$HOME/github/projects/config-bible"
-    end
+    dotfiles-settings; or return 1
 
     set -l docs "$CONFIG_BIBLE_HOME/docs"
 

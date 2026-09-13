@@ -1,6 +1,13 @@
 #!/usr/bin/env fish
 
-set -l DOTFILES "$HOME/dotfiles"
+# Load shared settings without relying on interactive Fish startup.
+set -l settings_file (path dirname (status filename))/lib/settings.fish
+if not test -f "$settings_file"
+    set settings_file "$HOME/.local/share/dotfiles/settings.fish"
+end
+source "$settings_file"; or exit 1
+
+set -l DOTFILES "$DOTFILES_DIR"
 
 if not test -d "$DOTFILES/home-manager"
     echo "Error: $DOTFILES/home-manager does not exist."
@@ -15,7 +22,7 @@ echo
 
 echo "==> Home Manager build"
 
-home-manager build --flake ./home-manager#commander
+home-manager build --flake "$DOTFILES_DIR/home-manager#$HM_PROFILE"
 
 if test $status -ne 0
     echo
@@ -27,7 +34,7 @@ end
 echo
 echo "==> Home Manager switch"
 
-home-manager switch --flake ./home-manager#commander
+home-manager switch --flake "$DOTFILES_DIR/home-manager#$HM_PROFILE"
 
 if test $status -ne 0
     echo

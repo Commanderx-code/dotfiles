@@ -1,10 +1,38 @@
 #!/usr/bin/env fish
 
-set -l DOTFILES "$HOME/dotfiles"
+# Load shared settings without relying on interactive Fish startup.
+set -l settings_file (path dirname (status filename))/lib/settings.fish
+if not test -f "$settings_file"
+    set settings_file "$HOME/.local/share/dotfiles/settings.fish"
+end
+source "$settings_file"; or exit 1
+
+set -l DOTFILES "$DOTFILES_DIR"
 set -l BACKUP "$DOTFILES/system-backup"
 set -l PRE_RESTORE "$HOME/.local/state/system-restore-pre"
 set -l TIMESTAMP (date "+%Y-%m-%d_%H-%M-%S")
 set -l SAVE_DIR "$PRE_RESTORE/$TIMESTAMP"
+
+# Planning exits before prompts, directory creation, or privileged commands.
+if contains -- --dry-run $argv
+    if not test -d "$BACKUP"
+        echo "Snapshot directory not found: $BACKUP" >&2
+        exit 1
+    end
+    echo "Restore source: $BACKUP"
+    for item in plasma sddm plymouth grub firewall pacman inventories
+        if test -e "$BACKUP/$item"
+            echo "Available: $BACKUP/$item"
+        else
+            echo "Missing: $BACKUP/$item"
+        end
+    end
+    exit 0
+end
+if test (count $argv) -gt 0
+    echo "Usage: restore-system [--dry-run]" >&2
+    exit 1
+end
 
 function section
     echo
@@ -42,8 +70,12 @@ function backup_if_exists
     set -l target "$argv[2]"
 
     if test -e "$source"
-        mkdir -p (dirname "$target")
-        cp -a "$source" "$target"
+        mkdir -p (dirname "$target"); or fail "Could not create backup directory for $source"
+        if string match -q '/etc/*' -- "$source"
+            sudo cp -a "$source" "$target"; or fail "Could not preserve $source"
+        else
+            cp -a "$source" "$target"; or fail "Could not preserve $source"
+        end
     end
 end
 
@@ -67,7 +99,7 @@ if not test -f /etc/os-release
     fail "/etc/os-release not found."
 end
 
-source /etc/os-release
+set -l PRETTY_NAME (string replace -r '^PRETTY_NAME="?(.*?)"?$' '$1' -- (string match 'PRETTY_NAME=*' < /etc/os-release))
 
 echo "Detected operating system:"
 echo "  $PRETTY_NAME"
@@ -84,7 +116,7 @@ end
 
 section "Pre-restore backup"
 
-mkdir -p "$SAVE_DIR"
+mkdir -p "$SAVE_DIR"; or fail "Could not create $SAVE_DIR"
 
 echo "Saving current fresh-install configuration to:"
 echo "  $SAVE_DIR"
@@ -135,10 +167,10 @@ if command -q home-manager
     if ask_yes_no "Apply Home Manager configuration now?"
         cd "$DOTFILES"; or fail "Could not enter $DOTFILES"
 
-        home-manager build --flake ./home-manager#commander
+        home-manager build --flake "$DOTFILES_DIR/home-manager#$HM_PROFILE"
         or fail "Home Manager build failed."
 
-        home-manager switch --flake ./home-manager#commander
+        home-manager switch --flake "$DOTFILES_DIR/home-manager#$HM_PROFILE"
         or fail "Home Manager switch failed."
 
         echo
@@ -155,15 +187,15 @@ echo "rewritten by the current session."
 echo
 
 if ask_yes_no "Restore Plasma configuration now?"
-    mkdir -p "$HOME/.config"
-    mkdir -p "$HOME/.local/share"
+    mkdir -p "$HOME/.config"; or fail "Plasma restore failed"
+    mkdir -p "$HOME/.local/share"; or fail "Plasma restore failed"
 
     if test -d "$BACKUP/plasma/config"
-        cp -a "$BACKUP/plasma/config/." "$HOME/.config/"
+        cp -a "$BACKUP/plasma/config/." "$HOME/.config/"; or fail "Plasma restore failed"
     end
 
     if test -d "$BACKUP/plasma/share"
-        cp -a "$BACKUP/plasma/share/." "$HOME/.local/share/"
+        cp -a "$BACKUP/plasma/share/." "$HOME/.local/share/"; or fail "Plasma restore failed"
     end
 
     echo

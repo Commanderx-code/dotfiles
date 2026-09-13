@@ -1,10 +1,17 @@
 #!/usr/bin/env fish
 
-set -l MOUNT "/run/media/$USER/Linux-Backup"
+# Load shared settings without relying on interactive Fish startup.
+set -l settings_file (path dirname (status filename))/lib/settings.fish
+if not test -f "$settings_file"
+    set settings_file "$HOME/.local/share/dotfiles/settings.fish"
+end
+source "$settings_file"; or exit 1
+
+set -l MOUNT "$BACKUP_MOUNT"
 set -l DEST "$MOUNT/secrets"
-set -l WALLET "kdewallet"
-set -l FOLDER "Restic"
-set -l ENTRY "Crucial-X6"
+set -l WALLET "$RESTIC_WALLET"
+set -l FOLDER "$RESTIC_WALLET_FOLDER"
+set -l ENTRY "$RESTIC_WALLET_ENTRY"
 
 echo "========================================"
 echo " Restic recovery credential backup"
@@ -12,7 +19,7 @@ echo "========================================"
 echo
 
 if not mountpoint -q "$MOUNT"
-    echo "Error: Linux-Backup is not mounted."
+    echo "Error: $MOUNT is not mounted."
     exit 1
 end
 

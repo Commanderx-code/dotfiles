@@ -77,3 +77,9 @@ brew-cache/
 # ============================================================
 .config/restic/
 restic-password*
+
+# Transactional snapshot workspaces and local previous generation
+.system-backup-capture-*/
+.system-backup.previous/
+.system-backup.lock
+__pycache__/

@@ -3,10 +3,10 @@
 # ---------------------------------------------------------
 
 # XDG Base Directories
-set -gx XDG_DATA_HOME  "$HOME/.local/share"
+set -gx XDG_DATA_HOME "$HOME/.local/share"
 set -gx XDG_CONFIG_HOME "$HOME/.config"
-set -gx XDG_STATE_HOME  "$HOME/.local/state"
-set -gx XDG_CACHE_HOME  "$HOME/.cache"
+set -gx XDG_STATE_HOME "$HOME/.local/state"
+set -gx XDG_CACHE_HOME "$HOME/.cache"
 
 # Bat behavior
 set -gx BAT_PAGER ""
@@ -36,14 +36,22 @@ if test -d "$HOME/.cargo/bin"
 end
 
 # Flatpak exports
-if test -d "/var/lib/flatpak/exports/bin"
-    fish_add_path -g "/var/lib/flatpak/exports/bin"
+if test -d /var/lib/flatpak/exports/bin
+    fish_add_path -g /var/lib/flatpak/exports/bin
 end
 if test -d "$HOME/.local/share/flatpak/exports/bin"
     fish_add_path -g "$HOME/.local/share/flatpak/exports/bin"
 end
 
 # Snap (optional)
-if test -d "/snap/bin"
-    fish_add_path -g "/snap/bin"
+if test -d /snap/bin
+    fish_add_path -g /snap/bin
+end
+
+# Commander Config Bible
+dotfiles-settings
+
+# Homebrew
+if test -x /home/linuxbrew/.linuxbrew/bin/brew
+    eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 end

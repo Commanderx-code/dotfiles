@@ -1,7 +1,7 @@
 function bible-audit --description "Audit the Commander Config Bible against live dotfiles"
-    set -l repo "$HOME/dotfiles"
-    set -l docs "$repo/docs"
-
+    dotfiles-settings; or return 1
+    set -l repo "$DOTFILES_DIR"
+    set -l docs "$CONFIG_BIBLE_HOME/docs"
     # -------------------------------------------------------------------------
     # Options
     # -------------------------------------------------------------------------
@@ -155,8 +155,8 @@ function bible-audit --description "Audit the Commander Config Bible against liv
             set -a compose_roots "$repo/compose"
         end
 
-        if test -d "/DATA/compose"
-            set -a compose_roots "/DATA/compose"
+        if test -d /DATA/compose
+            set -a compose_roots /DATA/compose
         end
 
         if test (count $compose_roots) -eq 0
@@ -247,8 +247,7 @@ function bible-audit --description "Audit the Commander Config Bible against liv
             end
 
             # Known paths that belong to the ZimaBoard / external host.
-            if string match -qr '^/DATA/' "$source_path"; or \
-               string match -qr '^/var/lib/casaos/' "$source_path"
+            if string match -qr '^/DATA/' "$source_path"; or string match -qr '^/var/lib/casaos/' "$source_path"
                 set reference_only (math $reference_only + 1)
                 continue
             end
@@ -288,7 +287,7 @@ function bible-audit --description "Audit the Commander Config Bible against liv
             # but report them once instead of four warnings per file.
             set -l first_line (command head -n 1 "$file")
 
-            if test "$first_line" != "---"
+            if test "$first_line" != ---
                 echo "⚠ Legacy page missing YAML metadata: $rel"
                 set metadata_issues (math $metadata_issues + 1)
                 set warnings (math $warnings + 1)
@@ -332,7 +331,7 @@ function bible-audit --description "Audit the Commander Config Bible against liv
                 set metadata_issues (math $metadata_issues + 1)
                 set warnings (math $warnings + 1)
             else
-                printf '%s\t%s\n' "$title" "$rel" >> "$title_file"
+                printf '%s\t%s\n' "$title" "$rel" >>"$title_file"
             end
 
             if test -z "$category"

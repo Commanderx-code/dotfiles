@@ -1,17 +1,10 @@
-{ ... }:
+{ machine, lib, ... }:
 
 {
   programs.fish = {
     enable = true;
 
     shellAliases = {
-      ll = "eza -lah --icons";
-      la = "eza -la --icons";
-      lt = "eza --tree --level=2 --icons";
-
-      cat = "bat";
-      grep = "rg";
-
       gs = "git status";
       ga = "git add";
       gc = "git commit";
@@ -19,13 +12,11 @@
       gl = "git pull";
       lg = "lazygit";
 
-      update = "sudo pacman -Syu && paru -Sua";
-
-      hms = "home-manager switch --flake ~/dotfiles/home-manager#commander";
+      hms = "home-manager switch --flake ${lib.escapeShellArg "${machine.dotfilesDirectory}/home-manager#${machine.username}"}";
     };
   };
 
-    programs.zoxide = {
+  programs.zoxide = {
     enable = true;
     enableFishIntegration = true;
   };

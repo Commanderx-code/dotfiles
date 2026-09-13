@@ -1,8 +1,13 @@
-{ config, ... }:
+{
+  config,
+  machine,
+  lib,
+  ...
+}:
 
 let
   home = config.home.homeDirectory;
-  bible = "${home}/github/projects/config-bible";
+  bible = machine.configBibleDirectory;
 in
 {
   xdg.enable = true;
@@ -12,7 +17,7 @@ in
     text = ''
       #!/usr/bin/env sh
 
-      app="${bible}/app/src-tauri/target/release/commander-config-bible"
+      app=${lib.escapeShellArg "${bible}/app/src-tauri/target/release/commander-config-bible"}
 
       if [ ! -x "$app" ]; then
         echo "Commander Config Bible has not been built yet."

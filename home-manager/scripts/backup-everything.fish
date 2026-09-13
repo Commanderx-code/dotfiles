@@ -1,6 +1,13 @@
 #!/usr/bin/env fish
 
-set -l MOUNT "/run/media/$USER/Linux-Backup"
+# Load shared settings without relying on interactive Fish startup.
+set -l settings_file (path dirname (status filename))/lib/settings.fish
+if not test -f "$settings_file"
+    set settings_file "$HOME/.local/share/dotfiles/settings.fish"
+end
+source "$settings_file"; or exit 1
+
+set -l MOUNT "$BACKUP_MOUNT"
 set -l SECRETS_DEST "$MOUNT/secrets"
 
 echo "========================================"
@@ -9,7 +16,7 @@ echo "========================================"
 echo
 
 if not mountpoint -q "$MOUNT"
-    echo "Error: Linux-Backup is not mounted."
+    echo "Error: $MOUNT is not mounted."
     echo
     echo "Unlock and mount the external backup drive first:"
     echo "  $MOUNT"
@@ -84,11 +91,11 @@ echo "========================================"
 echo
 
 echo "System snapshot:"
-echo "  $HOME/dotfiles/system-backup"
+echo "  $DOTFILES_DIR/system-backup"
 echo
 
 echo "Personal Restic repository:"
-echo "  $MOUNT/restic"
+echo "  $RESTIC_REPOSITORY"
 echo
 
 echo "Encrypted secrets:"
@@ -106,7 +113,7 @@ echo
 echo "==> Git status"
 echo
 
-git -C "$HOME/dotfiles" status --short
+git -C "$DOTFILES_DIR" status --short
 
 echo
 echo "========================================"
@@ -117,7 +124,7 @@ echo "Remember:"
 echo "  System-backup changes are not pushed automatically."
 echo
 echo "  Review them with:"
-echo "    cd ~/dotfiles"
+echo "    cd $DOTFILES_DIR"
 echo "    git status"
 echo
 echo "  Then commit/push when ready."

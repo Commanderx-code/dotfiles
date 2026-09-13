@@ -1,4 +1,4 @@
-{ ... }:
+{ machine, ... }:
 
 {
   home.file.".local/bin/backup-on-mount" = {
@@ -18,7 +18,7 @@
 
   systemd.user.services.backup-on-mount = {
     Unit = {
-      Description = "Run Restic backup when Linux-Backup is mounted";
+      Description = "Run Restic backup when the backup drive is mounted";
       After = [ "graphical-session.target" ];
     };
 
@@ -30,11 +30,11 @@
 
   systemd.user.paths.backup-on-mount = {
     Unit = {
-      Description = "Watch for Linux-Backup mount";
+      Description = "Watch for backup mount";
     };
 
     Path = {
-      PathChanged = "/run/media/commander";
+      PathChanged = builtins.dirOf machine.backupMount;
       Unit = "backup-on-mount.service";
     };
 
@@ -50,7 +50,7 @@
 
     Service = {
       Type = "oneshot";
-      ExecStart = "%h/.local/bin/restic-maintenance";
+      ExecStart = "%h/.local/bin/restic-maintenance --if-due";
     };
   };
 
@@ -77,7 +77,7 @@
 
     Service = {
       Type = "oneshot";
-      ExecStart = "%h/.local/bin/restic-deep-check";
+      ExecStart = "%h/.local/bin/restic-deep-check --if-due";
     };
   };
 

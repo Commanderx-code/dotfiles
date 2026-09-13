@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""Validate maintained source files without activating workstation changes."""
+import argparse
+import json
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import tempfile
+from urllib.parse import unquote, urlsplit
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def run(*args):
+    subprocess.run(args, cwd=ROOT, check=True)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--build', action='store_true', help='also build the Home Manager activation package')
+    args = parser.parse_args()
+    for tool in ('fish', 'bash', 'jq', 'nix', 'nixfmt', 'shellcheck', 'nvim', 'eza', 'rg', 'actionlint'):
+        if not shutil.which(tool):
+            parser.error(f'{tool} is required; use nix develop ./home-manager')
+    fish_files = sorted((ROOT / 'configs/fish').rglob('*.fish')) + sorted((ROOT / 'home-manager/scripts').rglob('*.fish'))
+    for file in fish_files:
+        run('fish', '--no-config', '--no-execute', str(file))
+    shell_files = sorted((ROOT / 'home-manager/scripts').glob('*.sh')) + [ROOT / 'configs/scripts/fzf-preview']
+    for file in shell_files:
+        run('bash', '-n', str(file))
+    run('actionlint', str(ROOT / '.github/workflows/check.yml'))
+    run('shellcheck', *(str(p) for p in shell_files))
+    run('nixfmt', '--check', *(str(p) for p in (ROOT / 'home-manager').rglob('*.nix')))
+    run('python3', '-B', '-m', 'unittest', 'discover', '-s', 'tests', '-v')
+    run('nvim', '--headless', '-u', 'NONE', '-i', 'NONE', '-l', str(ROOT / 'tests/check_nvim.lua'))
+    # Include snapshot documentation; root-relative links refer to this repository.
+    for document in sorted(ROOT.rglob('*.md')):
+        if '.git' in document.parts or any(part.startswith('.system-backup') for part in document.parts):
+            continue
+        for link in re.findall(r'\[[^\]]*\]\(([^\s)]+)\)', document.read_text()):
+            if '://' in link or link.startswith(('#', 'mailto:')):
+                continue
+            path = unquote(urlsplit(link).path)
+            target = ((ROOT / path.lstrip('/')) if path.startswith('/') else (document.parent / path)).resolve()
+            if not target.exists():
+                raise SystemExit(f'Broken link in {document.name}: {link}')
+    # A temporary path flake includes new, unstaged files without changing the Git index.
+    # Keep configs beside home-manager because modules use ../.. relative sources.
+    with tempfile.TemporaryDirectory(prefix='dotfiles-check-') as directory:
+        checkout = Path(directory)
+        for name in ('home-manager', 'configs'):
+            shutil.copytree(ROOT / name, checkout / name)
+        flake = f'path:{checkout}?dir=home-manager'
+        machine = json.loads((ROOT / 'home-manager/machine.json').read_text())
+        attr = f'{flake}#homeConfigurations.{machine["username"]}.activationPackage'
+        run('nix', 'eval', '--no-write-lock-file', '--raw', attr + '.drvPath')
+        if args.build:
+            run('nix', 'build', '--no-write-lock-file', '--no-link', attr)
+    print('\nAll checks passed.')
+
+
+if __name__ == '__main__':
+    main()

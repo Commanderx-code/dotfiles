@@ -435,3 +435,15 @@ Always:
 - test Restic access before destructive disk work
 - keep at least one offline backup copy
 - verify several successful boots before erasing an old system disk
+
+## Machine settings and snapshot provenance
+
+Before rebuilding on a replacement machine, review
+[home-manager/machine.json](home-manager/machine.json). It controls workstation
+paths, the Home Manager profile, backup location, and KWallet entry identifiers.
+See [STRUCTURE.md](STRUCTURE.md) for runtime overrides and prerequisites.
+
+Use `restore-system --dry-run` and `restore-apps --dry-run` to inspect available
+sources without changing the machine. Check `system-backup/inventories/*-metadata.json`
+for the capture host, date, versions, and completion status. Older snapshots may
+lack metadata; do not assume the current checkout date is their capture date.

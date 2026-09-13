@@ -1,8 +1,6 @@
 function bible-stats --description "Show Config Bible statistics"
 
-    if not set -q CONFIG_BIBLE_HOME
-        set -gx CONFIG_BIBLE_HOME "$HOME/github/projects/config-bible"
-    end
+    dotfiles-settings; or return 1
 
     set -l docs "$CONFIG_BIBLE_HOME/docs"
     set -l files (command find "$docs" -type f -name '*.md' ! -name 'INDEX.md' ! -name 'INDEX-BATCH*.md' ! -name 'TEMPLATE.md' | sort)

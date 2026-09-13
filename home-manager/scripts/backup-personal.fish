@@ -1,7 +1,14 @@
 #!/usr/bin/env fish
 
-set -l REPO "/run/media/$USER/Linux-Backup/restic"
-set -l PASSWORD_COMMAND "kwallet-query -f Restic -r Crucial-X6 kdewallet"
+# Load shared settings without relying on interactive Fish startup.
+set -l settings_file (path dirname (status filename))/lib/settings.fish
+if not test -f "$settings_file"
+    set settings_file "$HOME/.local/share/dotfiles/settings.fish"
+end
+source "$settings_file"; or exit 1
+
+set -l REPO "$RESTIC_REPOSITORY"
+set -l PASSWORD_COMMAND (string join " " kwallet-query -f (string escape -- "$RESTIC_WALLET_FOLDER") -r (string escape -- "$RESTIC_WALLET_ENTRY") (string escape -- "$RESTIC_WALLET"))
 
 echo "==> Personal backup"
 echo "    Repository: $REPO"
@@ -21,7 +28,7 @@ if not test -d "$REPO"
     echo "Error: Restic repository not found:"
     echo "  $REPO"
     echo
-    echo "Make sure Linux-Backup is unlocked and mounted."
+    echo "Make sure $BACKUP_MOUNT is unlocked and mounted."
     exit 1
 end
 
@@ -34,7 +41,8 @@ set -l PATHS \
     "$HOME/Music" \
     "$HOME/Projects" \
     "$HOME/Applications" \
-    "$HOME/dotfiles" \
+    "$DOTFILES_DIR" \
+    "$CONFIG_BIBLE_HOME" \
     "$HOME/.cargo"
 
 set -l EXISTING
@@ -61,7 +69,10 @@ echo
 restic \
     --repo "$REPO" \
     --password-command "$PASSWORD_COMMAND" \
-    backup $EXISTING
+    backup \
+    --exclude "$DOTFILES_DIR/.system-backup-capture-*" \
+    --exclude "$DOTFILES_DIR/.system-backup.lock" \
+    $EXISTING
 
 if test $status -ne 0
     echo

@@ -26,9 +26,9 @@ alias lk="eza -lh --sort=size --icons"
 alias lt="eza -lh --sort=modified --icons"
 
 # Directories / files only
-alias ldir="eza -l --icons --filter=dir"
-alias lf="eza -l --icons --filter=file"
+alias ldir="eza -l --icons --only-dirs"
+alias lf="eza -l --icons --only-files"
 
-alias lg="eza -l --git --icons"
+alias lgit="eza -l --git --icons"
 alias l1="eza -1 --icons"
 alias lr="eza -R --icons"

@@ -1,6 +1,34 @@
 #!/usr/bin/env fish
 
-set -l INVENTORY "$HOME/dotfiles/system-backup/inventories"
+# Load shared settings without relying on interactive Fish startup.
+set -l settings_file (path dirname (status filename))/lib/settings.fish
+if not test -f "$settings_file"
+    set settings_file "$HOME/.local/share/dotfiles/settings.fish"
+end
+source "$settings_file"; or exit 1
+
+set -l INVENTORY "$DOTFILES_DIR/system-backup/inventories"
+
+# Planning exits before prompts, directory creation, or privileged commands.
+if contains -- --dry-run $argv
+    if not test -d "$INVENTORY"
+        echo "Snapshot directory not found: $INVENTORY" >&2
+        exit 1
+    end
+    echo "Restore source: $INVENTORY"
+    for item in pacman-native-explicit.txt pacman-foreign-explicit.txt flatpak-apps.tsv flatpak-remotes.tsv appimages.txt
+        if test -e "$INVENTORY/$item"
+            echo "Available: $INVENTORY/$item"
+        else
+            echo "Missing: $INVENTORY/$item"
+        end
+    end
+    exit 0
+end
+if test (count $argv) -gt 0
+    echo "Usage: restore-apps [--dry-run]" >&2
+    exit 1
+end
 
 function section
     echo
