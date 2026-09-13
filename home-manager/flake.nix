@@ -24,6 +24,7 @@
           fish
           jq
           python3
+          gnupg
           shellcheck
           actionlint
           nixfmt
