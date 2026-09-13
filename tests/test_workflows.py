@@ -187,6 +187,26 @@ class Workflows(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertFalse(destination.exists())
 
+    def test_personal_backup_passes_wallet_command_and_records_success(self):
+        mock = self.root / 'bin'
+        mock.mkdir()
+        restic = mock / 'restic'
+        restic.write_text("#!/usr/bin/env python3\nimport shlex,sys\n"
+                         "args=sys.argv[1:]\n"
+                         "command=shlex.split(args[args.index('--password-command')+1])\n"
+                         "assert command == ['kwallet-query','-f','folder with spaces','-r','entry','wallet'], command\n")
+        restic.chmod(0o755)
+        wallet = mock / 'kwallet-query'
+        wallet.write_text('#!/bin/sh\nexit 0\n')
+        wallet.chmod(0o755)
+        self.env.update(PATH=str(mock) + os.pathsep + self.env['PATH'],
+                        RESTIC_REPOSITORY=str(self.root), XDG_STATE_HOME=str(self.root / 'state'),
+                        RESTIC_WALLET_FOLDER='folder with spaces', RESTIC_WALLET_ENTRY='entry',
+                        RESTIC_WALLET='wallet')
+        result = self.fish('backup-personal.fish')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(len(list(self.root.rglob('backup.success'))), 1)
+
     def test_metadata_tracks_separate_capture_times(self):
         for kind in ('system', 'applications'):
             for status in ('started', 'completed'):
