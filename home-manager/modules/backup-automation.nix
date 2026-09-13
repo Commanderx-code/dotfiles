@@ -1,4 +1,4 @@
-{ machine, ... }:
+{ machine, pkgs, ... }:
 
 {
   home.file.".local/bin/backup-on-mount" = {
@@ -16,9 +16,18 @@
     executable = true;
   };
 
+  systemd.user.services."backup-failure@" = {
+    Unit.Description = "Notify about backup failure in %i";
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.libnotify}/bin/notify-send --urgency=critical --expire-time=0 --app-name=Backups 'Backup service failed' '%i failed. Run backup-health and inspect its journal for details.'";
+    };
+  };
+
   systemd.user.services.backup-on-mount = {
     Unit = {
       Description = "Run Restic backup when the backup drive is mounted";
+      OnFailure = [ "backup-failure@%n.service" ];
       After = [ "graphical-session.target" ];
     };
 
@@ -46,6 +55,7 @@
   systemd.user.services.restic-maintenance = {
     Unit = {
       Description = "Prune old Restic snapshots and verify repository";
+      OnFailure = [ "backup-failure@%n.service" ];
     };
 
     Service = {
@@ -73,6 +83,7 @@
   systemd.user.services.restic-deep-check = {
     Unit = {
       Description = "Deep Restic repository integrity check";
+      OnFailure = [ "backup-failure@%n.service" ];
     };
 
     Service = {
