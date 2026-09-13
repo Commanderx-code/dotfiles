@@ -13,12 +13,28 @@
   outputs =
     { nixpkgs, home-manager, ... }:
     let
-      system = "x86_64-linux";
+      machine = builtins.fromJSON (builtins.readFile ./machine.json);
+      system = machine.system;
       pkgs = nixpkgs.legacyPackages.${system};
     in
     {
-      homeConfigurations."commander" = home-manager.lib.homeManagerConfiguration {
+      formatter.${system} = pkgs.nixfmt;
+      devShells.${system}.default = pkgs.mkShell {
+        packages = with pkgs; [
+          fish
+          jq
+          python3
+          shellcheck
+          actionlint
+          nixfmt
+          neovim
+          eza
+          ripgrep
+        ];
+      };
+      homeConfigurations.${machine.username} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
+        extraSpecialArgs = { inherit machine; };
 
         # Specify your home configuration modules here, for example,
         # the path to your home.nix.

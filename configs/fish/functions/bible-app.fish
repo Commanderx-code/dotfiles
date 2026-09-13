@@ -1,8 +1,6 @@
 function bible-app --description "Build, develop, or launch the Config Bible desktop app"
 
-    if not set -q CONFIG_BIBLE_HOME
-        set -gx CONFIG_BIBLE_HOME "$HOME/github/projects/config-bible"
-    end
+    dotfiles-settings; or return 1
 
     set -l app "$CONFIG_BIBLE_HOME/app"
     set -l action "$argv[1]"

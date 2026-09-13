@@ -38,14 +38,14 @@ show_arch_news = true
 # Home Manager flake.
 home_manager_arguments = [
   "--flake",
-  "/home/commander/dotfiles/home-manager#commander"
+  @HOME_MANAGER_FLAKE@
 ]
 
 
 [git]
 # Automatically update the dotfiles repository.
 repos = [
-  "~/dotfiles",
+  @DOTFILES_DIRECTORY@,
 ]
 
 max_concurrency = 5

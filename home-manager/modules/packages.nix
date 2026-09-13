@@ -8,7 +8,6 @@
     fd
     ripgrep
     broot
-    zoxide
     yazi
     nnn
 
@@ -20,6 +19,7 @@
     lazygit
 
     # Data / scripting
+    python3
     jq
 
     # Media / terminal previews
@@ -35,7 +35,6 @@
     playerctl
 
     # System maintenance helpers
-    fastfetch
     topgrade
   ];
 }

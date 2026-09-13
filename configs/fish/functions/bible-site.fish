@@ -1,8 +1,6 @@
 function bible-site --description "Build or serve the Config Bible web site"
 
-    if not set -q CONFIG_BIBLE_HOME
-        set -gx CONFIG_BIBLE_HOME "$HOME/github/projects/config-bible"
-    end
+    dotfiles-settings; or return 1
 
     set -l site "$CONFIG_BIBLE_HOME/site"
     set -l venv "$site/.venv"

@@ -5,6 +5,5 @@ function update --description "Show available updates (Arch)"
     end
 
     echo "Tip: install pacman-contrib for checkupdates: sudo pacman -S pacman-contrib"
-    sudo pacman -Sy
-    pacman -Qu
+    return 1
 end

@@ -1,5 +1,6 @@
 function config-index --description "Search the Commander configuration bible"
-    set -l docs_root "$HOME/dotfiles/docs"
+    dotfiles-settings; or return 1
+    set -l docs_root "$CONFIG_BIBLE_HOME/docs"
 
     # -------------------------------------------------------------------------
     # Help / quick filters
@@ -240,8 +241,7 @@ function config-index --description "Search the Commander configuration bible"
             "$relative" \
             "$file" \
             "$source_path" \
-            "$runtime_path" \
-            >> "$database"
+            "$runtime_path" >>"$database"
     end
 
     # -------------------------------------------------------------------------
@@ -376,14 +376,14 @@ function config-index --description "Search the Commander configuration bible"
                 -type f \
                 -name '*.md' \
                 \( \
-                    -path '*/recovery/*' \
-                    -o -path '*/backup/*' \
-                    -o -path '*/troubleshooting/*' \
+                -path '*/recovery/*' \
+                -o -path '*/backup/*' \
+                -o -path '*/troubleshooting/*' \
                 \) \
                 | sort \
                 | while read -l recovery_file
 
-                    set -l recovery_title (command awk -F': ' '
+                set -l recovery_title (command awk -F': ' '
                         $1 == "title" {
                             sub(/^title:[[:space:]]*/, "")
                             print
@@ -391,30 +391,29 @@ function config-index --description "Search the Commander configuration bible"
                         }
                     ' "$recovery_file")
 
-                    if test -z "$recovery_title"
-                        set recovery_title (command awk '
+                if test -z "$recovery_title"
+                    set recovery_title (command awk '
                             /^# / {
                                 sub(/^# /, "")
                                 print
                                 exit
                             }
                         ' "$recovery_file")
-                    end
+                end
 
-                    if test -z "$recovery_title"
-                        set recovery_title (path basename "$recovery_file" .md)
-                    end
+                if test -z "$recovery_title"
+                    set recovery_title (path basename "$recovery_file" .md)
+                end
 
-                    set -l recovery_relative (
+                set -l recovery_relative (
                         string replace "$docs_root/" "" "$recovery_file"
                     )
 
-                    printf '%s\t%s\t%s\n' \
-                        "$recovery_title" \
-                        "$recovery_relative" \
-                        "$recovery_file" \
-                        >> "$recovery_db"
-                end
+                printf '%s\t%s\t%s\n' \
+                    "$recovery_title" \
+                    "$recovery_relative" \
+                    "$recovery_file" >>"$recovery_db"
+            end
 
             set -l recovery_preview 'sed -n "1,300p" {3}'
             if command -q bat
