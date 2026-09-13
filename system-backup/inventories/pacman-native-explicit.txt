@@ -1,5 +1,6 @@
 7zip
 alsa-firmware
+anydesk-bin
 apparmor
 appimagepool-appimage
 appmenu-gtk-module
@@ -78,9 +79,12 @@ gawk
 gcc-libs
 gettext
 ghostty
+github-cli
 github-desktop
 glibc
+gnome-notes
 go
+gparted
 grep
 grub
 grub-btrfs
@@ -124,13 +128,11 @@ libinput-gestures-qt
 libmythes
 libreoffice-fresh
 licenses
-linux-cachyos-bore
-linux-cachyos-bore-headers
 linux-firmware
+linux-garuda
+linux-garuda-headers
 linux-lts
 linux-lts-headers
-linux-zen
-linux-zen-headers
 logrotate
 lrzip
 lsb-release
@@ -159,6 +161,7 @@ noto-fonts-cjk
 noto-fonts-emoji
 nss-mdns
 ntfs-3g
+nvme-cli
 octopi
 okular
 openbsd-netcat
@@ -179,6 +182,7 @@ plasma-nm
 plasma-pa
 plasma-systemmonitor
 plasma-thunderbolt
+plasma-x11-session
 plasma6-applets-window-title
 plasma6-wallpapers-blurredwallpaper
 plocate

@@ -1,9 +1,9 @@
 # GRUB boot loader configuration
 
 GRUB_DEFAULT="gnulinux-simple-9dacdee0-8435-4064-807f-c530fbc35d56"
-GRUB_TIMEOUT=2
+GRUB_TIMEOUT="2"
 GRUB_DISTRIBUTOR='Garuda'
-GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 lsm=landlock,lockdown,yama,integrity,apparmor,bpf quiet splash rd.udev.log_priority=3 vt.global_cursor_default=0"
+GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 lsm=landlock,lockdown,yama,integrity,apparmor,bpf splash rd.udev.log_priority=3 vt.global_cursor_default=0 quiet"
 GRUB_CMDLINE_LINUX=""
 
 # Preload both GPT and MBR modules so that they are not missed
@@ -14,7 +14,6 @@ GRUB_PRELOAD_MODULES="part_gpt part_msdos"
 
 # Set to 'countdown' or 'hidden' to change timeout behavior,
 # press ESC key to display menu.
-GRUB_TIMEOUT=2
 
 # Uncomment to use basic console
 GRUB_TERMINAL_INPUT=console
@@ -43,15 +42,15 @@ GRUB_GFXPAYLOAD_LINUX=keep
 #GRUB_COLOR_HIGHLIGHT="light-cyan/blue"
 
 # Uncomment one of them for the gfx desired, a image background or a gfxtheme
-#GRUB_BACKGROUND="/path/to/wallpaper"
-#GRUB_THEME="/usr/share/grub/themes/cachyos/theme.txt"
+GRUB_BACKGROUND="/usr/share/grub/themes/cachyos/bg.png"
+GRUB_THEME="/usr/share/grub/themes/cachyos/theme.txt"
 
 # Uncomment to get a beep at GRUB start
 #GRUB_INIT_TUNE="480 440 1"
 
 # Uncomment to make GRUB remember the last selection. This requires
 # setting 'GRUB_DEFAULT=saved' above.
-#GRUB_SAVEDEFAULT=true
+GRUB_SAVEDEFAULT="false"
 
 # Uncomment to disable submenus in boot menu
 #GRUB_DISABLE_SUBMENU=y
@@ -60,6 +59,4 @@ GRUB_GFXPAYLOAD_LINUX=keep
 # documentation on GRUB_DISABLE_OS_PROBER, if still want to enable this
 # functionality install os-prober and uncomment to detect and include other
 # operating systems.
-GRUB_DISABLE_OS_PROBER=false
-GRUB_THEME="/usr/share/grub/themes/cachyos/theme.txt"
-GRUB_BACKGROUND="/usr/share/grub/themes/cachyos/background.png"
+GRUB_DISABLE_OS_PROBER="true"

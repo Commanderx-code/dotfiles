@@ -2,12 +2,14 @@ appimagelauncher
 ivpn
 ivpn-ui
 libpamac-aur
-linutil-bin
 lsparu
+openlogi
 pamac-aur
 psst-bin
 redhat-fonts
 sddm-silent-theme-git
 spotatui-bin
+spotatui-bin-debug
 stacer
+termius
 wireguard-gui-bin
