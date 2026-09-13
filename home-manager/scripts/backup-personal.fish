@@ -8,7 +8,7 @@ end
 source "$settings_file"; or exit 1
 
 set -l REPO "$RESTIC_REPOSITORY"
-set -l PASSWORD_COMMAND (string join " " kwallet-query -f (string escape -- "$RESTIC_WALLET_FOLDER") -r (string escape -- "$RESTIC_WALLET_ENTRY") (string escape -- "$RESTIC_WALLET"))
+set -l PASSWORD_COMMAND (string join -- " " kwallet-query -f (string escape -- "$RESTIC_WALLET_FOLDER") -r (string escape -- "$RESTIC_WALLET_ENTRY") (string escape -- "$RESTIC_WALLET"))
 
 echo "==> Personal backup"
 echo "    Repository: $REPO"
