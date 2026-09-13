@@ -129,3 +129,18 @@ The jobs share a lock and recheck dates after acquiring it. Directly running
 GitHub Actions runs `nix develop ./home-manager --command ./scripts/check --build`
 on pushes and pull requests, with read-only repository permissions and pinned
 action revisions. It validates and builds without activating Home Manager.
+
+## Backup coverage and health
+
+Personal Restic captures include `~/github` (including unpushed repository work),
+`~/Projects`, the configured Config Bible directory, and the existing personal
+folders. `backup-secrets` separately encrypts SSH, GnuPG, and KWallet; GnuPG
+sockets, lock files, and random-seed state are excluded from its archive.
+
+`backup-health` shows locally recorded successful personal backup and maintenance
+dates, snapshot metadata, backup service results, and unfinished capture folders.
+It works offline and never unlocks KWallet. `backup-health --json` provides the
+same information for automation; exit 1 means attention or verification is needed.
+Personal backup dates start being recorded after installing this version and
+completing a successful backup. An unknown date is not evidence of a failed backup.
+A personal backup older than 24 hours is flagged for review.

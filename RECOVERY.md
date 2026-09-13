@@ -447,3 +447,12 @@ Use `restore-system --dry-run` and `restore-apps --dry-run` to inspect available
 sources without changing the machine. Check `system-backup/inventories/*-metadata.json`
 for the capture host, date, versions, and completion status. Older snapshots may
 lack metadata; do not assume the current checkout date is their capture date.
+
+## GnuPG recovery
+
+`backup-secrets` now creates `gnupg-<timestamp>.tar.gz.gpg` alongside the SSH and
+KWallet archives. Decrypt it into a private temporary directory, inspect the
+`.gnupg/` tree, and restore it with GnuPG applications closed. Preserve ownership
+and private permissions; do not extract over an active keyring. The archive
+contains key material, while transient agent sockets and lock files are omitted.
+Keep the archive passphrase available independently of the machine being restored.

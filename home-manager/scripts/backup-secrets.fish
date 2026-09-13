@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-# Secure backup of SSH and KDE Wallet.
+# Secure backup of SSH, GnuPG, and KDE Wallet.
 # The encrypted archives may be stored on an external drive.
 # No secret contents are ever copied into the dotfiles repository.
 
@@ -50,82 +50,42 @@ echo
 
 set -l BACKED_UP 0
 
-#
-# SSH
-#
-
-if test -d "$HOME/.ssh"
-    set -l SSH_OUTPUT "$DEST/ssh-$TIMESTAMP.tar.gz.gpg"
-
-    echo "==> Encrypting SSH backup"
-    echo "    $SSH_OUTPUT"
-    echo
-
-    tar \
-        -C "$HOME" \
-        -czf - \
-        .ssh \
-        | gpg \
-        --symmetric \
-        --cipher-algo AES256 \
-        --output "$SSH_OUTPUT"
-
-    if test $pipestatus[1] -ne 0 -o $pipestatus[2] -ne 0
-        echo
-        echo "ERROR: SSH backup failed."
-        rm -f "$SSH_OUTPUT"
-        exit 1
+# Encrypt directly from tar's stream; plaintext archives never touch disk.
+function encrypt_directory --argument-names base directory output
+    set -l excludes
+    if test "$directory" = .gnupg
+        set excludes '--exclude=S.gpg-agent*' '--exclude=S.dirmngr' \
+            '--exclude=*.lock' '--exclude=.#*' '--exclude=random_seed'
     end
-
-    chmod 600 "$SSH_OUTPUT"
-    set BACKED_UP 1
-
-    echo
-    echo "SSH backup complete."
-    echo
-else
-    echo "==> ~/.ssh does not exist; skipping SSH backup."
-    echo
+    tar -C "$base" $excludes -czf - "$directory" \
+        | gpg --symmetric --cipher-algo AES256 --output "$output"
+    set -l result $pipestatus
+    if test "$result[1]" -ne 0; or test "$result[2]" -ne 0
+        echo "ERROR: Could not encrypt $directory" >&2
+        rm -f -- "$output"
+        return 1
+    end
+    chmod 600 "$output"; or return 1
 end
 
-#
-# KDE Wallet
-#
-
-set -l KWALLET "$HOME/.local/share/kwalletd"
-
-if test -d "$KWALLET"
-    set -l KWALLET_OUTPUT "$DEST/kwallet-$TIMESTAMP.tar.gz.gpg"
-
-    echo "==> Encrypting KDE Wallet backup"
-    echo "    $KWALLET_OUTPUT"
-    echo
-
-    tar \
-        -C "$HOME/.local/share" \
-        -czf - \
-        kwalletd \
-        | gpg \
-        --symmetric \
-        --cipher-algo AES256 \
-        --output "$KWALLET_OUTPUT"
-
-    if test $pipestatus[1] -ne 0 -o $pipestatus[2] -ne 0
-        echo
-        echo "ERROR: KDE Wallet backup failed."
-        rm -f "$KWALLET_OUTPUT"
-        exit 1
+for directory in .ssh .gnupg .local/share/kwalletd
+    if not test -d "$HOME/$directory"
+        echo "==> $HOME/$directory does not exist; skipping."
+        continue
     end
-
-    chmod 600 "$KWALLET_OUTPUT"
+    set -l label (path basename "$directory" | string replace -r '^\.' '')
+    # Preserve the established KWallet archive name.
+    test "$label" = kwalletd; and set label kwallet
+    set -l output "$DEST/$label-$TIMESTAMP.tar.gz.gpg"
+    echo "==> Encrypting $directory backup"
+    set -l base "$HOME"
+    set -l archive_directory "$directory"
+    if test "$label" = kwallet
+        set base "$HOME/.local/share"
+        set archive_directory kwalletd
+    end
+    encrypt_directory "$base" "$archive_directory" "$output"; or exit 1
     set BACKED_UP 1
-
-    echo
-    echo "KDE Wallet backup complete."
-    echo
-else
-    echo "==> KDE Wallet directory does not exist; skipping."
-    echo
 end
 
 if test $BACKED_UP -eq 0

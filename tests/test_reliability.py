@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import tarfile
 import time
 import unittest
 from unittest.mock import patch
@@ -22,6 +23,7 @@ def module(name):
 
 transaction = module('snapshot-transaction')
 restic_job = module('restic-job')
+health = module('backup-health')
 
 
 class Reliability(unittest.TestCase):
@@ -125,3 +127,55 @@ sys.exit(int(sys.argv[2]))
         self.assertEqual(result.returncode, 1)
         self.assertNotIn('✅ Cleanup complete', result.stdout)
         self.assertEqual(log.read_text().count('paccache -rk3'), 1)
+
+    def test_health_reports_unknown_and_success_without_repository_access(self):
+        env = dict(RESTIC_REPOSITORY=str(self.root / 'repo'), DOTFILES_DIR=str(self.root),
+                   BACKUP_MOUNT=str(self.root / 'drive'), XDG_STATE_HOME=str(self.root / 'state'))
+        result = subprocess.CompletedProcess([], 0, 'LoadState=loaded\nActiveState=inactive\nResult=success\n')
+        with patch.object(health.subprocess, 'run', return_value=result):
+            report = health.collect(env)
+            self.assertTrue(report['needs_attention'])
+            self.assertEqual(report['jobs']['backup']['status'], 'unknown')
+            self.assertFalse((self.root / 'state').exists())
+            with patch.dict(os.environ, env), patch.object(sys, 'argv', ['restic-job', 'record-backup']):
+                self.assertEqual(restic_job.main(), 0)
+            stamp = next(self.root.rglob('backup.success'))
+            for name in ['maintenance.success', 'deep-check.success']:
+                stamp.with_name(name).touch()
+            metadata = self.root / 'system-backup/inventories'
+            metadata.mkdir(parents=True)
+            for kind in ['system', 'applications']:
+                (metadata / (kind + '-metadata.json')).write_text(json.dumps(
+                    {'status': 'completed', 'completed_at': '2026-09-13T00:00:00+00:00'}))
+            self.assertFalse(health.collect(env)['needs_attention'])
+            (self.root / '.system-backup-capture-failed').mkdir()
+            self.assertTrue(health.collect(env)['needs_attention'])
+
+    def test_gnupg_archive_layout_excludes_runtime_files_and_cleans_failure(self):
+        # GPG is a fixture sink; no actual keyring is read and no passphrase is needed.
+        keyring = self.root / '.gnupg'
+        keyring.mkdir()
+        (keyring / 'public-fixture').write_text('fixture data')
+        for name in ['S.gpg-agent', 'S.dirmngr', 'keyring.lock', 'random_seed']:
+            (keyring / name).write_text('transient fixture')
+        mock = self.root / 'bin'
+        mock.mkdir()
+        gpg = mock / 'gpg'
+        gpg.write_text('#!/bin/sh\nwhile [ "$1" != "--output" ]; do shift; done\ncat > "$2"\n')
+        gpg.chmod(0o755)
+        env = dict(os.environ, PATH=str(mock) + os.pathsep + os.environ['PATH'])
+        source = (ROOT / 'home-manager/scripts/backup-secrets.fish').read_text()
+        helper = 'function encrypt_directory' + source.split('function encrypt_directory', 1)[1].split('\nend\n', 1)[0] + '\nend\n'
+        output = self.root / 'fixture.tar.gz'
+        def run():
+            return subprocess.run([shutil.which('fish'), '--no-config', '-c',
+                helper + 'encrypt_directory $argv[1] .gnupg $argv[2]', str(self.root), str(output)],
+                env=env, text=True, capture_output=True)
+        result = run()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        with tarfile.open(output) as archive:
+            self.assertEqual(set(archive.getnames()), {'.gnupg', '.gnupg/public-fixture'})
+        self.assertEqual(output.stat().st_mode & 0o777, 0o600)
+        gpg.write_text('#!/bin/sh\nexit 7\n')
+        self.assertNotEqual(run().returncode, 0)
+        self.assertFalse(output.exists())
