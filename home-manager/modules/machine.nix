@@ -1,5 +1,6 @@
 { ... }:
 {
+  home.file.".local/share/dotfiles/encrypted-backup.py".source = ../scripts/encrypted-backup.py;
   xdg.configFile."dotfiles/machine.json".source = ../machine.json;
   home.file.".local/share/dotfiles/settings.fish".source = ../scripts/lib/settings.fish;
   home.file.".local/bin/backup-health" = {

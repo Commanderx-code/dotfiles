@@ -161,21 +161,53 @@ sys.exit(int(sys.argv[2]))
         mock = self.root / 'bin'
         mock.mkdir()
         gpg = mock / 'gpg'
-        gpg.write_text('#!/bin/sh\nwhile [ "$1" != "--output" ]; do shift; done\ncat > "$2"\n')
+        gpg.write_text('#!/bin/sh\ncat\n')
         gpg.chmod(0o755)
         env = dict(os.environ, PATH=str(mock) + os.pathsep + os.environ['PATH'])
-        source = (ROOT / 'home-manager/scripts/backup-secrets.fish').read_text()
-        helper = 'function encrypt_directory' + source.split('function encrypt_directory', 1)[1].split('\nend\n', 1)[0] + '\nend\n'
+        helper = module('encrypted-backup')
         output = self.root / 'fixture.tar.gz'
         def run():
-            return subprocess.run([shutil.which('fish'), '--no-config', '-c',
-                helper + 'encrypt_directory $argv[1] .gnupg $argv[2]', str(self.root), str(output)],
-                env=env, text=True, capture_output=True)
-        result = run()
-        self.assertEqual(result.returncode, 0, result.stderr)
+            with patch.dict(os.environ, env):
+                helper.encrypt(output, b'fixture-passphrase', archive=(self.root, '.gnupg'))
+        run()
         with tarfile.open(output) as archive:
             self.assertEqual(set(archive.getnames()), {'.gnupg', '.gnupg/public-fixture'})
         self.assertEqual(output.stat().st_mode & 0o777, 0o600)
+        output.unlink()
         gpg.write_text('#!/bin/sh\nexit 7\n')
-        self.assertNotEqual(run().returncode, 0)
+        with self.assertRaises(RuntimeError):
+            run()
         self.assertFalse(output.exists())
+
+    def test_encrypted_run_prompts_once_for_all_four_outputs(self):
+        helper = module('encrypted-backup')
+        for name in ['.ssh', '.gnupg', '.local/share/kwalletd']:
+            (self.root / name).mkdir(parents=True)
+        env = dict(BACKUP_MOUNT='/fixture', RESTIC_WALLET_FOLDER='Restic',
+                   RESTIC_WALLET_ENTRY='fixture', RESTIC_WALLET='wallet')
+        with patch.dict(os.environ, env), patch.object(Path, 'home', return_value=self.root), \
+             patch.object(sys, 'argv', ['encrypted-backup', str(self.root / 'out'), '--with-restic-credential']), \
+             patch.object(helper.getpass, 'getpass', return_value='fixture-passphrase') as prompt, \
+             patch.object(helper.subprocess, 'run'), \
+             patch.object(helper.subprocess, 'check_output', return_value=b'restic-fixture'), \
+             patch.object(helper, 'encrypt') as encrypt:
+            self.assertEqual(helper.main(), 0)
+            prompt.assert_called_once()
+            self.assertEqual(encrypt.call_count, 4)
+            self.assertTrue(all(call.args[1] == b'fixture-passphrase' for call in encrypt.call_args_list))
+
+    def test_real_encryption_round_trip_and_no_overwrite(self):
+        helper = module('encrypted-backup')
+        output = self.root / 'round-trip.gpg'
+        with patch.dict(os.environ, GNUPGHOME=str(self.root / 'gpg')):
+            (self.root / 'gpg').mkdir(mode=0o700)
+            helper.encrypt(output, b'test-only-passphrase', data=b'fixture contents')
+            result = subprocess.run(['gpg', '--batch', '--pinentry-mode', 'loopback',
+                                     '--passphrase-fd', '0', '--decrypt', str(output)],
+                                    input=b'test-only-passphrase\n', capture_output=True, check=True)
+            self.assertEqual(result.stdout, b'fixture contents')
+            original = output.read_bytes()
+            with self.assertRaises(FileExistsError):
+                helper.encrypt(output, b'other', data=b'other')
+            self.assertEqual(output.read_bytes(), original)
+            subprocess.run(['gpgconf', '--kill', 'gpg-agent'], check=True)

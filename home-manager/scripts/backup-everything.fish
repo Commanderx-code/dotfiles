@@ -23,7 +23,7 @@ if not mountpoint -q "$MOUNT"
     exit 1
 end
 
-echo "==> 1/4 System configuration backup"
+echo "==> 1/3 System configuration backup"
 echo
 
 backup-system-state
@@ -47,7 +47,7 @@ if test $status -ne 0
 end
 
 echo
-echo "==> 2/4 Personal Restic backup"
+echo "==> 2/3 Personal Restic backup"
 echo
 
 backup-personal
@@ -59,28 +59,16 @@ if test $status -ne 0
 end
 
 echo
-echo "==> 3/4 Encrypted secrets backup"
+echo "==> 3/3 Encrypted secrets and recovery credential backup"
 echo
 
 mkdir -p "$SECRETS_DEST"
 
-backup-secrets "$SECRETS_DEST"
+backup-secrets "$SECRETS_DEST" --with-restic-credential
 
 if test $status -ne 0
     echo
     echo "ERROR: backup-secrets failed."
-    exit 1
-end
-
-echo
-echo "==> 4/4 Restic recovery credential backup"
-echo
-
-backup-restic-credential
-
-if test $status -ne 0
-    echo
-    echo "ERROR: backup-restic-credential failed."
     exit 1
 end
 
