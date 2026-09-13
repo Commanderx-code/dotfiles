@@ -162,3 +162,12 @@ files. Standalone `backup-secrets DEST` also prompts once; add
 passed to GPG through an anonymous pipe, never command arguments, environment
 variables, or a plaintext file. Sudo and KWallet authentication remain separate.
 Store the passphrase separately and verify decryption after choosing a new one.
+
+Privacy: `.gitignore` excludes secret-file formats, credential directories,
+`personal/`, `private/`, and the entire local `system-backup/` capture. Snapshots
+remain on disk and are protected by the external Restic backup; they are not
+included in future Git commits. Ignoring a file does not erase earlier commits,
+and cannot detect secrets pasted into otherwise tracked configuration files.
+`home-manager/machine.json` remains tracked because the Git-based Nix flake
+requires it. It contains machine identifiers and paths, so keep credentials out
+of it. Use sanitized example files when documenting secret configuration.

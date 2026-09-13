@@ -1,2 +1,0 @@
-/home/commander/Applications/NymVPN_2026.12.2_amd64_e5181a9a89ba69b7afcf2e7cd81a830a.appimage
-/home/commander/Applications/standard-notes-3.201.27-linux-x86_64_579b6499bcbe7ddd1190ea6c83c4253e.appimage
