@@ -32,9 +32,9 @@ DialogHeight=630
 DialogWidth=810
 
 [Containments][148][General]
-changedPositions={"desktop:/background.png":["1920x1080","3","0"],"desktop:/bookmarks_5_13_26.html":["1920x1080","2","0"],"desktop:/restic-backup":["1920x1080","1","0"]}
+changedPositions={"desktop:/GameDVR":["1920x1080","0","0"],"desktop:/Screenshot_20260902_124551.png":["1920x1080","0","5"],"desktop:/Unconfirmed 512442.crdownload":["1920x1080","0","4"],"desktop:/Unconfirmed 871756.crdownload":["1920x1080","0","4"],"desktop:/XboxCaptureCopies":["1920x1080","1","0"],"desktop:/background.png":["1920x1080","0","1"],"desktop:/bg.png":["1920x1080","0","2"],"desktop:/bookmarks_5_13_26.html":["1920x1080","2","0"],"desktop:/key.conf":["1920x1080","1","1"],"desktop:/menuentry 'Garuda Linux' --class":["1920x1080","0","3"],"desktop:/openlogi-v0.8.3-linux-amd64.pkg.tar.zst":["1920x1080","0","4"],"desktop:/restic-backup":["1920x1080","1","0"],"desktop:/unnamed.png":["1920x1080","2","0"]}
 lastResolution=1920x1080
-positions={"1920x1080":["1","17","desktop:/background.png","3","0","desktop:/restic-backup","1","0","desktop:/bookmarks_5_13_26.html","2","0","desktop:/_Linux","0","0"]}
+positions={"1920x1080":["3","17","desktop:/Unconfirmed 871756.crdownload","0","4","desktop:/bg.png","0","2","desktop:/menuentry 'Garuda Linux' --class","0","3","desktop:/openlogi-v0.8.3-linux-amd64.pkg.tar.zst","0","4","desktop:/XboxCaptureCopies","1","0","desktop:/GameDVR","0","0","desktop:/bookmarks_5_13_26.html","2","0","desktop:/restic-backup","1","0","desktop:/unnamed.png","2","0","desktop:/Ernest.Movie.Collection.480p-1080p.H264.AC3.Will1869.torrent","0","4","desktop:/Screenshot_20260902_124551.png","0","5","desktop:/_Linux","0","0","desktop:/background.png","0","1","desktop:/icon.svg","0","4","desktop:/key.conf","1","1","desktop:/Unconfirmed 512442.crdownload","0","4"]}
 sortMode=-1
 
 [Containments][148][Wallpaper][org.kde.image][General]
@@ -76,7 +76,7 @@ immutability=1
 plugin=org.kde.plasma.icontasks
 
 [Containments][149][Applets][152][Configuration][General]
-launchers=applications:brave-browser.desktop,applications:systemsettings.desktop,applications:org.kde.discover.desktop,preferred://filemanager,applications:org.kde.kate.desktop,applications:org.kde.konsole.desktop
+launchers=applications:brave-origin.desktop,applications:systemsettings.desktop,applications:org.kde.discover.desktop,preferred://filemanager,applications:org.kde.kate.desktop,applications:org.kde.konsole.desktop,applications:termius.desktop
 
 [Containments][149][Applets][153]
 immutability=1
@@ -165,7 +165,7 @@ immutability=1
 plugin=org.kde.plasma.digitalclock
 
 [Containments][149][Applets][166][Configuration]
-popupHeight=375
+popupHeight=451
 popupWidth=525
 
 [Containments][149][Applets][167]
@@ -177,4 +177,4 @@ AppletOrder=150;151;152;153;154;166;167
 
 [ScreenMapping]
 itemsOnDisabledScreens=
-screenMapping=
+screenMapping=desktop:/unnamed.png,0,865b7da5-0063-4189-a8c5-096f49bb448b,desktop:/bg.png,0,865b7da5-0063-4189-a8c5-096f49bb448b,desktop:/menuentry 'Garuda Linux' --class,0,865b7da5-0063-4189-a8c5-096f49bb448b,desktop:/key.conf,0,865b7da5-0063-4189-a8c5-096f49bb448b,desktop:/background.png,0,865b7da5-0063-4189-a8c5-096f49bb448b,desktop:/GameDVR,0,865b7da5-0063-4189-a8c5-096f49bb448b,desktop:/XboxCaptureCopies,0,865b7da5-0063-4189-a8c5-096f49bb448b

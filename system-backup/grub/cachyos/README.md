@@ -11,4 +11,4 @@ sudo bash setup.sh
 ```
 
 # Screenshot
-![screenshot](./preview.png)
+![screenshot](/preview.png?raw=true)

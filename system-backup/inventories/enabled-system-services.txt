@@ -35,5 +35,6 @@ btrfs-balance.timer                enabled disabled
 btrfs-defrag.timer                 enabled disabled
 btrfs-scrub.timer                  enabled disabled
 btrfs-trim.timer                   enabled disabled
+paccache.timer                     enabled disabled
 pamac-cleancache.timer             enabled disabled
 snapper-cleanup.timer              enabled disabled
