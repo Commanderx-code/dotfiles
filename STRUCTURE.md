@@ -154,3 +154,11 @@ to report their errors in the terminal.
 Captured system files are preserved verbatim, including upstream README files.
 The validator reports broken upstream links inside `system-backup/` without
 failing; broken links in maintained repository documentation still fail checks.
+
+`backup-everything` asks once in the terminal for the recovery encryption
+passphrase and uses it for the separate SSH, GnuPG, KWallet, and Restic credential
+files. Standalone `backup-secrets DEST` also prompts once; add
+`--with-restic-credential` to include the recovery credential. The passphrase is
+passed to GPG through an anonymous pipe, never command arguments, environment
+variables, or a plaintext file. Sudo and KWallet authentication remain separate.
+Store the passphrase separately and verify decryption after choosing a new one.
