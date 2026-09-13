@@ -19,7 +19,6 @@
     lazygit
 
     # Data / scripting
-    python3
     jq
 
     # Media / terminal previews
