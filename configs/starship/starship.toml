@@ -17,8 +17,8 @@ $docker_context\
 [](fg:#06969A bg:#5E81AC)\
 [](fg:#5E81AC bg:#33658A)\
 $time\
-[](fg:#33658A)
-[╰─⮞](bg:#3B4252 fg:#ECEFF4)\
+[](fg:#33658A)
+[╰─>](bg:#3B4252 fg:#ECEFF4)\
 $character\
 $status\
 $package
@@ -33,15 +33,13 @@ style_root = "bg:#3B4252 fg:#BF616A"
 format = "[$user ]($style)"
 
 [character]
-error_symbol = " [×](bold red)"
-success_symbol = " [λ](green bold)"
+error_symbol = " [×](bold red) "
+success_symbol = " [λ](green bold) "
 
+# The character module shows a red × after an unsuccessful command.
+# Keep detailed exit codes and pipeline labels out of the prompt.
 [status]
-disabled = false
-format = '[\[$symbol$status_common_meaning$status_signal_name$status_maybe_int\]]($style)'
-map_symbol = true
-pipestatus = true
-symbol = "●"
+disabled = true
 
 [directory]
 style = "bg:#434C5E"
@@ -61,7 +59,7 @@ format = "[ in $path ]($style)[$read_only]($read_only_style)"
 
 [time]
 disabled = false
-time_format = "🕙 %I:%M %p"
+time_format = " %I:%M %p"
 style = "bg:#33658A"
 format = "[ $time ]($style)"
 
@@ -74,15 +72,15 @@ format = "[ $symbol$branch ]($style)"
 style = "bg:#3B4252"
 format = "[$all_status$ahead_behind ]($style)"
 conflicted = ""
-ahead = "⇡"
-behind = "⇣"
-diverged = "⇕"
+ahead = "↑"
+behind = "↓"
+diverged = "↕"
 untracked = "?"
 stashed = ""
 modified = "!"
 staged = "+"
 renamed = "»"
-deleted = "✘"
+deleted = "×"
 
 [c]
 symbol = " "
@@ -115,4 +113,4 @@ style = "bg:#06969A"
 format = "[ $symbol$context ]($style) "
 
 [package]
-symbol = " "
+symbol = "󰏗 "
