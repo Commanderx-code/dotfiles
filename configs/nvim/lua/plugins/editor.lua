@@ -1,55 +1,40 @@
 return {
-  -- Neo-tree (tree sidebar)
   {
-    "nvim-neo-tree/neo-tree.nvim",
-    keys = {
-      { "<leader>e", "<leader>fe", desc = "Explorer NeoTree (Root Dir)", remap = true },
-      { "<leader>E", "<leader>fE", desc = "Explorer NeoTree (cwd)", remap = true },
-    },
+    "neovim/nvim-lspconfig",
     opts = {
-      filesystem = {
-        filtered_items = {
-          visible = false,
-          hide_dotfiles = false,
-          hide_gitignored = false,
+      diagnostics = {
+        update_in_insert = false,
+        severity_sort = true,
+        virtual_lines = false,
+        virtual_text = {
+          spacing = 2,
+          source = false,
+          severity = { min = vim.diagnostic.severity.WARN },
+          format = function(diagnostic)
+            local message = diagnostic.message:match("[^\r\n]+") or ""
+            if vim.fn.strchars(message) > 60 then
+              return vim.fn.strcharpart(message, 0, 59) .. "…"
+            end
+            return message
+          end,
+        },
+        float = {
+          border = "rounded",
+          source = "if_many",
+          scope = "line",
+          max_width = 80,
         },
       },
     },
   },
-
-  -- fzf-lua (fuzzy finder)
-  {
-    "ibhagwan/fzf-lua",
-    keys = {
-      { "<leader>ff", "<cmd>FzfLua files<cr>", desc = "Find Files" },
-      { "<leader>fg", "<cmd>FzfLua live_grep<cr>", desc = "Find Text" },
-      { "<leader>fb", "<cmd>FzfLua buffers<cr>", desc = "Find Buffers" },
-      { "<leader>fh", "<cmd>FzfLua help_tags<cr>", desc = "Help Tags" },
-      { "<leader>fr", "<cmd>FzfLua oldfiles<cr>", desc = "Recent Files" },
-    },
-    opts = {
-      keymap = {
-        builtin = {
-          ["<C-j>"] = "down",
-          ["<C-k>"] = "up",
-        },
-        fzf = {
-          ["ctrl-j"] = "down",
-          ["ctrl-k"] = "up",
-        },
-      },
-    },
-  },
-
-  -- Optional: better-escape (keep only if you really want jk/jj)
+  -- Escape insert mode with jk or jj, without delaying ordinary typing.
   {
     "max397574/better-escape.nvim",
     event = "InsertEnter",
     opts = {
-      mapping = { "jk", "jj" },
+      default_mappings = false,
+      mappings = { i = { j = { k = "<Esc>", j = "<Esc>" } } },
       timeout = 200,
-      clear_empty_lines = false,
-      keys = "<Esc>",
     },
   },
 }
