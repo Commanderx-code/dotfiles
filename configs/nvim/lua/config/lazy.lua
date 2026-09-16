@@ -16,31 +16,13 @@ require("lazy").setup({
   --   fallback = false,
   -- },
   spec = {
-    -- 1) LazyVim core FIRST
+    -- lazyvim.json lets LazyVim order extras and their integrations correctly.
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
-
-    -- 2) Extras SECOND
-    -- Editor
-    { import = "lazyvim.plugins.extras.editor.neo-tree" },
-    { import = "lazyvim.plugins.extras.editor.fzf" },
-
-    -- Languages
-    { import = "lazyvim.plugins.extras.lang.typescript" },
-    { import = "lazyvim.plugins.extras.lang.go" },
-    { import = "lazyvim.plugins.extras.lang.rust" },
-    { import = "lazyvim.plugins.extras.lang.python" },
-    { import = "lazyvim.plugins.extras.lang.json" },
-
--- Formatting
-{ import = "lazyvim.plugins.extras.formatting.prettier" },
-
--- UI
-{ import = "lazyvim.plugins.extras.ui.alpha" },
-{ import = "lazyvim.plugins.extras.ui.mini-animate" },
-
--- 3) Your plugins LAST
-{ import = "plugins" },
+    { import = "plugins" },
   },
+
+  -- No configured plugins require LuaRocks.
+  rocks = { enabled = false },
 
   defaults = {
     -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.

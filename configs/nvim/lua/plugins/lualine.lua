@@ -7,8 +7,8 @@ return {
     opts.options.disabled_filetypes.statusline = opts.options.disabled_filetypes.statusline or {}
 
     local list = opts.options.disabled_filetypes.statusline
-    if not vim.tbl_contains(list, "alpha") then
-      table.insert(list, "alpha")
+    if not vim.tbl_contains(list, "snacks_dashboard") then
+      table.insert(list, "snacks_dashboard")
       end
       end,
   },

@@ -1,13 +1,13 @@
 local M = {}
 
 function M.setup()
-  local group = vim.api.nvim_create_augroup("AlphaHideBars", { clear = true })
+  local group = vim.api.nvim_create_augroup("DashboardHideBars", { clear = true })
   local saved
   local disabled = {}
 
   local function update()
     local buf = vim.api.nvim_get_current_buf()
-    if vim.bo[buf].filetype == "alpha" then
+    if vim.bo[buf].filetype == "snacks_dashboard" then
       if not saved then
         saved = { vim.o.laststatus, vim.o.showtabline, vim.o.cmdheight }
       end
@@ -21,9 +21,9 @@ function M.setup()
     elseif saved then
       vim.o.laststatus, vim.o.showtabline, vim.o.cmdheight = unpack(saved)
       saved = nil
-      for alpha_buf, state in pairs(disabled) do
-        if vim.api.nvim_buf_is_valid(alpha_buf) then
-          vim.b[alpha_buf].lualine_disable = state.value
+      for dashboard_buf, state in pairs(disabled) do
+        if vim.api.nvim_buf_is_valid(dashboard_buf) then
+          vim.b[dashboard_buf].lualine_disable = state.value
         end
       end
       disabled = {}
@@ -36,7 +36,7 @@ function M.setup()
   })
   vim.api.nvim_create_autocmd("User", {
     group = group,
-    pattern = "AlphaReady",
+    pattern = "SnacksDashboardOpened",
     callback = update,
   })
 end

@@ -1,11 +1,11 @@
 -- ~/.config/nvim/lua/plugins/colorscheme.lua
 return {
     -- =========================
-    -- Active theme (current)
+    -- Optional theme (loaded when selected)
     -- =========================
     {
         "olivercederborg/poimandres.nvim",
-        lazy = false,
+        lazy = true,
         priority = 1000,
         config = function()
         require("poimandres").setup({
@@ -15,7 +15,6 @@ return {
             bold_vert_split = false,
             disable_italics = false,
         })
-        vim.cmd.colorscheme("eldritch")
         end,
     },
 

@@ -1,8 +1,12 @@
-vim.opt.spelllang = 'en_us'
-vim.opt.spell = true
+-- Use Snacks for search, LSP pickers, and the file explorer.
+vim.g.lazyvim_picker = "snacks"
+vim.g.lazyvim_explorer = "snacks"
 
-vim.opt.textwidth = 140;
-vim.opt.wrap = true
+vim.opt.spelllang = 'en_us'
+vim.opt.spell = false
+
+vim.opt.textwidth = 0
+vim.opt.wrap = false
 
 vim.g.nightflyTransparent = true
 
