@@ -79,7 +79,7 @@ Home Manager is the primary way I manage portable user-level packages and config
 Apply the current configuration with:
 
 ```fish
-cd ~/dotfiles
+cd ~/github/projects/dotfiles
 home-manager build --flake ./home-manager#commander
 home-manager switch --flake ./home-manager#commander
 ```
