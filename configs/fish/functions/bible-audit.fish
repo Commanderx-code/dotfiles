@@ -80,7 +80,7 @@ function bible-audit --description "Audit the Commander Config Bible against liv
 
                 set -l base (path basename "$file")
                 set -l name (string replace -r '\.fish$' '' "$base")
-                set -l rel "~/dotfiles/configs/fish/functions/$base"
+                set -l rel "configs/fish/functions/$base"
 
                 if not command rg -l -F "$rel" "$docs" >/dev/null 2>&1
                     if not command rg -l -F "$name" "$docs" >/dev/null 2>&1
@@ -119,7 +119,7 @@ function bible-audit --description "Audit the Commander Config Bible against liv
 
                 set -l base (path basename "$file")
                 set -l name (string replace -r '\.(fish|sh)$' '' "$base")
-                set -l rel "~/dotfiles/home-manager/scripts/$base"
+                set -l rel "home-manager/scripts/$base"
 
                 if not command rg -l -F "$rel" "$docs" >/dev/null 2>&1
                     if not command rg -l -F "$name" "$docs" >/dev/null 2>&1
