@@ -1,5 +1,27 @@
 return {
   {
+    "folke/persistence.nvim",
+    opts = { branch = true },
+    keys = {
+      {
+        "<leader>qv",
+        function()
+          local persistence = require("persistence")
+          persistence.start()
+          persistence.save()
+          vim.notify("Project session saved")
+        end,
+        desc = "Save Session",
+      },
+    },
+  },
+  {
+    "lewis6991/gitsigns.nvim",
+    keys = {
+      { "<leader>ghP", function() require("gitsigns").preview_hunk() end, desc = "Preview Hunk Popup" },
+    },
+  },
+  {
     "neovim/nvim-lspconfig",
     opts = {
       diagnostics = {
