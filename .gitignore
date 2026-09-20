@@ -65,6 +65,9 @@ result-*
 # ============================================================
 brew-cache/
 
+# Lazygit is installed through Home Manager, not bundled in the repository.
+/lazygit
+
 
 # ============================================================
 # Temporary migration / restore files

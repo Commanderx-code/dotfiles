@@ -1,19 +1,29 @@
-# Greeting + fastfetch for every interactive shell in Konsole
+# Print once. Repainting a fetch taller than the window on WINCH repeatedly
+# pushes copies into scrollback and competes with Fish's prompt renderer.
+if not status is-interactive
+    return
+end
+# The fixed-width welcome does not fit multiplexer panes; keep it in the
+# outer Ghostty/Konsole window. Run fastfetch manually inside Zellij if wanted.
+if set -q ZELLIJ
+    return
+end
+if not set -q KONSOLE_VERSION; and test "$TERM_PROGRAM" != ghostty
+    return
+end
 
-if status is-interactive
-    if set -q KONSOLE_VERSION
+# Unregister the previous version if this file is sourced in an existing shell.
+functions -e __commander_welcome_resize __commander_welcome_stop __commander_welcome_draw
+set -e __commander_welcome_active
+set -e __commander_welcome_busy
+set -e __commander_welcome_size
 
-        # Greeting (bold, Nerd Font lightning bolt)
-        set_color
-	printf "Hello, Commander "
-	set_color yellow
-	echo ""
-	set_color normal
-
-	# Fastfetch
-        if command -v fastfetch >/dev/null
-            fastfetch
-        end
-
-    end
+set_color normal
+printf 'Hello, Commander '
+set_color yellow
+printf '\n'
+set_color normal
+if command -q fastfetch
+    printf '\n\n'
+    fastfetch
 end
