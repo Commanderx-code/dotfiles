@@ -128,9 +128,10 @@ GitHub Actions runs the same build check on pushes and pull requests.
 | [Commander Toolbox](https://github.com/Commanderx-code/commander-toolbox) | Linux setup menus and individual dotfiles installers. |
 | [Config Bible](https://github.com/Commanderx-code/config-bible) | Workstation handbook with web and desktop viewers. |
 
-The Config Bible source lives in its own repository; its local path is configured
-in `machine.json`. The full configuration and maintenance reference for these
-dotfiles lives in [STRUCTURE.md](STRUCTURE.md).
+Config Bible owns and installs its own commands, desktop launcher, and optional
+Home Manager module. Follow its repository README for installation. The full
+configuration and maintenance reference for these dotfiles lives in
+[STRUCTURE.md](STRUCTURE.md).
 
 ## Toolbox integration
 

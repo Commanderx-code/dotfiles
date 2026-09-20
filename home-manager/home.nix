@@ -13,7 +13,6 @@
     ./modules/topgrade.nix
     ./modules/terminal.nix
     ./modules/backup-automation.nix
-    ./modules/config-bible.nix
   ];
   home.username = machine.username;
   home.homeDirectory = machine.homeDirectory;

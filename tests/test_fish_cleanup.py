@@ -36,7 +36,7 @@ class FishCleanupTests(unittest.TestCase):
     def test_help_lists_command_names_with_color_formatting(self):
         result = self.run_fish('helpme')
         self.assertEqual(result.returncode, 0, result.stderr)
-        for name in ('fastfetch', 'starship', 'config-index', 'backup-everything', 'full-upgrade', ':Lazy'):
+        for name in ('fastfetch', 'starship', 'backup-everything', 'full-upgrade', ':Lazy'):
             self.assertIn(name, result.stdout)
 
     def test_environment_preserves_overrides_and_does_not_write_universal_go_values(self):
@@ -158,20 +158,6 @@ __fzf_starstar_tab
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.strip(), str(self.root))
 
-    def test_config_index_reads_page_status_and_opens_selected_document(self):
-        docs = self.root / 'bible/docs'
-        docs.mkdir(parents=True)
-        page = docs / 'example page.md'
-        page.write_text('---\ntitle: Example\ncategory: Shell\nstatus: active\n'
-                        'criticality: normal\ntags: example\n---\n# Example\n')
-        self.env['CONFIG_BIBLE_HOME'] = str(docs.parent)
-        self.mock('fzf', '/bin/cat > "$TEST_LOG"\nprintf "enter\\n"\n/bin/cat "$TEST_LOG"')
-        self.mock('nvim', 'printf "%s\\n" "$*"')
-        result = self.run_fish('function dotfiles-settings; end; config-index')
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stderr, '')
-        self.assertIn(str(page), result.stdout)
-        self.assertEqual(self.log.read_text().split('\t')[3], 'active')
 
 
 if __name__ == '__main__':
