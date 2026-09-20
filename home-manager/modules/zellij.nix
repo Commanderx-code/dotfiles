@@ -29,8 +29,7 @@ let
       platforms = [ "x86_64-linux" ];
     };
   };
-  # One bar instead of separate Zellij tab/status bars. The session manager
-  # and built-in help remain available through the usual unlocked shortcuts.
+  # Keep the custom session/tab bar above Zellij's built-in shortcut hints.
   tabTemplate = ''
     default_tab_template {
       children
@@ -46,6 +45,9 @@ let
           tab_normal "#[fg=#a9b1d6,bg=#24283b] {index} {name} "
           tab_active "#[fg=#24283b,bg=#7aa2f7,bold] {index} {name} #[fg=#7aa2f7,bg=#24283b]"
         }
+      }
+      pane size=1 borderless=true {
+        plugin location="zellij:status-bar"
       }
     }
   '';
