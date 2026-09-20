@@ -1,11 +1,19 @@
 { ... }:
 
 {
+  imports = [ ./zellij.nix ];
+
   xdg.configFile."ghostty/spotatui.conf".source = ../../configs/ghostty/spotatui.conf;
+  xdg.configFile."ghostty/topbar.css".source = ../../configs/ghostty/topbar.css;
 
   # fzf preview helper used by Fish/fzf.
   home.file.".local/bin/fzf-preview" = {
     source = ../../configs/scripts/fzf-preview;
+    executable = true;
+  };
+
+  home.file.".local/bin/clickpaste" = {
+    source = ../scripts/clickpaste.py;
     executable = true;
   };
 

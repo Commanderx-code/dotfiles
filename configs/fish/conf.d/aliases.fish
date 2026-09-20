@@ -32,35 +32,27 @@ alias home="cd ~"
 
 # Directory jumps (interactive only)
 if status is-interactive
-    abbr -a ..     'cd ..'
-    abbr -a ...    'cd ../..'
-    abbr -a ....   'cd ../../..'
-    abbr -a .....  'cd ../../../..'
-    abbr -a bd     'cd -'
-    abbr -a home   'cd ~'
+    abbr -a .. 'cd ..'
+    abbr -a ... 'cd ../..'
+    abbr -a .... 'cd ../../..'
+    abbr -a ..... 'cd ../../../..'
+    abbr -a bd 'cd -'
+    abbr -a home 'cd ~'
 
     # command shortcuts
-    abbr -a up 'update'
-    abbr -a ug 'upgrade'
-    abbr -a fu 'full-upgrade'
-    abbr -a fud "full-upgrade-devel"
-    abbr -a cl 'cleanup'
-    abbr -a tg 'topgrade'
+    abbr -a up update
+    abbr -a ug upgrade
+    abbr -a fu full-upgrade
+    abbr -a fud full-upgrade-devel
+    abbr -a cl cleanup
+    abbr -a tg topgrade
 end
 
 alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
 
-# Clipboard paste helper (Wayland-first, X11 fallback)
+# Clipboard typing helper (KDE Wayland / X11).
 function clickpaste
-    sleep 3
-    if command -q wl-paste
-        xdotool type -- (wl-paste)
-    else if command -q xclip
-        xdotool type -- (xclip -o -selection clipboard)
-    else
-        echo "No wl-paste or xclip found"
-        return 1
-    end
+    command clickpaste $argv
 end
 
 alias kssh="kitty +kitten ssh"
@@ -74,9 +66,9 @@ alias lanm="systemctl --user restart lan-mouse"
 # Fuzzy search inside files (rg + fzf)
 function rgi
     rg --line-number --no-heading --color=always $argv \
-    | fzf --ansi --delimiter ':' \
-          --preview 'bat --style=numbers --color=always --highlight-line {2} {1}' \
-          --preview-window 'right,60%,wrap'
+        | fzf --ansi --delimiter ':' \
+        --preview 'bat --style=numbers --color=always --highlight-line {2} {1}' \
+        --preview-window 'right,60%,wrap'
 end
 
 # Fuzzy file finder -> open in nvim

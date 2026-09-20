@@ -13,22 +13,25 @@ it as `~/.config/dotfiles/machine.json`; operational scripts read the same JSON 
 | --- | --- |
 | `configs/fish/` | Home Manager installs startup snippets and functions; `modules/fish.nix` owns program integration and its declared Git aliases. Eza aliases live in `conf.d/eza.fish`; `update` only checks for updates using `checkupdates`. |
 | `configs/nvim/` | Home Manager deploys the entire Neovim configuration, including `.neoconf.json`. |
-| `configs/starship/`, `configs/fastfetch/` | Home Manager deploys prompt and Fastfetch configuration/assets. |
+| `configs/starship/`, `configs/fastfetch/` | Home Manager deploys prompt and Fastfetch configuration/assets. Fish uses the original boxed Fastfetch layout with its side logo; the welcome prints once, with no resize redraw or scrollback clearing. |
 | `configs/konsole/` | Home Manager installs Konsole settings, the Garuda profile, and Sweet colors. |
+| `home-manager/modules/zellij.nix` | Imported by the terminal module; owns Zellij, pinned zjstatus/Harpoon/Zesh, Tokyo Night Storm layouts and locked mode without autostart. Fish `zwork`/`zdev` functions provide project and development workspaces. |
 | `configs/ghostty/spotatui.conf` | Home Manager installs an optional Ghostty profile, not a replacement for the main Ghostty configuration. |
+| `configs/ghostty/config` | Starting appearance preset, copied to the writable live Ghostty config for SpookiUI editing; see [Ghostty notes](configs/ghostty/README.md). |
 | `configs/topgrade/topgrade.toml` | Template rendered by Home Manager using the shared repository path/profile. Do not copy it directly. |
-| `configs/scripts/fzf-preview` | Installed as `~/.local/bin/fzf-preview`. |
-| `configs/fonts/` | Attribution only; `modules/fonts.nix` installs font packages from pinned Nixpkgs. |
+| `configs/scripts/fzf-preview` | Installed as `~/.local/bin/fzf-preview`. Ghostty/Kitty use `kitten icat` with Unicode placeholders for image previews; Chafa supplies Sixel previews in other terminals and a character-art fallback if `kitten` is absent. |
+| `home-manager/modules/fonts.nix` | Installs Nerd Font packages from pinned Nixpkgs; no font binaries are bundled. |
 | `home-manager/scripts/` | Installed backup, restore, and package helpers; `lib/settings.fish` supplies shared settings. |
-| `home-manager/modules/backup-automation.nix` | Owns user backup services, mount watcher, and maintenance timers. `configs/systemd/user/` is an unused empty directory. |
+| `home-manager/modules/backup-automation.nix` | Owns user backup services, mount watcher, and maintenance timers. |
 | `sddm/` | Customization backup used by `backup-sddm` and `restore-sddm`. Restore requires an existing SilentSDDM installation. |
 | `system-backup/sddm/` | Full installed SDDM snapshot used by `backup-system-state` and `restore-system`. It serves a different restore scope from `sddm/`. |
 | Other `system-backup/` directories | Captured system/desktop state and inventories, restored explicitly rather than deployed through Home Manager. |
 
 System applications (Ghostty, Konsole, Plasma, SDDM, Pacman, KWallet, and boot tools)
 remain distribution-managed. Restic/GPG and filesystem utilities are recovery
-prerequisites described in [RECOVERY.md](RECOVERY.md). User shell tools, fonts,
-Python, and jq are declared through Home Manager.
+prerequisites described in [RECOVERY.md](RECOVERY.md). User shell tools, fonts and
+jq are declared through Home Manager. Python helpers use the system interpreter;
+the validation environment provides Python separately.
 
 The external Config Bible repository contains the full documentation collection.
 Its location comes from `configBibleDirectory`; its app must be built separately.
@@ -100,8 +103,9 @@ exchange fails without replacing the published snapshot. This protects against
 capture/process failures, not a guarantee of durability through sudden power loss.
 Metadata itself is replaced atomically.
 
-Font binaries were removed from the current tree in favor of packages. Existing
-manual font installations and Git history are preserved; this does not shrink
+Font binaries and the standalone root-level Lazygit executable were removed in
+favor of Home Manager packages. Existing manual font installations and Git
+history are preserved; this does not shrink
 historical Git objects or automatically remove local font duplicates.
 
 ## Runtime checks

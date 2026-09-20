@@ -10,11 +10,11 @@ The recovery order is:
 1. Install Garuda Linux.
 2. Restore the dotfiles repository.
 3. Restore Home Manager configuration.
-4. Restore system configuration.
-5. Unlock the external backup drive.
-6. Recover the Restic repository password.
-7. Restore personal data.
-8. Restore SSH and KDE Wallet secrets.
+4. Unlock the external backup drive (section 5).
+5. Recover the Restic repository password (section 6).
+6. Restore personal data and local system snapshots (section 7).
+7. Restore system configuration from those snapshots (section 4).
+8. Restore SSH, GnuPG and KDE Wallet secrets.
 9. Review packages and services.
 10. Reboot and verify.
 
@@ -45,11 +45,11 @@ Install Git if required.
 
 Clone the dotfiles repository into:
 
-    ~/dotfiles
+    ~/github/projects/dotfiles
 
 Enter the repository:
 
-    cd ~/dotfiles
+    cd ~/github/projects/dotfiles
 
 Review:
 
@@ -63,7 +63,7 @@ Install Nix/Home Manager using the normal setup for this machine.
 
 Once Home Manager is available:
 
-    cd ~/dotfiles
+    cd ~/github/projects/dotfiles
 
     home-manager build --flake ./home-manager#commander
 
@@ -78,7 +78,12 @@ terminal configuration and helper scripts.
 
 # 4. Restore saved system configuration
 
-Run:
+`system-backup/` is excluded from Git. On a fresh installation, complete sections
+5–7 first to recover the captured directory from Restic, then place the reviewed
+copy under `~/github/projects/dotfiles/system-backup/`. A Git clone alone does
+not supply the system snapshots or application inventories.
+
+Preview the available sources with `restore-system --dry-run`. Then run:
 
     restore-system
 
@@ -246,6 +251,7 @@ Encrypted secret archives are stored under:
 They contain backups of:
 
 - ~/.ssh
+- ~/.gnupg (see [GnuPG recovery](#gnupg-recovery))
 - KDE Wallet data
 
 Create a temporary restore directory:
@@ -297,7 +303,7 @@ Test:
 
 The saved inventories are located under:
 
-    ~/dotfiles/system-backup/inventories/
+    ~/github/projects/dotfiles/system-backup/inventories/
 
 Files include:
 

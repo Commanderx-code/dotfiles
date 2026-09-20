@@ -30,6 +30,8 @@
     curl
 
     # Desktop CLI helpers
+    dotool
+    wl-clipboard
     trash-cli
     playerctl
 

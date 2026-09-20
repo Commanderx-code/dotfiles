@@ -1,355 +1,132 @@
-# Dotfiles – Garuda Linux Environment & Recovery Framework
+# Commander Dotfiles
 
-This repository contains my personal **Garuda Linux** configuration, Home Manager setup, backup tooling, and disaster-recovery workflow.
+Personal configuration for my **Garuda Linux / KDE Plasma** workstation, managed
+with **Nix Home Manager**. Fish, Starship, Fastfetch and Neovim share one source of
+truth, alongside terminal settings and backup/recovery helpers.
 
-It is designed to make my workstation reproducible while keeping system-level configuration, personal data, and secrets backed up through the appropriate tools instead of treating everything as a normal Git-tracked dotfile.
+[![Validate dotfiles](https://github.com/Commanderx-code/dotfiles/actions/workflows/check.yml/badge.svg)](https://github.com/Commanderx-code/dotfiles/actions/workflows/check.yml)
 
-## What this repo manages
+[Setup](#setup) · [Configuration](#configuration) · [Backup and recovery](#backup-and-recovery) · [Maintenance guide](STRUCTURE.md)
 
-- 🐟 **Fish shell environment** – functions, `conf.d`, fzf helpers, and shell tooling
-- ✨ **Terminal setup** – Starship, Fastfetch, Konsole, Ghostty, themes, and helper scripts
-- 📝 **Neovim / LazyVim configuration**
-- ❄️ **Home Manager** – declarative user packages and configuration
-- 📦 **Application inventory** – Pacman, AUR/foreign packages, Flatpak apps/remotes, and AppImages
-- 💾 **Restic personal backups** – documents, downloads, pictures, projects, applications, dotfiles, Cargo state, and more
-- 🔐 **Encrypted secrets backups** – SSH and KDE Wallet data stored separately from Git
-- 🔑 **Standalone Restic recovery credential** – GPG-encrypted copy for disaster recovery without depending on KWallet
-- 🖥️ **System configuration snapshots** – SDDM, GRUB, Plymouth, UFW, Pacman configuration, Plasma settings, and package/service inventories
-- 🔁 **Automatic backup on external-drive mount**
-- 🧹 **Scheduled Restic maintenance** – retention/pruning plus repository checks
-- 🩺 **Monthly deeper Restic integrity checks**
-- 🛟 **Interactive restore helpers** for system configuration and installed applications
+## Configuration
 
-This repository is both my **dotfiles collection** and a lightweight **configuration / disaster-recovery framework** for my Garuda workstation.
+| Area | What lives here |
+| :--- | :--- |
+| **Shell** | Fish functions and aliases, fzf navigation and previews, zoxide, and a Starship prompt. |
+| **System overview** | Fastfetch with boxed sections, an Arch logo, and alternative artwork. |
+| **Editor** | Neovim / LazyVim with Snacks for the dashboard, explorer and pickers, plus language and formatting tools. |
+| **Terminals** | Konsole profiles and colors, a Ghostty appearance preset, and optional Zellij workspaces. |
+| **Packages and fonts** | Home Manager modules for personal tools and Nerd Fonts, pinned through the Nix flake lockfile. |
+| **Recovery** | Restic backups, encrypted secrets archives, system snapshots, application inventories and restore helpers. |
 
----
+Home Manager owns user packages and managed configuration. Pacman owns the
+operating system, Plasma, terminal applications, drivers and boot components.
+The [ownership map](STRUCTURE.md#ownership) describes which files are deployed
+and which are reference presets or recovery material.
 
-## Maintenance and ownership
+## Setup
 
-See [STRUCTURE.md](STRUCTURE.md) for the deployment ownership map, shared machine
-settings, validation commands, restore previews, and snapshot provenance.
-Machine-specific values live in [home-manager/machine.json](home-manager/machine.json).
-The full Config Bible now lives in the separate repository configured there.
+This is a personal workstation configuration for `x86_64-linux`. It expects an
+existing Garuda/KDE installation with Nix and Home Manager available. Review
+[home-manager/machine.json](home-manager/machine.json) before applying it to
+another account or machine: it defines the username, home directory, repository
+paths, backup destination and KWallet identifiers.
 
-## Repository layout
-
-```text
-dotfiles/
-├── configs/
-│   ├── fish/                  # Fish conf.d, functions, and shell configuration
-│   ├── fastfetch/             # Fastfetch configuration/assets
-│   ├── fonts/                 # Attribution; font packages are declared in Home Manager
-│   ├── ghostty/               # Optional Ghostty profile
-│   ├── konsole/               # Konsole profile/theme/configuration
-│   ├── nvim/                  # Neovim / LazyVim configuration
-│   ├── scripts/               # Shared helper scripts
-│   └── starship/              # Starship prompt configuration
-│
-├── home-manager/
-│   ├── home.nix               # Main Home Manager configuration
-│   ├── machine.json           # Shared workstation paths and identifiers
-│   ├── flake.nix              # Home Manager flake
-│   ├── modules/               # Package and application-specific modules
-│   └── scripts/               # Managed backup/recovery/helper commands
-│
-├── system-backup/
-│   ├── firewall/              # UFW configuration snapshot
-│   ├── grub/                  # GRUB source configuration + theme
-│   ├── inventories/           # Pacman/AUR/Flatpak/AppImage/service inventories
-│   ├── pacman/                # pacman.conf and mirrorlists
-│   ├── plasma/                # Plasma/KDE configuration and appearance assets
-│   ├── plymouth/              # Plymouth configuration + theme
-│   └── sddm/                  # SDDM configuration + Silent theme
-│
-├── sddm/                      # Customization-only SDDM backup/restore
-├── STRUCTURE.md               # Ownership and maintenance guide
-├── scripts/check              # Validation entry point
-├── tests/                     # Safe workflow fixtures
-├── RECOVERY.md                # Full disaster-recovery procedure
-├── README.md
-└── .gitignore
-```
-
----
-
-## Home Manager
-
-Home Manager is the primary way I manage portable user-level packages and configuration.
-
-Apply the current configuration with:
-
-```fish
+```sh
+git clone https://github.com/Commanderx-code/dotfiles.git ~/github/projects/dotfiles
 cd ~/github/projects/dotfiles
+
 home-manager build --flake ./home-manager#commander
 home-manager switch --flake ./home-manager#commander
 ```
 
-A convenience helper is also installed:
+Replace `commander` in the flake target if you change the configured username.
+After installation, `hm-rebuild` builds and switches using the shared machine
+settings. New source files must be staged or committed before a normal Git-backed
+flake build can include them.
 
-```fish
-hm-rebuild
-```
+For a guided, portable terminal setup, see [Myfish](https://github.com/Commanderx-code/Myfish).
+For individual application configurations and Linux setup menus, see
+[Commander Toolbox](https://github.com/Commanderx-code/commander-toolbox).
 
-### Package ownership helpers
+## Everyday commands
 
-Check whether a command comes from Pacman, Nix/Home Manager, or elsewhere:
+| Command | Purpose |
+| :--- | :--- |
+| `hm-rebuild` | Build and apply the Home Manager configuration. |
+| `pkg-owner <command>` | Inspect whether a command comes from Pacman, Nix or another location. |
+| `pkg-install <package>` | Help choose between Home Manager and system package management. |
+| `zellij` | Start an optional terminal session. |
+| `zwork` / `zdev` | Pick a project session or open an editor, shell and Git workspace. |
+| `backup-personal` | Back up personal files to the configured Restic repository. |
+| `backup-everything` | Capture system state and inventories, back up personal files, and encrypt secrets and the Restic recovery credential. |
+| `backup-health` | Review locally recorded backup status without unlocking KWallet. |
+| `restore-system --dry-run` | Preview available system configuration restore sources. |
+| `restore-apps --dry-run` | Preview application inventory recovery. |
 
-```fish
-pkg-owner <command>
-```
+Zellij starts manually in locked mode; **Ctrl+G** unlocks its controls. See the
+[terminal notes](configs/ghostty/README.md) for shortcuts and project workflows,
+and the [Neovim notes](configs/nvim/AUDIT.md) for editor behavior.
 
-For example:
+## Backup and recovery
 
-```fish
-pkg-owner fd
-pkg-owner grub-mkconfig
-```
+Personal backups use Restic on the encrypted external drive configured in
+`machine.json`. Normal runs retrieve the repository password from KDE Wallet.
+Separate GPG archives protect SSH, GnuPG and KDE Wallet data, plus a standalone
+Restic recovery credential.
 
-Use the package-install helper when deciding whether a package belongs in Home Manager or Pacman:
+When the backup drive mounts, a user service triggers a personal backup and
+retries overdue maintenance. Weekly maintenance applies retention and pruning;
+a monthly integrity check reads 10% of repository data. See the
+[maintenance guide](STRUCTURE.md#backup-maintenance-and-ci) for scheduling,
+health reporting and failure notifications.
 
-```fish
-pkg-install <package>
-```
+**System snapshots are local backup data.** `system-backup/` is excluded from Git
+and protected by Restic; a fresh clone does not contain those captures. Recover
+them from your backup before using the system or application restore helpers.
+The tracked `sddm/` directory has a separate role as a login-theme customization
+source.
 
-General rule:
+Backups do not commit or push Git changes automatically. Keep recovery passphrases
+separate from the backup drive. Follow [RECOVERY.md](RECOVERY.md) for prerequisites,
+credential recovery, staged restores and verification.
 
-- **Home Manager:** personal CLI/user tools that should follow my dotfiles
-- **Pacman:** kernels, drivers, Plasma/KDE, boot components, networking, filesystem tools, security tooling, and other system infrastructure
-
----
-
-## Backup system
-
-### Quick personal backup
-
-```fish
-backup-personal
-```
-
-The Restic repository lives on the encrypted external backup drive at:
-
-```text
-/run/media/commander/Linux-Backup/restic
-```
-
-The external drive uses LUKS encryption, and the Restic repository password is normally retrieved from KDE Wallet.
-
-### Full backup
-
-```fish
-backup-everything
-```
-
-A full backup currently performs:
-
-1. System configuration snapshot
-2. Application/package inventory refresh
-3. Personal Restic backup
-4. Encrypted SSH + KDE Wallet backup
-5. Encrypted standalone Restic recovery credential backup
-
-Git changes are intentionally **not committed or pushed automatically**.
-
-### System configuration snapshot
-
-```fish
-backup-system-state
-```
-
-This captures important workstation configuration such as:
-
-- SDDM configuration and Silent theme
-- GRUB source configuration and theme
-- Plymouth configuration and theme
-- UFW configuration
-- Pacman configuration/mirrorlists
-- Plasma/KDE configuration and appearance assets
-- Pacman/AUR/Flatpak/application inventories
-- enabled system/user service inventories
-
-### Application inventory
-
-```fish
-backup-app-inventory
-```
-
-This records:
-
-- native explicit Pacman packages
-- foreign/AUR packages
-- full Pacman package/version list
-- Flatpak applications
-- Flatpak runtimes
-- Flatpak remotes
-- AppImage locations
-
-AppImages stored under `~/Applications` are also physically included in the Restic backup.
-
----
-
-## Automatic Restic backups
-
-When the encrypted `Linux-Backup` drive is unlocked and mounted, the user systemd path unit triggers an automatic personal backup.
-
-Check it with:
-
-```fish
-systemctl --user status backup-on-mount.path
-```
-
-View the most recent automatic run with:
-
-```fish
-journalctl --user -u backup-on-mount.service --since "10 minutes ago"
-```
-
----
-
-## Restic maintenance
-
-### Weekly maintenance
-
-```fish
-restic-maintenance
-```
-
-The retention policy keeps approximately:
-
-- 7 daily snapshots
-- 5 weekly snapshots
-- 12 monthly snapshots
-- 3 yearly snapshots
-
-The weekly job also prunes unused repository data and runs a standard repository check.
-
-Check the timer with:
-
-```fish
-systemctl --user status restic-maintenance.timer
-```
-
-### Monthly deeper integrity check
-
-```fish
-restic-deep-check
-```
-
-This performs a deeper Restic check that reads a subset of the stored backup data.
-
-Check the timer with:
-
-```fish
-systemctl --user status restic-deep-check.timer
-```
-
----
-
-## Encrypted secrets
-
-Secrets are intentionally **not stored in Git**.
-
-Encrypted backups are written to:
+## Repository layout
 
 ```text
-/run/media/commander/Linux-Backup/secrets
+configs/          Fish, Fastfetch, Starship, Neovim and terminal configuration
+home-manager/     Flake, machine settings, package modules and operational scripts
+sddm/             SilentSDDM customization assets and presets
+scripts/check     Repository validation entry point
+tests/            Configuration and workflow checks
+STRUCTURE.md      Configuration ownership, maintenance and backup behavior
+RECOVERY.md       Workstation recovery procedure
 ```
 
-The secrets workflow currently protects:
+Fonts and Lazygit come from Home Manager packages. Generated build output,
+private data and local system snapshots are excluded through [.gitignore](.gitignore).
 
-- `~/.ssh`
-- KDE Wallet data
-- standalone Restic recovery credential
+## Validation
 
-Create the SSH/KWallet encrypted backup with:
+From the repository root:
 
-```fish
-backup-secrets "/run/media/commander/Linux-Backup/secrets"
+```sh
+nix develop ./home-manager --command ./scripts/check --build
 ```
 
-Create a standalone encrypted Restic credential with:
+This runs syntax, formatting, workflow and documentation checks, then evaluates
+and builds Home Manager without activating it. It includes unstaged source files
+using a temporary copy. Omit `--build` to skip the activation-package build.
+GitHub Actions runs the same build check on pushes and pull requests.
 
-```fish
-backup-restic-credential
-```
+## Related repositories
 
-The GPG recovery passphrase and LUKS passphrase must be kept independently from the backup drive.
+| Repository | Role |
+| :--- | :--- |
+| [Myfish](https://github.com/Commanderx-code/Myfish) | Portable Fish, Bash and Zsh setup for Linux and macOS. |
+| [Commander Toolbox](https://github.com/Commanderx-code/commander-toolbox) | Linux setup menus and individual dotfiles installers. |
+| [Config Bible](https://github.com/Commanderx-code/config-bible) | Workstation handbook with web and desktop viewers. |
 
----
-
-## Restore / disaster recovery
-
-The full recovery procedure is documented in:
-
-```text
-RECOVERY.md
-```
-
-### Restore system configuration
-
-```fish
-restore-system
-```
-
-`restore-system` is interactive and intentionally cautious. It can restore the backed-up Plasma, SDDM, Plymouth, GRUB source configuration, UFW, and related configuration while avoiding unsafe assumptions such as blindly restoring an old generated `grub.cfg` or old disk UUIDs.
-
-### Restore applications
-
-```fish
-restore-apps
-```
-
-This helper can use the saved inventories to assist with restoring:
-
-- native Pacman packages
-- AUR/foreign packages
-- Flatpak remotes
-- Flatpak applications
-- AppImage verification
-
-Home Manager packages are restored separately through the Home Manager configuration.
-
----
-
-## Recovery philosophy
-
-Different data is restored by different tools:
-
-```text
-Home Manager     -> portable user configuration + user packages
-Git/dotfiles     -> tracked configuration and recovery scripts
-system-backup    -> system/desktop configuration snapshots
-Restic           -> personal files and selected development state
-GPG archives     -> SSH, KDE Wallet, and recovery credentials
-Package manifests-> Pacman, AUR, Flatpak, and AppImage recovery
-```
-
-This keeps secrets out of Git, avoids backing up large amounts of reproducible system data unnecessarily, and provides a clear recovery path after a reinstall or disk failure.
-
----
-
-## Important rules
-
-Never commit:
-
-- SSH private keys
-- decrypted KDE Wallet files
-- plaintext Restic passwords
-- NetworkManager credential files
-- decrypted secret archives
-
-Before destructive disk work:
-
-```fish
-backup-everything
-```
-
-Then verify the Restic repository:
-
-```fish
-restic \
-    --repo "/run/media/$USER/Linux-Backup/restic" \
-    --password-command "kwallet-query -f Restic -r Crucial-X6 kdewallet" \
-    check
-```
-
-For complete reinstall and recovery steps, see **`RECOVERY.md`**.
+The Config Bible source lives in its own repository; its local path is configured
+in `machine.json`. The full configuration and maintenance reference for these
+dotfiles lives in [STRUCTURE.md](STRUCTURE.md).
