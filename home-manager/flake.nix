@@ -19,6 +19,7 @@
     in
     {
       formatter.${system} = pkgs.nixfmt;
+      packages.${system} = import ./terminal-tools.nix { inherit pkgs; };
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
           fish

@@ -57,6 +57,7 @@ For individual application configurations and Linux setup menus, see
 | `pkg-owner <command>` | Inspect whether a command comes from Pacman, Nix or another location. |
 | `pkg-install <package>` | Help choose between Home Manager and system package management. |
 | `zellij` | Start an optional terminal session. |
+| `netwatch` / `tfm` / `cassette` | Network dashboard, visual file manager and Spotify player; see the [setup notes](configs/terminal-tools/README.md). |
 | `zwork` / `zdev` | Pick a project session or open an editor, shell and Git workspace. |
 | `backup-personal` | Back up personal files to the configured Restic repository. |
 | `backup-everything` | Capture system state and inventories, back up personal files, and encrypt secrets and the Restic recovery credential. |
