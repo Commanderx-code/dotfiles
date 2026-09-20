@@ -11,7 +11,7 @@ it as `~/.config/dotfiles/machine.json`; operational scripts read the same JSON 
 
 | Source | Deployment or use |
 | --- | --- |
-| `configs/fish/` | Home Manager installs startup snippets and functions; `modules/fish.nix` owns program integration and its declared Git aliases. Eza aliases live in `conf.d/eza.fish`; `update` only checks for updates using `checkupdates`. |
+| `configs/fish/` | Home Manager installs startup snippets and functions; `modules/fish.nix` owns program integration and its declared Git aliases. The nine startup snippets and autoloaded commands are documented in [Fish configuration](configs/fish/README.md). Eza aliases live in `conf.d/eza.fish`; `update` only checks for updates using `checkupdates`. |
 | `configs/nvim/` | Home Manager deploys the entire Neovim configuration, including `.neoconf.json`. |
 | `configs/starship/`, `configs/fastfetch/` | Home Manager deploys prompt and Fastfetch configuration/assets. Fish uses the original boxed Fastfetch layout with its side logo; the welcome prints once, with no resize redraw or scrollback clearing. |
 | `configs/konsole/` | Home Manager installs Konsole settings, the Garuda profile, and Sweet colors. |
