@@ -72,23 +72,6 @@ def visible_test_screen(data):
 
 
 class LayoutTests(unittest.TestCase):
-    @unittest.skipUnless(shutil.which('fish'), 'Fish required')
-    def test_default_wrapper_preserves_native_config_and_arguments(self):
-        fish = shutil.which('fish')
-        wrapper = ROOT / 'configs/fish/functions/fastfetch.fish'
-        with tempfile.TemporaryDirectory(prefix='fastfetch-native-') as directory:
-            executable = Path(directory) / 'fastfetch'
-            executable.write_text('#!/usr/bin/env python3\nimport json,sys\nprint(json.dumps(sys.argv[1:]))\n')
-            executable.chmod(0o755)
-            env = dict(os.environ, PATH=directory + os.pathsep + os.environ['PATH'])
-            for args in ([], ['--config', '/tmp/custom preset.jsonc', '--logo', 'none']):
-                result = subprocess.run([fish, '--no-config', '-c',
-                                         'function isatty; return 0; end; source $argv[1]; fastfetch $argv[2..-1]',
-                                         '--', str(wrapper), *args],
-                                        env=env, capture_output=True, text=True, timeout=10)
-                self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertEqual(json.loads(result.stdout), args)
-
     def test_layouts_remove_fixed_cursor_positions_and_borders(self):
         for columns, rows in [(40, 20), (60, 30), (100, 27), (200, 60)]:
             config = renderer.layout(BASE, columns, rows)

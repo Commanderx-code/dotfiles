@@ -1,8 +1,13 @@
-function upgrade --description "Upgrade packages (pacman + paru + flatpak)"
-    sudo pacman -Syu
-    paru -Syu
+function upgrade --description "Upgrade system/AUR packages, then Flatpak"
+    # Paru already upgrades official repositories along with AUR packages.
+    if command -q paru
+        command paru -Syu; or return $status
+    else
+        command sudo pacman -Syu; or return $status
+    end
 
     if command -q flatpak
-        flatpak update -y
+        command flatpak update -y; or return $status
     end
+    return 0
 end

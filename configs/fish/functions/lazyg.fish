@@ -1,9 +1,8 @@
-function lazyg
-    git add .
+function lazyg --description 'Stage, commit, and push; stop on any failure'
     if test (count $argv) -eq 0
         echo "Usage: lazyg <message>"
         return 1
     end
-    git commit -m (string join ' ' -- $argv)
-    git push
+    gcom $argv; or return $status
+    command git push
 end

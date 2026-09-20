@@ -1,3 +1,4 @@
+# Personal command aliases and interactive abbreviations.
 alias spico="sudo pico"
 alias snano="sudo nano"
 alias vim="nvim"
@@ -51,11 +52,6 @@ end
 
 alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
 
-# Clipboard typing helper (KDE Wayland / X11).
-function clickpaste
-    command clickpaste $argv
-end
-
 alias kssh="kitty +kitten ssh"
 alias sha1="openssl sha1"
 alias mountedinfo="df -hT"
@@ -63,23 +59,3 @@ alias mountedinfo="df -hT"
 alias docker-clean='docker container prune -f; docker image prune -f; docker network prune -f; docker volume prune -f'
 alias hug="systemctl --user restart hugo"
 alias lanm="systemctl --user restart lan-mouse"
-
-# Fuzzy search inside files (rg + fzf)
-function rgi
-    rg --line-number --no-heading --color=always $argv \
-        | fzf --ansi --delimiter ':' \
-        --preview 'bat --style=numbers --color=always --highlight-line {2} {1}' \
-        --preview-window 'right,60%,wrap'
-end
-
-# Fuzzy file finder -> open in nvim
-function fdi
-    set file (fd --type f --hidden --follow --exclude .git 2>/dev/null | fzf --preview 'bat --color=always --style=numbers --line-range :300 {}' --preview-window 'right,60%,wrap')
-    test -n "$file"; and nvim "$file"
-end
-
-# Fuzzy cd
-function cdi
-    set dir (fd --type d --hidden --follow --exclude .git 2>/dev/null | fzf)
-    test -n "$dir"; and cd "$dir"
-end

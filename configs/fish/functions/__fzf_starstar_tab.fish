@@ -1,17 +1,20 @@
-function __fzf_starstar_tab --description "Tab: if token ends with ** use fzf-file-widget, else normal completion"
-    set -l tok (commandline -t)
+function __fzf_starstar_tab
+    set -l token (commandline -t)
 
-    # If current token ends with "**", trigger fzf file picker
-    if string match -rq '\*\*$' -- "$tok"
-        # Remove the trailing ** from the token before inserting the chosen path
-        set -l cleaned (string replace -r '\*\*$' '' -- "$tok")
-        commandline -t -- "$cleaned"
+    # If the token ends with **
+    if string match -qr '\*\*$' -- "$token"
+        # Remove the trailing **
+        commandline -t -- (string replace -r '\*\*$' '' -- "$token")
 
-        # Use fzf's built-in widget (provided by fzf_key_bindings)
-        commandline -f fzf-file-widget
+        # Prefer official fzf widget if present, else fall back to your opener
+        if functions -q fzf-file-widget
+            fzf-file-widget
+        else
+            fzf_open_file
+        end
         return
     end
 
-    # Otherwise: behave like normal Tab completion
+    # Normal tab completion if not **
     commandline -f complete
 end
