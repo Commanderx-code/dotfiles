@@ -1,7 +1,10 @@
 { ... }:
 
 {
-  imports = [ ./zellij.nix ];
+  imports = [
+    ./zellij.nix
+    ./terminal-trials.nix
+  ];
 
   xdg.configFile."ghostty/spotatui.conf".source = ../../configs/ghostty/spotatui.conf;
   xdg.configFile."ghostty/topbar.css".source = ../../configs/ghostty/topbar.css;
