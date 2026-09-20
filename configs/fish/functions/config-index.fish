@@ -104,7 +104,7 @@ function config-index --description "Search the Commander configuration bible"
             }
         ' "$file")
 
-        set -l status (command awk -F': ' '
+        set -l page_status (command awk -F': ' '
             $1 == "status" {
                 sub(/^status:[[:space:]]*/, "")
                 print
@@ -199,7 +199,7 @@ function config-index --description "Search the Commander configuration bible"
 
         set -l status_mark ""
 
-        switch "$status"
+        switch "$page_status"
             case active
                 set status_mark "●"
             case active-external
@@ -235,7 +235,7 @@ function config-index --description "Search the Commander configuration bible"
             "$display_icon" \
             "$title" \
             "$category" \
-            "$status" \
+            "$page_status" \
             "$criticality" \
             "$tags" \
             "$relative" \
