@@ -1,0 +1,6 @@
+/* Ghostty-only: opaque TokyoNight Storm chrome; terminal opacity stays 0.9. */
+headerbar,
+toolbarview > .top-bar {
+    background-color: #24283b;
+    background-image: none;
+}
