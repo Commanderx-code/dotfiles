@@ -54,3 +54,7 @@ Validate changes from the repository root with
 `nix develop ./home-manager --command ./scripts/check --build`, then stage new
 source files before applying with `hm-rebuild` or `hms`. Open a new terminal
 following cleanup so old in-memory functions and aliases disappear.
+
+Config Bible functions and its launcher are installed by that repository's own
+installer. They are no longer part of this source tree or Home Manager module
+list. General workstation settings and backups remain owned by dotfiles.

@@ -47,18 +47,6 @@ function helpme --description "Show Commander shortcuts, tools, and Config Bible
     echo "  psg <pattern>           → search running processes"
     echo ""
 
-    echo "$b$g📚 Config Bible$n"
-    echo "  $c""config-index$n          → search the Config Bible"
-    echo "  $c""config-index <term>$n   → open Bible filtered by term"
-    echo "  $c""config-index --critical$n → show critical pages"
-    echo "  $c""config-index --planned$n  → show planned items"
-    echo "  $c""config-index --recovery$n → recovery-focused search"
-    echo "  $c""bible-audit$n           → audit docs against configs"
-    echo "  $c""bible-audit --metadata$n  → check Bible metadata"
-    echo "  $c""bible-audit --sources$n   → check documented source paths"
-    echo "  $c""bible-audit --stale$n     → find old verification dates"
-    echo ""
-
     echo "$b$g🏠 Home Manager$n"
     echo "  $c""hms$n                   → Home Manager switch"
     echo "  $c""hm-rebuild$n            → safer HM rebuild helper"
@@ -109,8 +97,6 @@ function helpme --description "Show Commander shortcuts, tools, and Config Bible
 
     echo "$y────────────────────────────────────────────────────────────$n"
     echo "$m""Tips:$n"
-    echo "  Search docs:     $b$c""config-index <topic>$n"
-    echo "  Check the Bible: $b$c""bible-audit$n"
     echo "  List functions:  $b$c""functions | sort$n"
     echo "  List aliases:    alias"
     echo ""

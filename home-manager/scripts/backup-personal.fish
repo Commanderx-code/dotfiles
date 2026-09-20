@@ -43,8 +43,27 @@ set -l PATHS \
     "$HOME/github" \
     "$HOME/Applications" \
     "$DOTFILES_DIR" \
-    "$CONFIG_BIBLE_HOME" \
     "$HOME/.cargo"
+
+# Applications can register additional repositories without coupling this helper
+# to their code. Each file contains absolute paths, one per line; # starts a comment.
+set -l config_home "$HOME/.config"
+set -q XDG_CONFIG_HOME; and set config_home "$XDG_CONFIG_HOME"
+set -l paths_directory "$config_home/backup-personal/paths.d"
+if test -d "$paths_directory"
+    for registration in "$paths_directory"/*
+        test -f "$registration"; or continue
+        while read -l extra_path
+            test -n "$extra_path"; or continue
+            string match -q '#*' -- "$extra_path"; and continue
+            if not string match -q '/*' -- "$extra_path"
+                printf 'Backup registration must use an absolute path: %s\n' "$registration" >&2
+                exit 1
+            end
+            contains -- "$extra_path" $PATHS; or set -a PATHS "$extra_path"
+        end < "$registration"
+    end
+end
 
 set -l EXISTING
 
