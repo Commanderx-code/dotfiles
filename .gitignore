@@ -112,6 +112,9 @@ id_dsa
 id_ecdsa
 id_ed25519
 credentials.json
+# Cassette's live Spotify config and token/cache data stay local.
+/configs/cassette/
+/.config/cassette/
 service-account*.json
 .netrc
 .authinfo

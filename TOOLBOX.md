@@ -17,6 +17,10 @@ Edit its tracked configuration or installer and push normally. Built-in catalog
 entries retain their dedicated Toolbox installers. Myfish's shell entries run the
 updated Myfish installer, including any new tools it manages.
 
+NetWatch, TFM and Spotify Cassette use dedicated Nix handlers. Their pinned
+packages live in [home-manager/terminal-tools.nix](home-manager/terminal-tools.nix),
+shared by Home Manager and Toolbox; see the [setup notes](configs/terminal-tools/README.md).
+
 ## Export a new application configuration
 
 Add a `config` entry to the `entries` array in `toolbox.json`. For example, after
