@@ -4,6 +4,7 @@ alias vim="nvim"
 alias history="history | fzf"
 alias fixpacman 'sudo rm /var/lib/pacman/db.lck'
 alias fresh="fr"
+alias toolbox="commander-toolbox"
 
 alias web="cd /var/www/html"
 alias da='date "+%Y-%m-%d %A %T %Z"'
