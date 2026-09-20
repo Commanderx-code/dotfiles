@@ -3,7 +3,6 @@
   "homeDirectory": "/home/commander",
   "system": "x86_64-linux",
   "dotfilesDirectory": "/home/commander/github/projects/dotfiles",
-  "configBibleDirectory": "/home/commander/github/projects/config-bible",
   "backupMount": "/run/media/commander/Linux-Backup",
   "resticRepository": "/run/media/commander/Linux-Backup/restic",
   "wallet": "kdewallet",

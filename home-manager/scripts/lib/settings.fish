@@ -18,8 +18,8 @@ if not test -f "$DOTFILES_MACHINE_CONFIG"
     echo "Machine settings not found: $DOTFILES_MACHINE_CONFIG" >&2
     return 1
 end
-set -l keys dotfilesDirectory configBibleDirectory backupMount resticRepository username wallet walletFolder walletEntry
-set -l variables DOTFILES_DIR CONFIG_BIBLE_HOME BACKUP_MOUNT RESTIC_REPOSITORY HM_PROFILE RESTIC_WALLET RESTIC_WALLET_FOLDER RESTIC_WALLET_ENTRY
+set -l keys dotfilesDirectory backupMount resticRepository username wallet walletFolder walletEntry
+set -l variables DOTFILES_DIR BACKUP_MOUNT RESTIC_REPOSITORY HM_PROFILE RESTIC_WALLET RESTIC_WALLET_FOLDER RESTIC_WALLET_ENTRY
 for i in (seq (count $keys))
     if not set -q $variables[$i]
         set -l value (jq -er --arg key "$keys[$i]" '.[$key] | select(type == "string" and length > 0)' "$DOTFILES_MACHINE_CONFIG")

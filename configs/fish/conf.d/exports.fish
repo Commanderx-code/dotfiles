@@ -41,5 +41,5 @@ for directory in /usr/local/go/bin "$GOBIN"
     end
 end
 
-# Shared workstation and Config Bible settings.
+# Shared workstation settings.
 dotfiles-settings

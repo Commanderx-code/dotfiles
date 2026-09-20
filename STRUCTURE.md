@@ -1,7 +1,7 @@
 # Configuration ownership and maintenance
 
 `home-manager/machine.json` is the shared source for the username, home directory,
-architecture, dotfiles and Config Bible paths, backup mount/repository, and KWallet
+architecture, dotfiles path, backup mount/repository, and KWallet
 entry names. It contains identifiers, never the Restic password. Edit it before
 building on another host. Home Manager reads it at evaluation time and installs
 it as `~/.config/dotfiles/machine.json`; operational scripts read the same JSON via
@@ -33,10 +33,10 @@ prerequisites described in [RECOVERY.md](RECOVERY.md). User shell tools, fonts a
 jq are declared through Home Manager. Python helpers use the system interpreter;
 the validation environment provides Python separately.
 
-The external Config Bible repository contains the full documentation collection.
-Its location comes from `configBibleDirectory`; its app must be built separately.
-Personal Restic backups include that directory. The old batch-import instructions
-have been removed; use the Config Bible repository for its documentation workflow.
+The external Config Bible repository owns the handbook and its commands, desktop
+launcher, installer, and optional Home Manager module. It installs independently
+of dotfiles; see its README. Its installer registers its checkout for personal
+backup through the generic `~/.config/backup-personal/paths.d/` directory.
 
 ## Validation
 
@@ -64,7 +64,7 @@ These checks do not run backups, perform restores, or activate a generation.
 Installed helpers load machine settings explicitly, including when invoked by
 systemd without interactive shell startup. For a one-off recovery or fixture run,
 set `DOTFILES_MACHINE_CONFIG` to another JSON file. Individual environment values
-can override defaults: `DOTFILES_DIR`, `CONFIG_BIBLE_HOME`, `BACKUP_MOUNT`,
+can override defaults: `DOTFILES_DIR`, `BACKUP_MOUNT`,
 `RESTIC_REPOSITORY`, `HM_PROFILE`, `RESTIC_WALLET`, `RESTIC_WALLET_FOLDER`, and
 `RESTIC_WALLET_ENTRY`. Mount and repository overrides are independent: override
 both when relocating the backup repository. Rebuild Home Manager to change the
@@ -110,11 +110,6 @@ historical Git objects or automatically remove local font duplicates.
 
 ## Runtime checks
 
-`bible-secrets` returns 0 for a completed scan without matches, 1 when potential
-secrets are found, and 2 when a directory is missing or a search fails. It reports
-filenames only. Ripgrep ignore rules still apply; this is a heuristic scan of the
-searchable tree, not a guarantee that every local file is secret-free.
-
 Neovim disables automatic formatting above 1 MiB of buffer contents and restores
 the previous buffer preference when the buffer shrinks. Manual `:LazyFormat`
 remains available. `ldir` lists directories and `lf` lists files.
@@ -136,7 +131,7 @@ action revisions. It validates and builds without activating Home Manager.
 ## Backup coverage and health
 
 Personal Restic captures include `~/github` (including unpushed repository work),
-`~/Projects`, the configured Config Bible directory, and the existing personal
+`~/Projects`, application-registered extra paths, and the existing personal
 folders. `backup-secrets` separately encrypts SSH, GnuPG, and KWallet; GnuPG
 sockets, lock files, and random-seed state are excluded from its archive.
 
@@ -174,3 +169,12 @@ and cannot detect secrets pasted into otherwise tracked configuration files.
 `home-manager/machine.json` remains tracked because the Git-based Nix flake
 requires it. It contains machine identifiers and paths, so keep credentials out
 of it. Use sanitized example files when documenting secret configuration.
+
+## Application backup registrations
+
+Independent applications can register repositories in
+`~/.config/backup-personal/paths.d/`. Each file contains absolute paths, one per
+line; empty lines and lines beginning with `#` are ignored. Existing paths are
+added to personal backups. Relative paths are rejected before starting Restic.
+Applications own their registration files; dotfiles has no dependency on their
+source or installation modules.
