@@ -161,6 +161,13 @@ class LayoutTests(unittest.TestCase):
         self.check_resize('/usr/bin/fish')
 
     def check_resize(self, fish):
+        # The welcome checks for an external binary before calling our Fish stub.
+        # CI need not install Fastfetch just to exercise terminal redraw behavior.
+        fixture = tempfile.TemporaryDirectory(prefix='welcome-command-')
+        self.addCleanup(fixture.cleanup)
+        executable = Path(fixture.name) / 'fastfetch'
+        executable.write_text('#!/bin/sh\nexit 0\n')
+        executable.chmod(0o755)
         master, slave = pty.openpty()
         self.addCleanup(os.close, master)
         fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 27, 100, 0, 0))
@@ -171,7 +178,8 @@ class LayoutTests(unittest.TestCase):
                 f"source '{source}'")
         proc = subprocess.Popen([fish, '--no-config', '-i', '-C', init],
                                 stdin=slave, stdout=slave, stderr=slave,
-                                env=dict(os.environ, TERM='xterm-256color', TERM_PROGRAM='ghostty'),
+                                env=dict(os.environ, TERM='xterm-256color', TERM_PROGRAM='ghostty',
+                                         PATH=fixture.name + os.pathsep + os.environ['PATH']),
                                 start_new_session=True,
                                 preexec_fn=lambda: fcntl.ioctl(0, termios.TIOCSCTTY, 0))
         os.close(slave)

@@ -130,3 +130,9 @@ GitHub Actions runs the same build check on pushes and pull requests.
 The Config Bible source lives in its own repository; its local path is configured
 in `machine.json`. The full configuration and maintenance reference for these
 dotfiles lives in [STRUCTURE.md](STRUCTURE.md).
+
+## Toolbox integration
+
+Changes on `main` are picked up automatically after CI succeeds. Add new exported
+tools to [toolbox.json](toolbox.json); see [publishing tools](TOOLBOX.md) for package
+names, config paths and the update workflow.
