@@ -29,7 +29,8 @@ def main():
     shell_files = sorted((ROOT / 'home-manager/scripts').glob('*.sh')) + [ROOT / 'configs/scripts/fzf-preview']
     for file in shell_files:
         run('bash', '-n', str(file))
-    run('actionlint', str(ROOT / '.github/workflows/check.yml'))
+    run('actionlint', *(str(p) for p in sorted((ROOT / '.github/workflows').glob('*.yml'))))
+    run('python3', '-B', str(ROOT / 'scripts/sync-myfish.py'), '--check')
     run('shellcheck', *(str(p) for p in shell_files))
     run('nixfmt', '--check', *(str(p) for p in (ROOT / 'home-manager').rglob('*.nix')))
     run('python3', '-B', '-m', 'unittest', 'discover', '-s', 'tests', '-v')
