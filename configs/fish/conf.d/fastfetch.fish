@@ -3,8 +3,8 @@
 if not status is-interactive
     return
 end
-# Keep startup artwork in the outer Ghostty/Konsole window. Zellij's pinned
-# version cannot display Kitty images; run fastfetch --logo none there.
+# The fixed-width welcome does not fit multiplexer panes; keep it in the
+# outer Ghostty/Konsole window. Run fastfetch manually inside Zellij if wanted.
 if set -q ZELLIJ
     return
 end
@@ -23,10 +23,7 @@ printf 'Hello, Commander '
 set_color yellow
 printf '\n'
 set_color normal
-# Use the terminal grid to recognize narrow/short snapped windows. Keep the
-# greeting, but only auto-run Fastfetch when there is enough room for it.
-# Manual fastfetch remains available at any size.
-if test "$COLUMNS" -ge 100; and test "$LINES" -ge 24; and command -q fastfetch
+if command -q fastfetch
     printf '\n\n'
     fastfetch
 end
