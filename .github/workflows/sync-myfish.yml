@@ -1,0 +1,51 @@
+name: Sync shared Fish from Myfish
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Validate dotfiles']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: sync-myfish-main
+  cancel-in-progress: false
+jobs:
+  sync:
+    if: github.repository == 'Commanderx-code/dotfiles' && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event != 'pull_request'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+      - name: Import only a tested Myfish revision
+        id: import
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -B scripts/sync-myfish.py
+      - uses: cachix/install-nix-action@b85815f71a6de0ddee80b8a80a98d43f4bcc66c7
+        if: steps.import.outputs.changed == 'true'
+      - name: Test and build the combined workstation configuration
+        if: steps.import.outputs.changed == 'true'
+        run: nix develop ./home-manager --command ./scripts/check --build
+      - name: Publish the tested import
+        if: steps.import.outputs.changed == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add configs/fish/functions configs/fish/shared-source.json
+          git diff --cached --check
+          git commit -m 'Sync tested shared Fish functions from Myfish'
+          git push origin HEAD:main
+      - name: Ensure the published commit receives its own validation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # GITHUB_TOKEN pushes do not trigger push workflows. Retrying this step
+        # on no-change runs also recovers an interrupted post-push dispatch.
+        run: python3 -B scripts/sync-myfish.py --ensure-validation

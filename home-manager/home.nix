@@ -3,6 +3,7 @@
 {
   imports = [
     ./modules/machine.nix
+    ./modules/repo-sync.nix
     ./modules/fonts.nix
     ./modules/packages.nix
     ./modules/git.nix
