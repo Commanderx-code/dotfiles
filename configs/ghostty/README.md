@@ -165,31 +165,19 @@ Ghostty's built-in Fish integration. Home Manager loads the same aliases,
 abbreviations, Starship prompt, zoxide, completions, and fzf bindings used in
 other terminals. No separate Ghostty copy of the Fish configuration is needed.
 The welcome message and Fastfetch startup run in both Ghostty and Konsole.
-Automatic Fastfetch startup requires at least 100 columns and 24 rows; narrow
-or short snapped windows show just the greeting. This uses the terminal size,
-so equally small floating windows also skip it. Manual `fastfetch` always works.
 
-Fastfetch keeps `~/.config/fastfetch/config.jsonc` as the source for the artwork,
-colored boxed sections, fields, formats, and palette. The Fish `fastfetch`
-function reads the current terminal size on each invocation. At 135 columns
-or wider the 24-column Arch logo stays beside the boxes; narrower windows put
-it above them. Boxes shrink to fit, and long values wrap inside their borders.
-Very small panes (under 35 columns or 15 rows) omit the image to leave room for
-text. Every information field remains available by scrolling. Font size,
-Ghostty settings, and the source Fastfetch JSON are unchanged.
+Fastfetch uses the original `~/.config/fastfetch/config.jsonc` unchanged: colored
+boxed sections, the 24-column Arch logo on the left, and the full information
+and color palette. The adaptive formatter is no longer used or installed.
+Use a wide window (roughly 135 columns or more) for the fixed-width boxes;
+they do not fit the 100-column startup window cleanly.
 
-The Home Manager `commander-fastfetch-layout` helper prepares the detection
-config, then wraps the native output into boxed rows. Native Fastfetch still
-runs directly under Fish so shell detection remains accurate; it also handles
-the original image protocol. The helper uses pipes and creates no temp files.
-Explicit Fastfetch arguments and redirected output retain native behavior;
-`command fastfetch` bypasses the personal wrapper altogether.
-
-The welcome prints once. Run `fastfetch` manually in a snapped window when
-wanted; it fits the current size. Existing terminal history cannot
-rebuild its boxes after Fastfetch exits. There is deliberately no resize signal
-handler: repeatedly drawing a fetch taller than the window pushes duplicate
-pages into scrollback and interferes with Starship's multi-line prompt.
+The welcome prints once. There is no resize signal handler: repeatedly drawing
+a fetch taller than the window pushes duplicate pages into scrollback and can
+interfere with Starship's multi-line prompt. Widen the window before running
+`fastfetch` again; old output does not re-layout its boxes. Open a new tab to
+load the restored default without touching existing scrollback. All Fastfetch
+arguments pass through unchanged to the native CLI.
 
 Fish shortcuts: Ctrl+T inserts a selected file path, Ctrl+P opens a selected
 file in Neovim, Ctrl+F searches file contents, Ctrl+H searches command history,

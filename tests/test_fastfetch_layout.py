@@ -72,98 +72,68 @@ def visible_test_screen(data):
 
 
 class LayoutTests(unittest.TestCase):
-    @staticmethod
-    def fixture():
-        return (
-            '\x1b[33m╭─  DISTRO ─────────────────────────────────╮\x1b[0m\n'
-            '\x1b[33m OS\x1b[0m Garuda Linux x86_64\n'
-            'Packages 2 appimage, 20 flatpak, 554 nix-user, 66 nix-default, 1539 pacman [stable]\n'
-            '\x1b[33m╰──────────────────────────────────────────╯\x1b[0m\n'
-            '\x1b[32m╭─ 󰌢 SYSTEM ────────────────────────────────╮\x1b[0m\n'
-            'Memory 8 GiB / 32 GiB\nUptime 5 hours\n'
-            'Unicode 中文 é and a literal {#31} value\n'
-            '\x1b[32m╰──────────────────────────────────────────╯\x1b[0m\n'
-        )
+    def test_layouts_remove_fixed_cursor_positions_and_borders(self):
+        for columns, rows in [(40, 20), (60, 30), (100, 27), (200, 60)]:
+            config = renderer.layout(BASE, columns, rows)
+            for module in config['modules']:
+                self.assertNotIn('\x1b', module.get('key', '') + module.get('format', ''))
+                self.assertNotIn('╮', module.get('format', ''))
+            self.assertFalse(config['display']['disableLinewrap'])
 
-    def test_every_box_fits_without_cursor_positioning(self):
-        for columns, rows in [(20, 12), (40, 20), (60, 30), (100, 27), (135, 40), (200, 60)]:
-            with self.subTest(columns=columns):
-                config = renderer.layout(BASE, columns, rows, self.fixture())
-                side = config['logo'].get('position') == 'left'
-                margin = 27 if side else 0
-                for module in config['modules']:
-                    line = module['format'].replace('{{', '{')
-                    self.assertLess(renderer.width(line) + margin, columns)
-                    self.assertNotRegex(line, r'\x1b\[[0-9]*[CsHu]')
-                lines = [renderer.plain(m['format'].replace('{{', '{')) for m in config['modules']]
-                self.assertEqual(sum(line.startswith('╭') for line in lines), 2)
-                self.assertEqual(sum(line.startswith('╰') for line in lines), 2)
-                borders = [renderer.width(line) for line in lines if line.startswith(('╭', '│', '╰'))]
-                self.assertEqual(len(set(borders)), 1)
+    def test_normal_window_stacks_logo_without_shrinking_it(self):
+        config = renderer.layout(BASE, 100, 27)
+        self.assertEqual(config['logo']['width'], 24)
+        self.assertEqual(config['logo']['position'], 'top')
+        self.assertNotIn('height', config['logo'])
+        self.assertEqual(config['modules'][0], {'type': 'custom', 'format': '\r'})
+        self.assertNotIn('bottom', config['logo']['padding'])
 
-    def test_logo_moves_above_boxes_but_keeps_artwork_and_size(self):
-        for columns in (40, 80, 100, 117):
-            logo = renderer.layout(BASE, columns, 27, self.fixture())['logo']
-            self.assertEqual(logo['position'], 'top')
-            self.assertEqual(logo['width'], BASE['logo']['width'])
-            self.assertEqual(logo['source'], BASE['logo']['source'])
-            self.assertNotIn('height', logo)
-        self.assertEqual(renderer.layout(BASE, 190, 40, '')['logo']['position'], 'left')
-        self.assertEqual(renderer.layout(BASE, 30, 12, '')['logo']['type'], 'none')
+    def test_section_dividers_do_not_fill_the_old_window_width(self):
+        for columns in (40, 100, 190):
+            config = renderer.layout(BASE, columns, 40)
+            headings = [m['format'] for m in config['modules'] if '──' in m.get('format', '')]
+            self.assertEqual(len(headings), 5)
+            self.assertTrue(all('───' not in heading for heading in headings))
 
-    def test_detection_preserves_all_fields_formats_and_commands(self):
-        config = renderer.prepared_config(BASE)
-        self.assertEqual(len(config['modules']), len(BASE['modules']))
-        for original, prepared in zip(BASE['modules'], config['modules']):
-            if not isinstance(original, dict):
-                self.assertEqual(original, prepared)
-                continue
-            self.assertEqual(original['type'], prepared['type'])
-            self.assertEqual(original.get('text'), prepared.get('text'))
-            if original['type'] != 'custom':
-                self.assertEqual(original.get('format'), prepared.get('format'))
-            self.assertNotIn('\x1b', prepared.get('key', ''))
-        self.assertEqual(BASE, json.loads((ROOT / 'configs/fastfetch/config.jsonc').read_text()))
+    def test_every_window_keeps_all_fields_and_palette(self):
+        originals = [module for module in BASE['modules']
+                     if isinstance(module, dict) and module['type'] != 'custom']
+        for columns, rows in [(30, 12), (80, 24), (100, 27), (100, 40), (190, 40), (200, 60)]:
+            config = renderer.layout(BASE, columns, rows)
+            fields = [module for module in config['modules'] if module['type'] != 'custom']
+            self.assertEqual([m['type'] for m in fields], [m['type'] for m in originals])
+            self.assertEqual([m.get('format') for m in fields], [m.get('format') for m in originals])
+            self.assertTrue(any('󰮯' in module.get('format', '') for module in config['modules']))
 
-    def test_wrapping_retains_text_and_color_with_wide_and_combining_characters(self):
-        for columns in (2, 10, 37, 100):
-            original = '\x1b[33mPackages 中文 é ' + 'value ' * 30 + '\x1b[0m'
-            wrapped = list(renderer.wrap(original, columns))
-            self.assertEqual(''.join(renderer.plain(line) for line in wrapped), renderer.plain(original))
-            self.assertTrue(all(renderer.width(line) <= columns for line in wrapped))
-            self.assertTrue(all('\x1b[33m' in line for line in wrapped))
-        self.assertNotIn('\x1b[2J', ''.join(renderer.wrap('safe\x1b[2Jvalue', 20)))
+    def test_height_does_not_change_information(self):
+        self.assertEqual(renderer.layout(BASE, 100, 24)['modules'],
+                         renderer.layout(BASE, 100, 60)['modules'])
 
-    def test_short_height_keeps_all_information(self):
-        short = renderer.layout(BASE, 80, 12, self.fixture())['modules']
-        tall = renderer.layout(BASE, 80, 60, self.fixture())['modules']
-        self.assertEqual(short, tall[1:])  # only the image cursor reset differs
-        for columns in (20, 40, 100):
-            lines = list(renderer.boxed_lines(self.fixture(), columns))
-            contents = ''.join(renderer.plain(line)[2:-1].rstrip() for line in lines if renderer.plain(line).startswith('│'))
-            self.assertIn('1539 pacman [stable]'.replace(' ', ''), contents.replace(' ', ''))
-            self.assertIn('Memory', contents)
-            self.assertIn('Uptime', contents)
+    def test_tiny_pane_omits_only_image(self):
+        config = renderer.layout(BASE, 30, 12)
+        self.assertEqual(config['logo']['type'], 'none')
+        self.assertIn('memory', [module['type'] for module in config['modules']])
+        self.assertIn('uptime', [module['type'] for module in config['modules']])
+
+    def test_full_layout_keeps_details_and_original_config_is_unchanged(self):
+        config = renderer.layout(BASE, 200, 60)
+        self.assertEqual(config['logo']['position'], 'left')
+        self.assertIn('icons', [module['type'] for module in config['modules']])
+        self.assertIn('player', [module['type'] for module in config['modules']])
+        self.assertNotIn('height', BASE['logo'])
 
     @unittest.skipUnless(shutil.which('fastfetch'), 'Fastfetch required')
-    def test_native_fastfetch_accepts_layouts_and_literal_braces(self):
-        detection = subprocess.run(['fastfetch', '--config', '-', '--pipe', 'false'],
-                                   input=json.dumps(renderer.prepared_config(BASE)),
-                                   capture_output=True, text=True, timeout=15)
-        self.assertEqual(detection.returncode, 0, detection.stderr)
-        for columns in (20, 40, 100, 200):
-            config = renderer.layout(BASE, columns, 27, detection.stdout + self.fixture())
-            config['logo'] = {'type': 'none'}
-            result = subprocess.run(['fastfetch', '--config', '-', '--pipe', 'false'],
+    def test_native_fastfetch_accepts_generated_layouts(self):
+        for columns, rows in [(40, 20), (100, 27), (200, 60)]:
+            config = renderer.layout(BASE, columns, rows)
+            result = subprocess.run(['fastfetch', '--config', '-', '--logo', 'none', '--pipe', 'true'],
                                     input=json.dumps(config), capture_output=True, text=True, timeout=15)
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertFalse(result.stderr)
-            for value in ('OS', 'Memory', 'Uptime', 'colors'):
-                self.assertIn(value, result.stdout)
-            for line in result.stdout.splitlines():
-                self.assertLess(renderer.width(line), columns)
-            if columns >= 80:
-                self.assertIn('literal {#31} value', result.stdout)
+            self.assertFalse(result.stderr, result.stderr)
+            self.assertIn('OS', result.stdout)
+            self.assertIn('Memory', result.stdout)
+            self.assertIn('Uptime', result.stdout)
+            self.assertIn('colors', result.stdout)
 
     @unittest.skipUnless(shutil.which('fish'), 'Fish required')
     def test_resize_never_reprints_welcome(self):
