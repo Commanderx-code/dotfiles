@@ -1,0 +1,217 @@
+{
+  "proxy": "",
+  "ui_font_size": 16,
+  "buffer_font_size": 15,
+  "buffer_font_family": "CaskaydiaCove Nerd Font Mono",
+  "theme": {
+    "mode": "system",
+    "light": "One Light",
+    "dark": "Catppuccin Mocha"
+  },
+  "base_keymap": "VSCode",
+  "vim_mode": false,
+  "tab_size": 2,
+  "format_on_save": "on",
+  "remove_trailing_whitespace_on_save": true,
+  "ensure_final_newline_on_save": true,
+  "soft_wrap": "editor_width",
+  "preferred_line_length": 100,
+  "show_whitespaces": "selection",
+  "indent_guides": {
+    "enabled": true,
+    "coloring": "indent_aware"
+  },
+  "inlay_hints": {
+    "enabled": true
+  },
+  "sticky_scroll": {
+    "enabled": true
+  },
+  "tabs": {
+    "file_icons": true,
+    "git_status": true,
+    "show_diagnostics": "errors"
+  },
+  "diagnostics": {
+    "inline": {
+      "enabled": true
+    }
+  },
+  "project_panel": {
+    "dock": "left",
+    "default_width": 280
+  },
+  "terminal": {
+    "shell": {
+      "program": "/home/commander/.nix-profile/bin/fish"
+    },
+    "working_directory": "current_project_directory",
+    "font_family": "CaskaydiaCove Nerd Font Mono",
+    "font_size": 14,
+    "dock": "bottom"
+  },
+  "agent": {
+    "enabled": true,
+    "dock": "right",
+    "default_width": 440
+  },
+  "agent_servers": {
+    "codex-acp": {
+      "type": "registry",
+      "default_mode": "agent"
+    }
+  },
+  "edit_predictions": {
+    "provider": "none"
+  },
+  "auto_install_extensions": {
+    "catppuccin": true,
+    "html": true,
+    "nix": true,
+    "fish": true,
+    "toml": true,
+    "dockerfile": true,
+    "make": true,
+    "tombi": true
+  },
+  "languages": {
+    "Python": {
+      "tab_size": 4,
+      "language_servers": [
+        "basedpyright",
+        "ruff"
+      ],
+      "formatter": {
+        "language_server": {
+          "name": "ruff"
+        }
+      }
+    },
+    "Rust": {
+      "tab_size": 4,
+      "language_servers": [
+        "rust-analyzer"
+      ]
+    },
+    "Nix": {
+      "language_servers": [
+        "nil"
+      ],
+      "formatter": {
+        "external": {
+          "command": "nixfmt",
+          "arguments": []
+        }
+      }
+    },
+    "Fish": {
+      "tab_size": 4,
+      "formatter": {
+        "external": {
+          "command": "fish_indent",
+          "arguments": []
+        }
+      }
+    },
+    "Shell Script": {
+      "formatter": {
+        "external": {
+          "command": "shfmt",
+          "arguments": [
+            "-filename",
+            "{buffer_path}"
+          ]
+        }
+      }
+    },
+    "Markdown": {
+      "soft_wrap": "editor_width",
+      "format_on_save": "off",
+      "remove_trailing_whitespace_on_save": false
+    },
+    "Make": {
+      "hard_tabs": true
+    }
+  },
+  "lsp": {
+    "rust-analyzer": {
+      "binary": {
+        "path": "/home/commander/.nix-profile/bin/rust-analyzer"
+      },
+      "initialization_options": {
+        "check": {
+          "command": "clippy"
+        }
+      }
+    },
+    "nil": {
+      "binary": {
+        "path": "/home/commander/.nix-profile/bin/nil"
+      }
+    },
+    "basedpyright": {
+      "binary": {
+        "path": "/home/commander/.nix-profile/bin/basedpyright-langserver",
+        "arguments": [
+          "--stdio"
+        ]
+      }
+    },
+    "ruff": {
+      "binary": {
+        "path": "/home/commander/.nix-profile/bin/ruff",
+        "arguments": [
+          "server"
+        ]
+      }
+    },
+    "bash-language-server": {
+      "binary": {
+        "path": "/home/commander/.nix-profile/bin/bash-language-server",
+        "arguments": [
+          "start"
+        ]
+      }
+    },
+    "vtsls": {
+      "binary": {
+        "path": "/home/commander/.nix-profile/bin/vtsls",
+        "arguments": [
+          "--stdio"
+        ]
+      }
+    },
+    "yaml-language-server": {
+      "binary": {
+        "path": "/home/commander/.nix-profile/bin/yaml-language-server",
+        "arguments": [
+          "--stdio"
+        ]
+      }
+    },
+    "json-language-server": {
+      "binary": {
+        "path": "/home/commander/.nix-profile/bin/vscode-json-language-server",
+        "arguments": [
+          "--stdio"
+        ]
+      }
+    },
+    "tombi": {
+      "binary": {
+        "path": "/home/commander/.nix-profile/bin/tombi",
+        "arguments": [
+          "lsp"
+        ]
+      }
+    },
+    "vscode-css-language-server": {
+      "binary": {
+        "path": "/home/commander/.nix-profile/bin/vscode-css-language-server",
+        "arguments": [
+          "--stdio"
+        ]
+      }
+    }
+  }
+}
