@@ -11,6 +11,7 @@
     ./modules/starship.nix
     ./modules/fastfetch.nix
     ./modules/nvim.nix
+    ./modules/zed.nix
     ./modules/topgrade.nix
     ./modules/terminal.nix
     ./modules/backup-automation.nix
