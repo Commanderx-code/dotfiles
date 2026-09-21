@@ -1,0 +1,14 @@
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      "ctrl-alt-a": [
+        "agent::NewExternalAgentThread",
+        {
+          "agent": "codex-acp"
+        }
+      ],
+      "ctrl-alt-t": "task::Spawn"
+    }
+  }
+]
