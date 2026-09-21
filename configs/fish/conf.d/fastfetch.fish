@@ -3,8 +3,8 @@
 if not status is-interactive
     return
 end
-# The fixed-width welcome does not fit multiplexer panes; keep it in the
-# outer Ghostty/Konsole window. Run fastfetch manually inside Zellij if wanted.
+# Keep startup artwork in the outer Ghostty/Konsole window. Zellij's pinned
+# version cannot display Kitty images; run fastfetch --logo none there.
 if set -q ZELLIJ
     return
 end
