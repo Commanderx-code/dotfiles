@@ -27,6 +27,7 @@
         {
             "type": "packages",
             "key": "{#33}\u001b[s\u001b[105C│\u001b[u│ {#0}{#33}󰏖 Packages{#0}",
+            "format": "{appimage} appimage, {flatpak-all} flatpak, {nix-user} nix-user, {nix-default} nix-default, {pacman} pacman{?pacman-branch} [{pacman-branch}]{?}",
             "keyColor": "yellow"
         },
         {
