@@ -27,7 +27,13 @@
         {
             "type": "packages",
             "key": "{#33}\u001b[s\u001b[105C│\u001b[u│ {#0}{#33}󰏖 Packages{#0}",
-            "format": "{appimage} appimage, {flatpak-all} flatpak, {nix-user} nix-user, {nix-default} nix-default, {pacman} pacman{?pacman-branch} [{pacman-branch}]{?}",
+            "format": "{appimage} appimage, {flatpak-all} flatpak, {pacman} pacman{?pacman-branch} [{pacman-branch}]{?}",
+            "keyColor": "yellow"
+        },
+        {
+            "type": "packages",
+            "key": "{#33}\u001b[s\u001b[105C│\u001b[u│ {#0}{#33}󰏖 Nix{#0}",
+            "format": "{nix-user} user, {nix-default} default",
             "keyColor": "yellow"
         },
         {
