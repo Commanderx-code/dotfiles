@@ -19,6 +19,10 @@ Starship or Zoxide startup loaders.
 | `ssh-agent.fish` | SSH agent socket and interactive key loading |
 | `spotatui-autostart.fish` | Companion to the `spotatui-ghostty` launcher |
 
+Portable functions marked with a Myfish source comment are generated imports.
+Edit them in Myfish; CI checks their recorded hashes. See [shared Fish updates](../../FISH-SYNC.md)
+for automation, explicit workstation overrides, and the local updater.
+
 Keep one function per file in `functions/` so Fish can load commands on demand.
 The `rgi`, `fdi`, and `cdi` commands live there instead of in startup aliases.
 `fcd` picks immediate visible subdirectories; `cdi` includes hidden and nested

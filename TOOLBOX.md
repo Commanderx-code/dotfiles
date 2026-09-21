@@ -77,3 +77,8 @@ No extra cross-repository token is needed for these public repositories.
 GitHub disables scheduled workflows in public repos after 60 days without repo
 activity; re-enable the workflow in Actions if necessary. New source repositories
 must be explicitly connected to the sync workflow; it watches dotfiles and Myfish.
+
+Shared portable Fish functions are maintained in Myfish and imported automatically
+after successful CI. See [shared Fish updates](FISH-SYNC.md) for source ownership
+and automatic local checkout updates. Bot-created imports use explicitly
+dispatched `check.yml` validation before Toolbox can adopt them.

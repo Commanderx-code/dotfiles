@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "repository": "Commanderx-code/Myfish",
+  "revision": "1e528d234540cb1079e626d2d351b8607512c336",
+  "overrides": {
+    "extract.fish": "Workstation archive commands, including unrar.",
+    "fdi.fish": "Direct editor shortcut rather than a command-line widget.",
+    "rgi.fish": "Accepts ripgrep arguments instead of prompting for a query.",
+    "fzf_rg_search.fish": "Searches the workstation local-bin directory as well as the current directory.",
+    "fish_user_key_bindings.fish": "Workstation Ctrl-R and history bindings.",
+    "serve.fish": "LAN-accessible server with the workstation Python fallback."
+  },
+  "files": {
+    "__commander_editor.fish": "1fc77e9ae3daee00364704387b3f16097e0b2e7355f6c4a74b1eab484052c601",
+    "__commander_find.fish": "ee244df1c4a22edfabfa512bd698fa2e0fa0dcf80d0405273e835ca000d0ba9c",
+    "__commander_pick_directory.fish": "d9168d1b4a75f3e84a1d309a0b1bb7fee263e5991f551535c304518153489160",
+    "__fzf_starstar_tab.fish": "942bb985d87da2a6a8de4badd2a5e9e3249d091d878b4ec683f8635a6b5f7dbc",
+    "br.fish": "dcd269f6c886869eddcf4a14d36b5d9b7fa4071647db8c43084569ca42a3b9c6",
+    "cdi.fish": "de02f30dc6d9ea39eb0984e20432e52ccdef1f8c41774eebce5fb49e6f62a630",
+    "dirsize.fish": "2af664cd99c140f54568ee6342c2fe4b2ea42561e1a651f5a922ae20bc6705ce",
+    "fcd.fish": "f7807d11e02ce3ae0847beec4da731c27baae3a621ac6b0667a337077fb4cd14",
+    "fzf_open_file.fish": "fe986b32e6d8a00871a6fd8121ddfdebed5d77ee1de4d35098e49b494c2c92e7",
+    "gcom.fish": "4676f845d59c849bb502f54a9aa42a1fb7423fd3f6aba8fc0300f30af074f881",
+    "lazyg.fish": "e527b32dbaafbfd5bb3b6dafef996566195e855097e9b4ca47252de8d10c4831",
+    "mkcd.fish": "4a8e9138f0a6909b162637ee2c4c71cd68116ca7e5d2b1d147bb360c67b79d01",
+    "psg.fish": "af5faaa4ee8dbefb5b40954aee39fe4083e96e438e4b5e4c13846498c3bc3b14"
+  }
+}
