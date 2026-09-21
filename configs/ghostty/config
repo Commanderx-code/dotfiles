@@ -16,10 +16,9 @@ window-padding-x = 14
 window-padding-y = 12
 window-padding-balance = true
 
-# Start at 117 columns by 31 usable rows. Ghostty 1.3.1/GTK counts the
-# integrated tab bar in the height; 33 compensates for its two-row overhead.
-window-width = 117
-window-height = 33
+# Default opening dimensions, in terminal cells.
+window-width = 150
+window-height = 36
 
 # Integrated tabs and controls, including when maximized.
 window-decoration = client
