@@ -165,6 +165,9 @@ Ghostty's built-in Fish integration. Home Manager loads the same aliases,
 abbreviations, Starship prompt, zoxide, completions, and fzf bindings used in
 other terminals. No separate Ghostty copy of the Fish configuration is needed.
 The welcome message and Fastfetch startup run in both Ghostty and Konsole.
+Automatic Fastfetch startup requires at least 100 columns and 24 rows; narrow
+or short snapped windows show just the greeting. This uses the terminal size,
+so equally small floating windows also skip it. Manual `fastfetch` always works.
 
 Fastfetch keeps `~/.config/fastfetch/config.jsonc` as the source for the artwork,
 colored boxed sections, fields, formats, and palette. The Fish `fastfetch`
@@ -182,8 +185,8 @@ the original image protocol. The helper uses pipes and creates no temp files.
 Explicit Fastfetch arguments and redirected output retain native behavior;
 `command fastfetch` bypasses the personal wrapper altogether.
 
-The welcome prints once. Open a new tab or run `fastfetch` after snapping a
-window to get a layout sized for that window. Existing terminal history cannot
+The welcome prints once. Run `fastfetch` manually in a snapped window when
+wanted; it fits the current size. Existing terminal history cannot
 rebuild its boxes after Fastfetch exits. There is deliberately no resize signal
 handler: repeatedly drawing a fetch taller than the window pushes duplicate
 pages into scrollback and interferes with Starship's multi-line prompt.
