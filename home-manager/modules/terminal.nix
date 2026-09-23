@@ -15,6 +15,11 @@
     executable = true;
   };
 
+  home.file.".local/bin/fzf-rg-results" = {
+    source = ../../configs/scripts/fzf-rg-results;
+    executable = true;
+  };
+
   home.file.".local/bin/clickpaste" = {
     source = ../scripts/clickpaste.py;
     executable = true;

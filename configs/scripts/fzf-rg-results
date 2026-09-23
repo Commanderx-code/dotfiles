@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+"""Keep ripgrep paths separate from display text and editor arguments."""
+import base64
+import json
+import os
+import re
+import subprocess
+import sys
+
+
+def raw(value):
+    return os.fsencode(value['text']) if 'text' in value else base64.b64decode(value['bytes'], validate=True)
+
+
+def location(line, encoded):
+    if not re.fullmatch(r'[1-9][0-9]*', line):
+        raise ValueError('Invalid search line number')
+    path = base64.b64decode(encoded, validate=True)
+    if not path.startswith(b'/') or b'\0' in path:
+        raise ValueError('Invalid search path')
+    return path, line
+
+
+def rows(stream):
+    for record in stream:
+        event = json.loads(record)
+        if event['type'] != 'match':
+            continue
+        match = event['data']
+        path = raw(match['path'])
+        line = str(match['line_number'])
+        encoded = base64.b64encode(path).decode('ascii')
+        location(line, encoded)
+        # JSON escaping keeps tabs, newlines and terminal controls out of display records.
+        display = (json.dumps(os.fsdecode(path), ensure_ascii=True) + ':' + line + ': ' +
+                   json.dumps(os.fsdecode(raw(match['lines'])).rstrip('\n'), ensure_ascii=True))
+        yield f'{line}\t{encoded}\t{display}\0'.encode()
+
+
+def main():
+    mode, *args = sys.argv[1:]
+    if mode == 'rows' and not args:
+        for row in rows(sys.stdin):
+            sys.stdout.buffer.write(row)
+    elif mode == 'decode' and not args:
+        line, encoded, _ = sys.stdin.read().split('\t', 2)
+        path, line = location(line, encoded)
+        sys.stdout.buffer.write(path + b'\0' + line.encode() + b'\0')
+    elif mode == 'preview' and len(args) == 2:
+        path, line = location(*args)
+        return subprocess.run(['bat', '--style=numbers', '--color=always',
+                               '--highlight-line', line, '--line-range', ':300', '--', path]).returncode
+    else:
+        raise ValueError('Invalid search helper arguments')
+    return 0
+
+
+if __name__ == '__main__':
+    try:
+        sys.exit(main())
+    except (OSError, ValueError, KeyError) as error:
+        print(f'Search results: {error}', file=sys.stderr)
+        sys.exit(1)
