@@ -79,6 +79,14 @@ function backup_if_exists
     end
 end
 
+function restore_system_files
+    set -l helper (path dirname (status filename))/restore-system-files.py
+    if not test -f "$helper"
+        set helper "$HOME/.local/share/dotfiles/restore-system-files.py"
+    end
+    sudo python3 "$helper" $argv
+end
+
 section "System restore"
 
 echo "This restores configuration from:"
@@ -207,19 +215,17 @@ section SDDM
 
 if ask_yes_no "Restore SDDM configuration and Silent theme?"
     if test -f "$BACKUP/sddm/sddm.conf"
-        sudo cp -a "$BACKUP/sddm/sddm.conf" /etc/sddm.conf
+        restore_system_files "$BACKUP/sddm/sddm.conf" /etc/sddm.conf
         or fail "Failed to restore /etc/sddm.conf"
     end
 
     if test -d "$BACKUP/sddm/sddm.conf.d"
-        sudo mkdir -p /etc/sddm.conf.d
-        sudo cp -a "$BACKUP/sddm/sddm.conf.d/." /etc/sddm.conf.d/
+        restore_system_files "$BACKUP/sddm/sddm.conf.d" /etc/sddm.conf.d
         or fail "Failed to restore SDDM drop-in configuration."
     end
 
     if test -d "$BACKUP/sddm/silent"
-        sudo mkdir -p /usr/share/sddm/themes/silent
-        sudo cp -a "$BACKUP/sddm/silent/." /usr/share/sddm/themes/silent/
+        restore_system_files "$BACKUP/sddm/silent" /usr/share/sddm/themes/silent
         or fail "Failed to restore Silent SDDM theme."
     end
 
@@ -230,20 +236,17 @@ end
 section Plymouth
 
 if ask_yes_no "Restore Plymouth configuration and theme?"
-    sudo mkdir -p /etc/plymouth
-    sudo mkdir -p /usr/share/plymouth/themes/arch-slider-and-glow
-
     if test -f "$BACKUP/plymouth/plymouthd.conf"
-        sudo cp -a \
+        restore_system_files \
             "$BACKUP/plymouth/plymouthd.conf" \
             /etc/plymouth/plymouthd.conf
         or fail "Failed to restore Plymouth configuration."
     end
 
     if test -d "$BACKUP/plymouth/arch-slider-and-glow"
-        sudo cp -a \
-            "$BACKUP/plymouth/arch-slider-and-glow/." \
-            /usr/share/plymouth/themes/arch-slider-and-glow/
+        restore_system_files \
+            "$BACKUP/plymouth/arch-slider-and-glow" \
+            /usr/share/plymouth/themes/arch-slider-and-glow
         or fail "Failed to restore Plymouth theme."
     end
 
@@ -260,16 +263,14 @@ echo
 
 if ask_yes_no "Restore GRUB source configuration and theme?"
     if test -f "$BACKUP/grub/grub"
-        sudo mkdir -p /etc/default
-        sudo cp -a "$BACKUP/grub/grub" /etc/default/grub
+        restore_system_files "$BACKUP/grub/grub" /etc/default/grub
         or fail "Failed to restore /etc/default/grub"
     end
 
     if test -d "$BACKUP/grub/cachyos"
-        sudo mkdir -p /usr/share/grub/themes/cachyos
-        sudo cp -a \
-            "$BACKUP/grub/cachyos/." \
-            /usr/share/grub/themes/cachyos/
+        restore_system_files \
+            "$BACKUP/grub/cachyos" \
+            /usr/share/grub/themes/cachyos
         or fail "Failed to restore GRUB theme."
     end
 
@@ -285,8 +286,7 @@ if ask_yes_no "Restore UFW configuration?"
         echo "Install it before restoring the saved firewall rules."
     else
         if test -d "$BACKUP/firewall/ufw"
-            sudo mkdir -p /etc/ufw
-            sudo cp -a "$BACKUP/firewall/ufw/." /etc/ufw/
+            restore_system_files "$BACKUP/firewall/ufw" /etc/ufw
             or fail "Failed to restore UFW configuration."
 
             echo
@@ -317,19 +317,17 @@ echo
 
 if ask_yes_no "Restore saved pacman.conf and mirrorlists?"
     if test -f "$BACKUP/pacman/pacman.conf"
-        sudo cp -a "$BACKUP/pacman/pacman.conf" /etc/pacman.conf
+        restore_system_files "$BACKUP/pacman/pacman.conf" /etc/pacman.conf
         or fail "Failed to restore pacman.conf"
     end
 
     if test -f "$BACKUP/pacman/mirrorlist"
-        sudo mkdir -p /etc/pacman.d
-        sudo cp -a "$BACKUP/pacman/mirrorlist" /etc/pacman.d/mirrorlist
+        restore_system_files "$BACKUP/pacman/mirrorlist" /etc/pacman.d/mirrorlist
         or fail "Failed to restore mirrorlist"
     end
 
     if test -f "$BACKUP/pacman/chaotic-mirrorlist"
-        sudo mkdir -p /etc/pacman.d
-        sudo cp -a \
+        restore_system_files \
             "$BACKUP/pacman/chaotic-mirrorlist" \
             /etc/pacman.d/chaotic-mirrorlist
         or fail "Failed to restore chaotic-mirrorlist"
