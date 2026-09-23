@@ -89,6 +89,13 @@ Preview the available sources with `restore-system --dry-run`. Then run:
 
 The restore script is interactive.
 
+System files are installed as root-owned files, retaining executable bits and
+restrictive permissions while removing group/other write access, set-ID bits,
+and inherited ACLs. Existing destination files are repaired too. System restores
+reject symlinks, special files, and existing files with multiple hard links;
+review and resolve those entries before retrying a failed restore. User Plasma
+restores continue to use the user's ownership.
+
 It can restore:
 
 - Plasma configuration
