@@ -1,7 +1,7 @@
 {
   "version": 1,
   "repository": "Commanderx-code/Myfish",
-  "revision": "24bd2d42c197eb34812327c7b9760383d5fa0390",
+  "revision": "6ddefb79f739b3d22dec80dfa34eba7ac669945b",
   "overrides": {
     "extract.fish": "Workstation archive commands, including unrar.",
     "fdi.fish": "Direct editor shortcut rather than a command-line widget.",
