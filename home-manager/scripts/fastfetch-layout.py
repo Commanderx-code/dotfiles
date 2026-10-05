@@ -6,7 +6,6 @@ import copy
 import json
 import os
 from pathlib import Path
-import re
 
 
 def layout(config, columns, rows):
@@ -29,30 +28,9 @@ def layout(config, columns, rows):
     # Explicitly finish that row before the first heading. Image spacing is
     # output, not a nonexistent logo.padding.bottom setting.
     modules = [{'type': 'custom', 'format': '\r'}] if logo.get('position') == 'top' and logo['type'] != 'none' else []
-    section = ''
-    for original in config['modules']:
-        if isinstance(original, str):
-            continue
-        module = copy.deepcopy(original)
-        kind = module['type']
-        if kind == 'custom':
-            value = module.get('format', '')
-            heading = re.fullmatch(r'\{#(\d+)\}╭─ (.*?) ─+╮\{#0\}', value)
-            if heading:
-                color, title = heading.groups()
-                section = title
-                if modules:
-                    modules.append({'type': 'custom', 'format': ' '})
-                module['format'] = '{#' + color + '}' + title + ' ──{#0}'
-                modules.append(module)
-            elif 'colors' in section and '╰' not in value:
-                module['format'] = re.sub(r'\x1b\[s\x1b\[\d+C│\x1b\[u│ ', '', value)
-                modules.append(module)
-            continue
-        if 'key' in module:
-            key = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', module['key'])
-            module['key'] = re.sub(r'\{#[^}]*\}', '', key).lstrip('│ ')
-        modules.append(module)
+    # The tree-style keys carry no cursor positions or borders, so only the
+    # bare "break" spacers are dropped; every module is kept as written.
+    modules += [copy.deepcopy(module) for module in config['modules'] if not isinstance(module, str)]
     config['modules'] = modules
     return config
 
