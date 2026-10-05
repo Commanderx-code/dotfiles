@@ -13,7 +13,7 @@ truth, alongside terminal settings and backup/recovery helpers.
 | Area | What lives here |
 | :--- | :--- |
 | **Shell** | Fish functions and aliases, fzf navigation and previews, zoxide, and a Starship prompt. |
-| **System overview** | Fastfetch with boxed sections, an Arch logo, and alternative artwork. |
+| **System overview** | Fastfetch with tree-style sections, an Arch logo, a rainbow ghost row, and alternative artwork. |
 | **Editor** | Neovim / LazyVim with Snacks for the dashboard, explorer and pickers, plus language and formatting tools. |
 | **Terminals** | Konsole profiles and colors, a Ghostty appearance preset, and optional Zellij workspaces. |
 | **Packages and fonts** | Home Manager modules for personal tools and Nerd Fonts, pinned through the Nix flake lockfile. |
@@ -57,6 +57,7 @@ For individual application configurations and Linux setup menus, see
 | `pkg-owner <command>` | Inspect whether a command comes from Pacman, Nix or another location. |
 | `pkg-install <package>` | Help choose between Home Manager and system package management. |
 | `zellij` | Start an optional terminal session. |
+| `zapfast` | Native WhatsApp client, built from its upstream flake and run through nixGL. |
 | `netwatch` / `tfm` / `cassette` | Network dashboard, visual file manager and Spotify player; see the [setup notes](configs/terminal-tools/README.md). |
 | `zwork` / `zdev` | Pick a project session or open an editor, shell and Git workspace. |
 | `backup-personal` | Back up personal files to the configured Restic repository. |
