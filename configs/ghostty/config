@@ -17,8 +17,8 @@ window-padding-y = 12
 window-padding-balance = true
 
 # Default opening dimensions, in terminal cells.
-window-width = 150
-window-height = 36
+window-width = 125
+window-height = 35
 
 # Integrated tabs and controls, including when maximized.
 window-decoration = client

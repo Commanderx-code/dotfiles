@@ -2,9 +2,10 @@
 
 The [starting preset](config) uses Catppuccin Mocha, JetBrainsMono Nerd
 Font at 13 pt, 94% opacity, balanced padding, and compact Linux tabs.
-The configured opening dimensions are 150 columns by 36 rows
-(`window-width = 150`, `window-height = 36`). Check the usable grid with
-`stty size`; integrated tabs and display scaling can affect it in this GTK build.
+New windows open with a usable grid of 125 columns by 33 rows
+(`window-width = 125`, `window-height = 35`; the integrated tab bar takes two
+of the configured rows). Check the usable grid with `stty size`; display
+scaling can affect it in this GTK build.
 Ghostty supplies an integrated tab/title bar with client-side window controls.
 The tab bar is always enabled, including with one tab, and is not hidden when
 maximized. This also avoids relying on KDE's titlebar, which this desktop hides
