@@ -88,19 +88,18 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(config['modules'][0], {'type': 'custom', 'format': '\r'})
         self.assertNotIn('bottom', config['logo']['padding'])
 
-    def test_section_dividers_do_not_fill_the_old_window_width(self):
+    def test_every_window_keeps_the_four_tree_sections(self):
         for columns in (40, 100, 190):
             config = renderer.layout(BASE, columns, 40)
-            headings = [m['format'] for m in config['modules'] if '──' in m.get('format', '')]
-            self.assertEqual(len(headings), 5)
-            self.assertTrue(all('───' not in heading for heading in headings))
+            headings = [m['key'] for m in config['modules'] if 'key' in m and not m['key'].startswith('│')]
+            self.assertEqual(len(headings), 4)
+            self.assertTrue(all('─' not in heading for heading in headings))
 
     def test_every_window_keeps_all_fields_and_palette(self):
-        originals = [module for module in BASE['modules']
-                     if isinstance(module, dict) and module['type'] != 'custom']
+        originals = [module for module in BASE['modules'] if isinstance(module, dict) and 'key' in module]
         for columns, rows in [(30, 12), (80, 24), (100, 27), (100, 40), (190, 40), (200, 60)]:
             config = renderer.layout(BASE, columns, rows)
-            fields = [module for module in config['modules'] if module['type'] != 'custom']
+            fields = [module for module in config['modules'] if 'key' in module]
             self.assertEqual([m['type'] for m in fields], [m['type'] for m in originals])
             self.assertEqual([m.get('format') for m in fields], [m.get('format') for m in originals])
             self.assertTrue(any('󰮯' in module.get('format', '') for module in config['modules']))
@@ -130,10 +129,10 @@ class LayoutTests(unittest.TestCase):
                                     input=json.dumps(config), capture_output=True, text=True, timeout=15)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertFalse(result.stderr, result.stderr)
-            self.assertIn('OS', result.stdout)
+            self.assertIn('DISTRO', result.stdout)
             self.assertIn('Memory', result.stdout)
             self.assertIn('Uptime', result.stdout)
-            self.assertIn('colors', result.stdout)
+            self.assertIn('󰮯', result.stdout)
 
     @unittest.skipUnless(shutil.which('fish'), 'Fish required')
     def test_resize_never_reprints_welcome(self):
