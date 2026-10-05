@@ -2,8 +2,8 @@
     "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
     "logo": {
         "type": "kitty",
-        "source": "~/.config/fastfetch/png/arch.png",
-        "width": 24
+        "source": "~/.config/fastfetch/png/garuda-bird.png",
+        "width": 27
     },
     "display": {
         "separator": " ",
