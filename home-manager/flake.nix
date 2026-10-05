@@ -8,10 +8,26 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # ZapFast (native WhatsApp client) is not in nixpkgs; build its own flake.
+    zapfast = {
+      url = "github:crmne/zapfast";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # Lets Nix-built GUI apps find graphics drivers on a non-NixOS host.
+    nixgl = {
+      url = "github:nix-community/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    { nixpkgs, home-manager, ... }:
+    {
+      nixpkgs,
+      home-manager,
+      zapfast,
+      nixgl,
+      ...
+    }:
     let
       machine = builtins.fromJSON (builtins.readFile ./machine.json);
       system = machine.system;
@@ -36,7 +52,11 @@
       };
       homeConfigurations.${machine.username} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        extraSpecialArgs = { inherit machine; };
+        extraSpecialArgs = {
+          inherit machine;
+          inherit nixgl;
+          zapfast = zapfast.packages.${system}.default;
+        };
 
         # Specify your home configuration modules here, for example,
         # the path to your home.nix.
