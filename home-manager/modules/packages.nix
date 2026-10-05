@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   home.packages = with pkgs; [
@@ -38,4 +38,12 @@
     # System maintenance helpers
     topgrade
   ];
+
+  # KDE misses new Nix desktop entries because store files share one fixed
+  # timestamp, so rebuild its application cache after every switch.
+  home.activation.refreshKdeAppCache = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    if [ -x /usr/bin/kbuildsycoca6 ]; then
+      run /usr/bin/kbuildsycoca6 --noincremental
+    fi
+  '';
 }
