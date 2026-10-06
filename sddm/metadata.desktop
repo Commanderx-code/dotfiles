@@ -13,7 +13,8 @@ Screenshot=docs/previews/default.png
 TranslationsDirectory=translations
 QtVersion=6
 
-ConfigFile=configs/revan.conf
+ConfigFile=configs/sw.conf
+# ConfigFile=configs/revan.conf
 # ConfigFile=configs/default-left.conf
 # ConfigFile=configs/default-right.conf
 # ConfigFile=configs/rei.conf
