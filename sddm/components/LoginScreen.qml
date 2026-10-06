@@ -286,6 +286,8 @@ Item {
                 font.weight: Config.usernameFontWeight
                 font.pixelSize: Config.usernameFontSize * Config.automaticScale(Screen.devicePixelRatio)
                 color: Config.usernameColor
+                // The real name is the account's GECOS field, which its owner can set: show it literally, never as markup.
+                textFormat: Text.PlainText
                 text: loginScreen.userRealName || loginScreen.userName || ""
                 visible: loginScreen.foundUsers
 

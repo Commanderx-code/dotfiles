@@ -249,5 +249,40 @@ class RestoreSecurity(unittest.TestCase):
         self.assertIn('cp -a "$BACKUP/plasma/config/."', source)
 
 
+class ZedTaskSecurity(unittest.TestCase):
+    def test_current_file_tasks_keep_the_buffer_path_out_of_the_command_line(self):
+        fish = shutil.which('fish')
+        tasks = json.loads((ROOT / 'configs/zed/tasks.json').read_text())
+        current_file = [task for task in tasks if '$ZED_FILE' in json.dumps(task)]
+        self.assertEqual(len(current_file), 4)
+        for task in tasks:
+            # Zed pastes its variables into these fields as text before the shell parses them.
+            for text in [task['command'], *task.get('args', [])]:
+                self.assertNotIn('ZED_', text, task['label'])
+        for task in current_file:
+            tool, *arguments = task['command'].split()
+            for name in ('ordinary file.sh', '$(touch marker).sh', '";touch marker;".sh',
+                         "';touch marker;'.sh", '(touch marker) {a,b} *.sh', 'back\\slash $HOME ~.sh'):
+                with self.subTest(task=task['label'], name=name), tempfile.TemporaryDirectory() as temporary:
+                    directory = Path(temporary)
+                    path = str(directory / name)
+                    bin_dir = directory / 'bin'
+                    bin_dir.mkdir()
+                    stub = bin_dir / tool
+                    stub.write_text("#!/usr/bin/env python3\nimport json,os,sys\n"
+                                    "open(os.environ['TEST_LOG'],'w').write(json.dumps(sys.argv[1:]))\n")
+                    stub.chmod(0o700)
+                    log = directory / 'args.json'
+                    # Zed expands its variables in env values and hands them to the process as data.
+                    env = {key: value.replace('$ZED_FILE', path) for key, value in task['env'].items()}
+                    run = subprocess.run([fish, '--no-config', '-c', task['command']], cwd=directory,
+                                         text=True, capture_output=True,
+                                         env=dict(os.environ, HOME=str(directory), TEST_LOG=str(log), **env,
+                                                  PATH=str(bin_dir) + ':' + os.environ['PATH']))
+                    self.assertEqual(run.returncode, 0, run.stderr)
+                    self.assertFalse((directory / 'marker').exists())
+                    self.assertEqual(json.loads(log.read_text()), arguments[:-1] + [path])
+
+
 if __name__ == '__main__':
     unittest.main()
