@@ -82,7 +82,8 @@
   },
   {
     "label": "Python: run current file",
-    "command": "python \"$ZED_FILE\"",
+    "command": "python \"$TARGET_FILE\"",
+    "env": { "TARGET_FILE": "$ZED_FILE" },
     "cwd": "$ZED_WORKTREE_ROOT",
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
@@ -100,7 +101,8 @@
   },
   {
     "label": "Python: lint current file",
-    "command": "ruff check \"$ZED_FILE\"",
+    "command": "ruff check \"$TARGET_FILE\"",
+    "env": { "TARGET_FILE": "$ZED_FILE" },
     "cwd": "$ZED_WORKTREE_ROOT",
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
@@ -109,7 +111,8 @@
   },
   {
     "label": "Fish: check current file",
-    "command": "fish --no-execute \"$ZED_FILE\"",
+    "command": "fish --no-execute \"$TARGET_FILE\"",
+    "env": { "TARGET_FILE": "$ZED_FILE" },
     "cwd": "$ZED_WORKTREE_ROOT",
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
@@ -118,7 +121,8 @@
   },
   {
     "label": "Shell: ShellCheck current file",
-    "command": "shellcheck \"$ZED_FILE\"",
+    "command": "shellcheck \"$TARGET_FILE\"",
+    "env": { "TARGET_FILE": "$ZED_FILE" },
     "cwd": "$ZED_WORKTREE_ROOT",
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
