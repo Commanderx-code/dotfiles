@@ -1,7 +1,8 @@
 # Ghostty
 
-The [starting preset](config) uses Catppuccin Mocha, JetBrainsMono Nerd
-Font at 13 pt, 94% opacity, balanced padding, and compact Linux tabs.
+The [starting preset](config) uses the workstation [palette](../themes/README.md)
+(`theme = commander`), JetBrainsMono Nerd Font at 13 pt, 94% opacity, balanced
+padding, and compact Linux tabs.
 New windows open with a usable grid of 125 columns by 33 rows
 (`window-width = 125`, `window-height = 35`; the integrated tab bar takes two
 of the configured rows). Check the usable grid with `stty size`; display
@@ -14,7 +15,7 @@ It was validated with Ghostty 1.3.1 on Garuda KDE/Wayland.
 
 The live `~/.config/ghostty/config` is a **writable copy**, so SpookiUI
 can edit it. Home Manager owns [spotatui.conf](spotatui.conf) and
-[topbar.css](topbar.css), not the main config.
+the generated `themes/commander` and `topbar.css`, not the main config.
 Changes in SpookiUI do not update this repository automatically. To keep a setup
 you like, copy the live config back here and review the diff before committing.
 Shader files created by SpookiUI also need to be saved separately if used.
@@ -38,8 +39,8 @@ Without that effect, the window still has subtle transparency.
 Set `background-opacity = 1` for an opaque background.
 
 The live config loads `gtk-custom-css = ~/.config/ghostty/topbar.css` to give
-only the tab/title bar an opaque TokyoNight Storm background. The terminal's
-90% opacity and blur are unchanged. This stylesheet is loaded by Ghostty only;
+only the tab/title bar an opaque background in the palette's darkest shade. The
+terminal's 94% opacity and blur are unchanged. This stylesheet is loaded by Ghostty only;
 it does not change KDE or other GTK applications. Remove that config line to
 restore the transparent top bar.
 
@@ -93,7 +94,7 @@ Zellij is installed by `home-manager/modules/zellij.nix` (imported by the termin
 module) and runs on demand,
 not automatically when a terminal opens. Its generated configuration lives at
 `~/.config/zellij/config.kdl`; change its settings in the Nix module, then run
-`hms` to apply them. It uses Fish and the Tokyo Night Storm theme.
+`hms` to apply them. It uses Fish and the workstation palette.
 
 ```sh
 zellij                 # start a session

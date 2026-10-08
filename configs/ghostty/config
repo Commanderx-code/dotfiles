@@ -1,9 +1,10 @@
-# Commander / Catppuccin Mocha
+# Commander
 # Starting preset; the live ~/.config/ghostty/config is a writable copy.
 # Reload: Ctrl+Shift+,   Appearance editor: spookiui
 
-# Purple/blue accents, with readable text over subtle transparency.
-theme = Catppuccin Mocha
+# The palette chosen with `rice`: Home Manager writes ~/.config/ghostty/themes/commander.
+theme = commander
+gtk-custom-css = ~/.config/ghostty/topbar.css
 background-opacity = 0.94
 background-blur = true
 window-theme = dark

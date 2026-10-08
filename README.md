@@ -12,11 +12,12 @@ truth, alongside terminal settings and backup/recovery helpers.
 
 | Area | What lives here |
 | :--- | :--- |
+| **Theme** | One palette (Eldritch by default) for terminals, prompt, editors, CLI tools, Plasma and the login screen; `rice` switches it. See [palettes](configs/themes/README.md). |
 | **Shell** | Fish functions and aliases, fzf navigation and previews, zoxide, and a Starship prompt. |
 | **System overview** | Fastfetch with tree-style sections, a Garuda eagle logo, a rainbow ghost row, and alternative artwork. |
 | **Editor** | Neovim / LazyVim with Snacks for the dashboard, explorer and pickers, plus language and formatting tools. |
 | **Terminals** | Konsole profiles and colors, a Ghostty appearance preset, and optional Zellij workspaces. |
-| **Packages and fonts** | Home Manager modules for personal tools and Nerd Fonts, pinned through the Nix flake lockfile. |
+| **Packages and fonts** | Home Manager modules for personal tools and JetBrainsMono Nerd Font, pinned through the Nix flake lockfile. |
 | **Recovery** | Restic backups, encrypted secrets archives, system snapshots, application inventories and restore helpers. |
 
 Home Manager owns user packages and managed configuration. Pacman owns the
@@ -54,6 +55,7 @@ For individual application configurations and Linux setup menus, see
 | Command | Purpose |
 | :--- | :--- |
 | `hm-rebuild` | Build and apply the Home Manager configuration. |
+| `rice` / `rice <palette>` | List the palettes, or switch the whole workstation to one. |
 | `pkg-owner <command>` | Inspect whether a command comes from Pacman, Nix or another location. |
 | `pkg-install <package>` | Help choose between Home Manager and system package management. |
 | `zellij` | Start an optional terminal session. |
@@ -96,7 +98,7 @@ credential recovery, staged restores and verification.
 ## Repository layout
 
 ```text
-configs/          Fish, Fastfetch, Starship, Neovim and terminal configuration
+configs/          Fish, Fastfetch, Starship, Neovim, terminal configuration and palettes
 home-manager/     Flake, machine settings, package modules and operational scripts
 sddm/             SilentSDDM customization assets and presets
 scripts/check     Repository validation entry point
