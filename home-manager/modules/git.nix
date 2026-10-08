@@ -7,7 +7,7 @@
     settings = {
       user = {
         name = "Commanderx-code";
-        email = "dirtyprodigy@protonmail.com";
+        email = "65996567+Commanderx-code@users.noreply.github.com";
       };
 
       init.defaultBranch = "main";
