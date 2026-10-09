@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  machine,
   pkgs,
   ...
 }:
@@ -290,7 +291,11 @@ in
     # An "nvim" entry in rice.json overrides the palette's choice and survives palette switches.
     xdg.configFile."nvim/lua/config/rice.lua".text = ''
       -- Generated from configs/themes/${theme.id}.json by modules/theme.nix.
-      return { colorscheme = "${selection.nvim or theme.apps.nvim}" }
+      return {
+        colorscheme = "${selection.nvim or theme.apps.nvim}",
+        -- The <leader>th picker saves its choice here, and startup reads it back.
+        selection = "${machine.dotfilesDirectory}/home-manager/rice.json",
+      }
     '';
 
     xdg.configFile."eza/theme.yml".source = yaml.generate "eza-theme.yml" ezaTheme;
