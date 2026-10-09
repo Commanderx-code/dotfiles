@@ -42,7 +42,7 @@ function __rice_swatches --argument-names file
     printf '  '
     for hex in (jq -r '.terminal.ansi[]' $file)
         set_color -b $hex
-        printf '   '
+        printf '  '
     end
     set_color normal
     printf '  terminal\n'
@@ -106,13 +106,16 @@ if test "$argv[1]" = pick; and test (count $argv) -eq 1
         exit 1
     end
     set -l self (path resolve (status filename))
+    # Open with the cursor on the palette in use.
+    set -l position (contains -i -- $current (__rice_names $themes_dir)); or set position 1
     set -l choice (
         for name in (__rice_names $themes_dir)
             set -l marker "  "
             test "$name" = "$current"; and set marker "* "
             printf '%s\t%s%s\n' $name $marker (jq -r .name $themes_dir/$name.json)
         end | fzf --ansi --no-multi --delimiter '\t' --with-nth 2 \
-            --prompt 'palette> ' --header 'Enter switches the workstation, Esc cancels (* is the current one)' \
+            --prompt 'palette> ' --header 'Enter switch  Esc cancel  * current' \
+            --bind "load:pos($position)" \
             --preview "fish $self show {1}" --preview-window 'right,55%,nowrap'
     )
     if test -z "$choice"
