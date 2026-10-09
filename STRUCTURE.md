@@ -11,7 +11,7 @@ it as `~/.config/dotfiles/machine.json`; operational scripts read the same JSON 
 
 | Source | Deployment or use |
 | --- | --- |
-| `configs/fish/` | Home Manager installs startup snippets and functions; `modules/fish.nix` owns program integration and its declared Git aliases. The nine startup snippets (plus the generated `rice.fish`) and autoloaded commands are documented in [Fish configuration](configs/fish/README.md). Eza aliases live in `conf.d/eza.fish`; `update` only checks for updates using `checkupdates`. |
+| `configs/fish/` | Home Manager installs startup snippets and functions; `modules/fish.nix` owns program integration and its declared Git aliases. The nine startup snippets (plus the generated `rice.fish` and `00-machine.fish`) and autoloaded commands are documented in [Fish configuration](configs/fish/README.md). Eza aliases live in `conf.d/eza.fish`; `update` only checks for updates using `checkupdates`. |
 | `configs/nvim/` | Home Manager deploys the entire Neovim configuration, including `.neoconf.json`. |
 | `configs/themes/`, `home-manager/rice.json` | The palettes and the one in use. `modules/theme.nix` generates the Ghostty theme and tab bar CSS, Konsole's Commander scheme, Neovim's colorscheme choice, fzf/bat colours (`fish/conf.d/rice.fish`), delta, and the eza, lazygit and btop themes; Starship, Zellij and Plasma read the same palette. `rice` switches it; see [palettes](configs/themes/README.md). |
 | `home-manager/modules/plasma.nix` | plasma-manager declares only the palette's colour scheme and the fixed-width font; other Plasma settings stay with System Settings (`overrideConfig` is off). |

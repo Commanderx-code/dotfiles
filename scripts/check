@@ -26,7 +26,7 @@ def main():
     fish_files = sorted((ROOT / 'configs/fish').rglob('*.fish')) + sorted((ROOT / 'home-manager/scripts').rglob('*.fish'))
     for file in fish_files:
         run('fish', '--no-config', '--no-execute', str(file))
-    shell_files = sorted((ROOT / 'home-manager/scripts').glob('*.sh')) + [ROOT / 'configs/scripts/fzf-preview']
+    shell_files = sorted((ROOT / 'home-manager/scripts').glob('*.sh')) + [ROOT / 'configs/scripts/fzf-preview', ROOT / 'scripts/setup']
     for file in shell_files:
         run('bash', '-n', str(file))
     run('actionlint', *(str(p) for p in sorted((ROOT / '.github/workflows').glob('*.yml'))))

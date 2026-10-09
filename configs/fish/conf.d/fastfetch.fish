@@ -18,8 +18,11 @@ set -e __commander_welcome_active
 set -e __commander_welcome_busy
 set -e __commander_welcome_size
 
+# The name comes from machine.json through the generated 00-machine.fish.
+set -l name $USER
+set -q COMMANDER_NAME; and set name $COMMANDER_NAME
 set_color normal
-printf 'Hello, Commander '
+printf 'Hello, %s ' $name
 set_color yellow
 printf '\n'
 set_color normal

@@ -1,6 +1,9 @@
 {
   "username": "commander",
   "homeDirectory": "/home/commander",
+  "displayName": "Commander",
+  "gitName": "Commanderx-code",
+  "gitEmail": "65996567+Commanderx-code@users.noreply.github.com",
   "system": "x86_64-linux",
   "dotfilesDirectory": "/home/commander/github/projects/dotfiles",
   "backupMount": "/run/media/commander/Linux-Backup",
