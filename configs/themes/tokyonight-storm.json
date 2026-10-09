@@ -1,0 +1,58 @@
+{
+  "name": "Tokyo Night Storm",
+  "colors": {
+    "base": "#24283b",
+    "mantle": "#1f2335",
+    "surface": "#292e42",
+    "overlay": "#414868",
+    "muted": "#565f89",
+    "subtext": "#a9b1d6",
+    "text": "#c0caf5",
+    "red": "#f7768e",
+    "orange": "#ff9e64",
+    "yellow": "#e0af68",
+    "green": "#9ece6a",
+    "cyan": "#7dcfff",
+    "blue": "#7aa2f7",
+    "purple": "#bb9af7",
+    "pink": "#ff007c"
+  },
+  "terminal": {
+    "ansi": [
+      "#1d202f",
+      "#f7768e",
+      "#9ece6a",
+      "#e0af68",
+      "#7aa2f7",
+      "#bb9af7",
+      "#7dcfff",
+      "#a9b1d6",
+      "#4e5575",
+      "#f7768e",
+      "#9ece6a",
+      "#e0af68",
+      "#7aa2f7",
+      "#bb9af7",
+      "#7dcfff",
+      "#c0caf5"
+    ],
+    "cursor": "#c0caf5",
+    "cursorText": "#1d202f",
+    "selection": "#364a82",
+    "selectionText": "#c0caf5"
+  },
+  "diff": {
+    "added": "#3f4d45",
+    "removed": "#52394d",
+    "addedEmphasis": "#5b7350",
+    "removedEmphasis": "#834b60"
+  },
+  "apps": {
+    "nvim": "tokyonight-storm",
+    "bat": "ansi",
+    "zed": {
+      "theme": "Tokyo Night Storm",
+      "extension": "tokyo-night"
+    }
+  }
+}

@@ -11,16 +11,19 @@ it as `~/.config/dotfiles/machine.json`; operational scripts read the same JSON 
 
 | Source | Deployment or use |
 | --- | --- |
-| `configs/fish/` | Home Manager installs startup snippets and functions; `modules/fish.nix` owns program integration and its declared Git aliases. The nine startup snippets and autoloaded commands are documented in [Fish configuration](configs/fish/README.md). Eza aliases live in `conf.d/eza.fish`; `update` only checks for updates using `checkupdates`. |
+| `configs/fish/` | Home Manager installs startup snippets and functions; `modules/fish.nix` owns program integration and its declared Git aliases. The nine startup snippets (plus the generated `rice.fish`) and autoloaded commands are documented in [Fish configuration](configs/fish/README.md). Eza aliases live in `conf.d/eza.fish`; `update` only checks for updates using `checkupdates`. |
 | `configs/nvim/` | Home Manager deploys the entire Neovim configuration, including `.neoconf.json`. |
-| `configs/starship/`, `configs/fastfetch/` | Home Manager deploys prompt and Fastfetch configuration/assets. Fish uses the tree-style Fastfetch layout with its side logo; the welcome prints once, with no resize redraw or scrollback clearing. |
-| `configs/konsole/` | Home Manager installs Konsole settings, the Garuda profile, and Sweet colors. |
-| `home-manager/modules/zellij.nix` | Imported by the terminal module; owns Zellij, pinned zjstatus/Harpoon/Zesh, Tokyo Night Storm layouts and locked mode without autostart. Fish `zwork`/`zdev` functions provide project and development workspaces. |
+| `configs/themes/`, `home-manager/rice.json` | The palettes and the one in use. `modules/theme.nix` generates the Ghostty theme and tab bar CSS, Konsole's Commander scheme, Neovim's colorscheme choice, fzf/bat colours (`fish/conf.d/rice.fish`), delta, and the eza, lazygit and btop themes; Starship, Zellij and Plasma read the same palette. `rice` switches it; see [palettes](configs/themes/README.md). |
+| `home-manager/modules/plasma.nix` | plasma-manager declares only the palette's colour scheme and the fixed-width font; other Plasma settings stay with System Settings (`overrideConfig` is off). |
+| `configs/starship/` | The prompt layout, imported from Myfish (see [shared updates](FISH-SYNC.md)); `modules/starship.nix` swaps in the palette's colours. |
+| `configs/fastfetch/` | Home Manager deploys prompt and Fastfetch configuration/assets. Fish uses the tree-style Fastfetch layout with its side logo; the welcome prints once, with no resize redraw or scrollback clearing. |
+| `configs/konsole/` | Home Manager installs Konsole settings and the Garuda profile, which uses the palette's generated Commander scheme; Sweet stays installed as an alternative. |
+| `home-manager/modules/zellij.nix` | Imported by the terminal module; owns Zellij, pinned zjstatus/Harpoon/Zesh, layouts in the palette's colours and locked mode without autostart. Fish `zwork`/`zdev` functions provide project and development workspaces. |
 | `configs/ghostty/spotatui.conf` | Home Manager installs an optional Ghostty profile, not a replacement for the main Ghostty configuration. |
-| `configs/ghostty/config` | Starting appearance preset, copied to the writable live Ghostty config for SpookiUI editing; see [Ghostty notes](configs/ghostty/README.md). |
+| `configs/ghostty/config` | Starting appearance preset (`theme = commander`), copied to the writable live Ghostty config for SpookiUI editing; see [Ghostty notes](configs/ghostty/README.md). |
 | `configs/topgrade/topgrade.toml` | Template rendered by Home Manager using the shared repository path/profile. Do not copy it directly. |
 | `configs/scripts/fzf-preview` | Installed as `~/.local/bin/fzf-preview`. Ghostty/Kitty use `kitten icat` with Unicode placeholders for image previews; Chafa supplies Sixel previews in other terminals and a character-art fallback if `kitten` is absent. |
-| `home-manager/modules/fonts.nix` | Installs Nerd Font packages from pinned Nixpkgs; no font binaries are bundled. |
+| `home-manager/modules/fonts.nix` | Installs JetBrainsMono Nerd Font, the one font for Ghostty, Konsole, Zed and Plasma's fixed-width text, from pinned Nixpkgs; no font binaries are bundled. |
 | `home-manager/modules/zapfast.nix` | Installs the ZapFast WhatsApp client from its upstream flake, wrapped with nixGL so it finds the host graphics drivers. `modules/packages.nix` refreshes the KDE application cache after each switch so new launcher entries appear. |
 | `home-manager/scripts/` | Installed backup, restore, and package helpers; `lib/settings.fish` supplies shared settings. |
 | `home-manager/modules/backup-automation.nix` | Owns user backup services, mount watcher, and maintenance timers. |

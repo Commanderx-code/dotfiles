@@ -1,0 +1,58 @@
+{
+  "name": "Gruvbox Dark",
+  "colors": {
+    "base": "#282828",
+    "mantle": "#1d2021",
+    "surface": "#3c3836",
+    "overlay": "#504945",
+    "muted": "#928374",
+    "subtext": "#bdae93",
+    "text": "#ebdbb2",
+    "red": "#fb4934",
+    "orange": "#fe8019",
+    "yellow": "#fabd2f",
+    "green": "#b8bb26",
+    "cyan": "#8ec07c",
+    "blue": "#83a598",
+    "purple": "#d3869b",
+    "pink": "#d3869b"
+  },
+  "terminal": {
+    "ansi": [
+      "#282828",
+      "#cc241d",
+      "#98971a",
+      "#d79921",
+      "#458588",
+      "#b16286",
+      "#689d6a",
+      "#a89984",
+      "#928374",
+      "#fb4934",
+      "#b8bb26",
+      "#fabd2f",
+      "#83a598",
+      "#d3869b",
+      "#8ec07c",
+      "#ebdbb2"
+    ],
+    "cursor": "#ebdbb2",
+    "cursorText": "#282828",
+    "selection": "#665c54",
+    "selectionText": "#ebdbb2"
+  },
+  "diff": {
+    "added": "#484828",
+    "removed": "#562f2b",
+    "addedEmphasis": "#696a27",
+    "removedEmphasis": "#87372d"
+  },
+  "apps": {
+    "nvim": "gruvbox-baby",
+    "bat": "gruvbox-dark",
+    "zed": {
+      "theme": "Gruvbox Dark",
+      "extension": null
+    }
+  }
+}

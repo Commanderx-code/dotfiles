@@ -1,6 +1,6 @@
 # Zed setup
 
-Zed 1.20.2 is configured for the local Rust, JavaScript/TypeScript, Python, Nix, and shell projects. The system package manager owns Zed; Home Manager owns the supporting tools. Your existing Catppuccin Mocha / One Light theme and font sizes are preserved.
+Zed 1.20.2 is configured for the local Rust, JavaScript/TypeScript, Python, Nix, and shell projects. The system package manager owns Zed; Home Manager owns the supporting tools. The dark theme follows the workstation palette (`rice` sets it), with One Light for light mode; the editor and terminal use JetBrainsMono Nerd Font Mono.
 
 ## Start working
 
