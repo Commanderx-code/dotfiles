@@ -49,7 +49,8 @@ Manager replaces are kept with a `.before-dotfiles` suffix.
 It also installs the Rust, Go, Python and Node.js toolchains that Neovim's
 language tools are built with, makes Ghostty the default terminal, and copies the
 [Ghostty preset](configs/ghostty/config) when Ghostty has no config yet. An
-existing Ghostty config is left alone.
+existing Ghostty config is left alone. When the login shell is not Fish, it runs
+`chsh -s /usr/bin/fish`, which takes effect at the next login.
 
 With an external drive mounted it also installs Restic, stores a repository
 password in KDE Wallet and creates the repository. Without one, run it again once
