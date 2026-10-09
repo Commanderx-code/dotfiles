@@ -1,5 +1,12 @@
-{ pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
+  c = config.commander.theme.colors;
+  ansi = config.commander.theme.terminal.ansi;
   # Release hashes from each upstream's GitHub asset metadata / SHA256SUMS.
   zjstatus = pkgs.fetchurl {
     url = "https://github.com/dj95/zjstatus/releases/download/v0.24.0/zjstatus.wasm";
@@ -35,15 +42,15 @@ let
       children
       pane size=1 borderless=true {
         plugin location="file:${zjstatus}" {
-          format_left "{mode} #[fg=#7aa2f7,bold]{session}  {tabs}"
-          format_right "#[fg=#a9b1d6] Ctrl+G lock/unlock "
-          format_space "#[bg=#24283b]"
+          format_left "{mode} #[fg=${c.cyan},bold]{session}  {tabs}"
+          format_right "#[fg=${c.subtext}] Ctrl+G lock/unlock "
+          format_space "#[bg=${c.mantle}]"
           hide_frame_for_single_pane "false"
-          mode_normal "#[fg=#24283b,bg=#bb9af7,bold] CONTROL #[fg=#bb9af7,bg=#24283b]"
-          mode_locked "#[fg=#24283b,bg=#73daca,bold] LOCKED #[fg=#73daca,bg=#24283b]"
+          mode_normal "#[fg=${c.mantle},bg=${c.purple},bold] CONTROL #[fg=${c.purple},bg=${c.mantle}]"
+          mode_locked "#[fg=${c.mantle},bg=${c.green},bold] LOCKED #[fg=${c.green},bg=${c.mantle}]"
           mode_default_to_mode "normal"
-          tab_normal "#[fg=#a9b1d6,bg=#24283b] {index} {name} "
-          tab_active "#[fg=#24283b,bg=#7aa2f7,bold] {index} {name} #[fg=#7aa2f7,bg=#24283b]"
+          tab_normal "#[fg=${c.subtext},bg=${c.mantle}] {index} {name} "
+          tab_active "#[fg=${c.mantle},bg=${c.cyan},bold] {index} {name} #[fg=${c.cyan},bg=${c.mantle}]"
         }
       }
       pane size=1 borderless=true {
@@ -60,12 +67,28 @@ in
     enableBashIntegration = false;
     enableZshIntegration = false;
     settings = {
-      theme = "tokyo-night-storm";
+      theme = "commander";
       default_shell = "${pkgs.fish}/bin/fish";
       default_mode = "locked";
       default_layout = "commander";
     };
     extraConfig = ''
+      // The palette chosen with `rice` (modules/theme.nix).
+      themes {
+        commander {
+          fg "${c.text}"
+          bg "${c.surface}"
+          black "${c.mantle}"
+          red "${c.red}"
+          green "${c.green}"
+          yellow "${c.yellow}"
+          blue "${c.blue}"
+          magenta "${c.purple}"
+          cyan "${c.cyan}"
+          white "${builtins.elemAt ansi 7}"
+          orange "${c.orange}"
+        }
+      }
       keybinds {
         shared_except "locked" {
           bind "Alt y" {

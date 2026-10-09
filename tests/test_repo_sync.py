@@ -111,6 +111,36 @@ class ImportTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 sync.filename(name)
 
+    def test_shared_config_import_and_ownership(self):
+        lock = json.loads((self.root / sync.LOCK).read_text())
+        lock['configs'] = {'configs/starship/starship.toml': {'source': 'modules/starship.toml', 'sha256': ''}}
+        (self.root / sync.LOCK).write_text(json.dumps(lock))
+        prompt = self.source / 'modules/starship.toml'
+        prompt.write_text('palette = "eldritch"\n')
+        target = self.root / 'configs/starship/starship.toml'
+        target.parent.mkdir(parents=True)
+        # An unrecorded local copy is refused rather than overwritten.
+        target.write_text('local prompt')
+        with self.assertRaises(ValueError):
+            sync.synchronize(self.root, self.source, 'b' * 40)
+        lock['configs']['configs/starship/starship.toml']['sha256'] = sync.digest(b'local prompt')
+        (self.root / sync.LOCK).write_text(json.dumps(lock))
+        self.assertTrue(sync.synchronize(self.root, self.source, 'b' * 40))
+        self.assertTrue(target.read_text().startswith('# Shared from Commanderx-code/Myfish: modules/starship.toml\n'))
+        self.assertTrue(target.read_text().endswith('palette = "eldritch"\n'))
+        self.assertFalse(sync.synchronize(self.root, self.source, 'b' * 40))
+        sync.verify(self.root)
+        target.write_text(target.read_text() + 'edited\n')
+        with self.assertRaises(ValueError):
+            sync.verify(self.root)
+
+    def test_shared_config_paths_stay_inside_their_trees(self):
+        for target, source in (('configs/../x', 'modules/a'), ('home/x', 'modules/a'),
+                               ('configs/a', '/etc/passwd'), ('configs/a', 'modules//a'), (None, 'modules/a')):
+            with self.subTest(target=target, source=source):
+                with self.assertRaises(ValueError):
+                    sync.config_paths(target, source)
+
     def test_committed_import_matches_manifest(self):
         sync.verify(ROOT)
 

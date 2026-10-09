@@ -2,11 +2,11 @@
   "proxy": "",
   "ui_font_size": 16,
   "buffer_font_size": 15,
-  "buffer_font_family": "CaskaydiaCove Nerd Font Mono",
+  "buffer_font_family": "JetBrainsMono Nerd Font Mono",
   "theme": {
     "mode": "system",
     "light": "One Light",
-    "dark": "Catppuccin Mocha"
+    "dark": "Eldritch"
   },
   "base_keymap": "VSCode",
   "vim_mode": false,
@@ -46,7 +46,7 @@
       "program": "/home/commander/.nix-profile/bin/fish"
     },
     "working_directory": "current_project_directory",
-    "font_family": "CaskaydiaCove Nerd Font Mono",
+    "font_family": "JetBrainsMono Nerd Font Mono",
     "font_size": 14,
     "dock": "bottom"
   },
@@ -72,7 +72,8 @@
     "toml": true,
     "dockerfile": true,
     "make": true,
-    "tombi": true
+    "tombi": true,
+    "eldritch-theme": true
   },
   "languages": {
     "Python": {

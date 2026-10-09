@@ -5,6 +5,8 @@
     ./modules/machine.nix
     ./modules/repo-sync.nix
     ./modules/fonts.nix
+    ./modules/theme.nix
+    ./modules/plasma.nix
     ./modules/packages.nix
     ./modules/git.nix
     ./modules/fish.nix
@@ -72,6 +74,11 @@
 
   home.file.".local/bin/hm-rebuild" = {
     source = ./scripts/hm-rebuild.fish;
+    executable = true;
+  };
+
+  home.file.".local/bin/rice" = {
+    source = ./scripts/rice.fish;
     executable = true;
   };
   home.file.".local/bin/backup-app-inventory" = {
