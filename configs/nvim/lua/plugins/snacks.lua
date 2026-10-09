@@ -17,6 +17,10 @@ return {
     },
     opts = {
       explorer = { enabled = true },
+      -- Images open in a buffer and show inline in Markdown, through the kitty
+      -- graphics protocol (Ghostty) and ImageMagick. Math rendering stays off:
+      -- it needs tectonic or pdflatex, which are not installed.
+      image = { enabled = true, math = { enabled = false } },
       picker = {
         enabled = true,
         -- Search results on top, file preview below.
