@@ -25,6 +25,7 @@ it as `~/.config/dotfiles/machine.json`; operational scripts read the same JSON 
 | `configs/scripts/fzf-preview` | Installed as `~/.local/bin/fzf-preview`. Ghostty/Kitty use `kitten icat` with Unicode placeholders for image previews; Chafa supplies Sixel previews in other terminals and a character-art fallback if `kitten` is absent. |
 | `home-manager/modules/fonts.nix` | Installs JetBrainsMono Nerd Font, the one font for Ghostty, Konsole, Zed and Plasma's fixed-width text, from pinned Nixpkgs; no font binaries are bundled. |
 | `home-manager/modules/zapfast.nix` | Installs the ZapFast WhatsApp client from its upstream flake, wrapped with nixGL so it finds the host graphics drivers. `modules/packages.nix` refreshes the KDE application cache after each switch so new launcher entries appear. |
+| `home-manager/modules/toolbox.nix` | Installs the `commander-toolbox` launcher. Each start compares the published release checksum with the copy cached under `~/.local/share/commander-toolbox`, downloads and verifies a newer build, and runs the cached copy when offline. An executable `~/.local/bin/commander-toolbox`, such as a launcher for a source checkout, is run instead. |
 | `home-manager/scripts/` | Installed backup, restore, and package helpers; `lib/settings.fish` supplies shared settings. |
 | `home-manager/modules/backup-automation.nix` | Owns user backup services, mount watcher, and maintenance timers. |
 | `sddm/` | Customization backup used by `backup-sddm` and `restore-sddm`. Restore requires an existing SilentSDDM installation. |
