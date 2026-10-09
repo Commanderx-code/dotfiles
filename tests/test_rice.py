@@ -44,10 +44,10 @@ class PaletteTests(unittest.TestCase):
     def test_selection_names_a_palette(self):
         selection = json.loads((ROOT / 'home-manager/rice.json').read_text())
         self.assertIn(selection['theme'], themes())
-        # An optional Neovim override must name an installed colorscheme plugin too.
+        # The optional Neovim override is a colorscheme name: the <leader>th picker
+        # writes it, and it may be a built-in as well as a plugin's.
         if 'nvim' in selection:
-            colorschemes = (ROOT / 'configs/nvim/lua/plugins/colorscheme.lua').read_text()
-            self.assertIn(selection['nvim'].split('-')[0], colorschemes)
+            self.assertRegex(selection['nvim'], r'^[A-Za-z0-9_-]+$')
 
     def test_shared_prompt_palette_matches_the_eldritch_file(self):
         prompt = tomllib.loads((ROOT / 'configs/starship/starship.toml').read_text())
