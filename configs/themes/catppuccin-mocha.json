@@ -1,0 +1,58 @@
+{
+  "name": "Catppuccin Mocha",
+  "colors": {
+    "base": "#1e1e2e",
+    "mantle": "#181825",
+    "surface": "#313244",
+    "overlay": "#45475a",
+    "muted": "#7f849c",
+    "subtext": "#a6adc8",
+    "text": "#cdd6f4",
+    "red": "#f38ba8",
+    "orange": "#fab387",
+    "yellow": "#f9e2af",
+    "green": "#a6e3a1",
+    "cyan": "#89dceb",
+    "blue": "#89b4fa",
+    "purple": "#cba6f7",
+    "pink": "#f5c2e7"
+  },
+  "terminal": {
+    "ansi": [
+      "#45475a",
+      "#f38ba8",
+      "#a6e3a1",
+      "#f9e2af",
+      "#89b4fa",
+      "#f5c2e7",
+      "#94e2d5",
+      "#a6adc8",
+      "#585b70",
+      "#f37799",
+      "#89d88b",
+      "#ebd391",
+      "#74a8fc",
+      "#f2aede",
+      "#6bd7ca",
+      "#bac2de"
+    ],
+    "cursor": "#f5e0dc",
+    "cursorText": "#1e1e2e",
+    "selection": "#585b70",
+    "selectionText": "#cdd6f4"
+  },
+  "diff": {
+    "added": "#3c4947",
+    "removed": "#4d3649",
+    "addedEmphasis": "#5b7762",
+    "removedEmphasis": "#7e4f65"
+  },
+  "apps": {
+    "nvim": "catppuccin-mocha",
+    "bat": "Catppuccin Mocha",
+    "zed": {
+      "theme": "Catppuccin Mocha",
+      "extension": "catppuccin"
+    }
+  }
+}
