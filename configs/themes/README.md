@@ -32,6 +32,16 @@ palette (see `backup-sddm` and `restore-sddm`).
 `ansi` means bat and delta highlight with the terminal's own sixteen colours,
 which are the palette's.
 
+To give Neovim its own colorscheme whatever the palette, add it to
+`home-manager/rice.json` and rebuild; `rice` keeps it when switching:
+
+```json
+{
+  "theme": "eldritch",
+  "nvim": "tokyonight-storm"
+}
+```
+
 ## What follows the palette
 
 | App | How |
@@ -40,7 +50,7 @@ which are the palette's.
 | Konsole | The `Commander` colour scheme, used by the Garuda profile |
 | Starship | The prompt's named colours (the layout is shared from Myfish) |
 | Zellij | The `commander` theme and the zjstatus bar |
-| Neovim | `lua/config/rice.lua` sets LazyVim's colorscheme |
+| Neovim | `lua/config/rice.lua` sets LazyVim's colorscheme; `"nvim"` in `rice.json` overrides the palette's choice |
 | Zed | `theme.dark` in its settings, set by `rice` |
 | Plasma | The `Commander<Name>` colour scheme, through plasma-manager |
 | fzf, bat | `fish/conf.d/rice.fish` (generated) adds `--color` and `BAT_THEME` |
