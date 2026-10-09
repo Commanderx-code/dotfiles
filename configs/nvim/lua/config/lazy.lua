@@ -6,7 +6,17 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 
+-- Home Manager deploys this config read-only, so lazy-lock.json is written in the
+-- dotfiles checkout instead (lua/config/machine.lua is generated with its path).
+-- Without that file, lazy keeps its default next to this config.
+local ok, machine = pcall(require, "config.machine")
+local lockfile = ok and machine.lockfile or nil
+if lockfile and not vim.uv.fs_stat(vim.fs.dirname(lockfile)) then
+  lockfile = nil
+end
+
 require("lazy").setup({
+  lockfile = lockfile,
   -- ui = {
   --   border = "rounded",
   -- },
