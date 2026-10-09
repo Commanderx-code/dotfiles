@@ -17,6 +17,7 @@
     ./modules/topgrade.nix
     ./modules/terminal.nix
     ./modules/zapfast.nix
+    ./modules/toolbox.nix
     ./modules/backup-automation.nix
   ];
   home.username = machine.username;
