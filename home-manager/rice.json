@@ -1,3 +1,4 @@
 {
-  "theme": "eldritch"
+  "theme": "eldritch",
+  "nvim": "tokyonight-storm"
 }
