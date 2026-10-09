@@ -43,7 +43,9 @@
   },
   "diff": {
     "added": "#485251",
-    "removed": "#4e3e49"
+    "removed": "#4e3e49",
+    "addedEmphasis": "#637262",
+    "removedEmphasis": "#6f4853"
   },
   "apps": {
     "nvim": "nord",

@@ -322,6 +322,8 @@ in
         syntax-theme = theme.apps.bat;
         plus-style = "syntax ${theme.diff.added}";
         minus-style = "syntax ${theme.diff.removed}";
+        plus-emph-style = "syntax ${theme.diff.addedEmphasis}";
+        minus-emph-style = "syntax ${theme.diff.removedEmphasis}";
         file-style = "${c.purple} bold";
         file-decoration-style = "${c.overlay} ul";
         hunk-header-style = "file line-number syntax";

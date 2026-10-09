@@ -18,7 +18,7 @@ in
         alert = c.red;
         user = c.surface;
         directory = c.overlay;
-        git = c.mantle;
+        git = c.muted;
         language = c.purple;
         docker = c.cyan;
         time = c.blue;

@@ -43,7 +43,9 @@
   },
   "diff": {
     "added": "#26514d",
-    "removed": "#4f3345"
+    "removed": "#4f3345",
+    "addedEmphasis": "#2b8163",
+    "removedEmphasis": "#7f4453"
   },
   "apps": {
     "nvim": "eldritch",

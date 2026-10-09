@@ -43,7 +43,9 @@
   },
   "diff": {
     "added": "#3c4947",
-    "removed": "#4d3649"
+    "removed": "#4d3649",
+    "addedEmphasis": "#5b7762",
+    "removedEmphasis": "#7e4f65"
   },
   "apps": {
     "nvim": "catppuccin-mocha",

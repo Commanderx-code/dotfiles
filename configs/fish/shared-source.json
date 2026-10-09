@@ -28,7 +28,7 @@
   "configs": {
     "configs/starship/starship.toml": {
       "source": "modules/starship.toml",
-      "sha256": "24174a99e34cd270cd0abfb6b4301b68fc00e80fb41c410c1fee04c33aa418a0"
+      "sha256": "2178211425f2529d4b36d3556cc3d59cc9e291a8bba7dd53f5c3060b0a3ed0db"
     }
   }
 }

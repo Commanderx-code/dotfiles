@@ -43,7 +43,9 @@
   },
   "diff": {
     "added": "#3f4d45",
-    "removed": "#52394d"
+    "removed": "#52394d",
+    "addedEmphasis": "#5b7350",
+    "removedEmphasis": "#834b60"
   },
   "apps": {
     "nvim": "tokyonight-storm",

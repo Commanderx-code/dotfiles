@@ -76,7 +76,7 @@ change its values; every colour is `#rrggbb`.
 - `colors`: the fifteen roles the apps use, from `base` (background) and
   `mantle` (darker bars) to `text`, plus the accents.
 - `terminal`: the sixteen ANSI colours, cursor and selection.
-- `diff`: delta's background for added and removed lines.
+- `diff`: delta's background for added and removed lines, and a stronger shade for the changed words.
 - `apps`: the Neovim colorscheme (its plugin must be in
   `configs/nvim/lua/plugins/colorscheme.lua`), the SDDM preset in
   `sddm/configs/` or `null`, the bat theme (`bat --list-themes`, or `ansi`),

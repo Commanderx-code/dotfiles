@@ -43,7 +43,9 @@
   },
   "diff": {
     "added": "#484828",
-    "removed": "#562f2b"
+    "removed": "#562f2b",
+    "addedEmphasis": "#696a27",
+    "removedEmphasis": "#87372d"
   },
   "apps": {
     "nvim": "gruvbox-baby",
