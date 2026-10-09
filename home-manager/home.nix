@@ -26,6 +26,9 @@
 
   programs.home-manager.enable = true;
 
+  # No "unread news items" reminder after each rebuild; `home-manager news` still shows them.
+  news.display = "silent";
+
   home.file.".local/bin/backup-sddm" = {
     source = ./scripts/backup-sddm.sh;
     executable = true;
