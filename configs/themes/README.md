@@ -8,6 +8,7 @@ One palette colours the whole workstation. Each file here is a palette;
 ```fish
 rice                    # the current palette and the others
 rice show nord          # colour swatches in the terminal
+rice pick               # choose from a list with a swatch preview; Enter switches
 rice catppuccin-mocha   # switch: writes the choice and rebuilds
 ```
 

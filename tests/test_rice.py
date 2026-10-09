@@ -110,6 +110,23 @@ class RiceCommandTests(unittest.TestCase):
         self.assertEqual(json.loads(selection.read_text()), {'theme': 'nord', 'nvim': 'tokyonight-storm'})
         self.assertIn('Neovim colorscheme: tokyonight-storm', self.rice().stdout)
 
+    def test_pick_switches_to_the_chosen_palette_or_changes_nothing(self):
+        fzf = self.root / 'bin/fzf'
+        # Stands in for fzf: prints the list line for $PICK, or cancels like Esc.
+        fzf.write_text('#!/bin/sh\n[ -n "$PICK" ] || exit 130\ngrep "^$PICK\t"\n')
+        fzf.chmod(0o755)
+        cancelled = self.rice('pick')
+        self.assertEqual(cancelled.returncode, 0, cancelled.stderr)
+        self.assertIn('still on eldritch', cancelled.stdout)
+        same = self.rice('pick', PICK='eldritch')
+        self.assertIn('Already on eldritch', same.stdout)
+        self.assertEqual(self.selection(), 'eldritch')
+        self.assertFalse(self.log.exists())
+        picked = self.rice('pick', PICK='nord')
+        self.assertEqual(picked.returncode, 0, picked.stderr)
+        self.assertEqual(self.selection(), 'nord')
+        self.assertEqual(self.log.read_text().splitlines(), ['rebuild'])
+
     def test_failed_rebuild_restores_the_previous_choice(self):
         zed = (self.repo / 'configs/zed/settings.json').read_text()
         before = self.selection()
