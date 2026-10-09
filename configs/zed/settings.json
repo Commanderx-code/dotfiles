@@ -73,7 +73,8 @@
     "dockerfile": true,
     "make": true,
     "tombi": true,
-    "eldritch-theme": true
+    "eldritch-theme": true,
+    "tokyo-night": true
   },
   "languages": {
     "Python": {

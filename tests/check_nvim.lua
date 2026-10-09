@@ -128,8 +128,27 @@ local function check()
   explorer.toggle()
   assert(opens == 2 and current, "toggle must reopen explorer")
   _G.Snacks = nil
+
+  -- The colorscheme picker's choice is saved to rice.json and read back at startup.
+  package.loaded["config.rice"] = { colorscheme = "palette-choice" }
+  local colorscheme = require("config.colorscheme")
+  local selection = directory .. "/rice.json"
+  assert(colorscheme.default(selection) == "palette-choice", "no rice.json falls back to the palette's choice")
+  assert(not colorscheme.save("nord", selection), "saving needs an existing rice.json")
+  vim.fn.writefile({ "{", '  "theme": "eldritch"', "}" }, selection)
+  assert(colorscheme.default(selection) == "palette-choice", "no saved pick keeps the palette's choice")
+  assert(colorscheme.save("tokyonight-storm", selection), "pick must be saved")
+  assert(colorscheme.default(selection) == "tokyonight-storm", "saved pick must be read back")
+  local saved = vim.json.decode(table.concat(vim.fn.readfile(selection), "\n"))
+  assert(saved.theme == "eldritch" and saved.nvim == "tokyonight-storm", "saving must keep the palette")
+  vim.fn.writefile({ "not json" }, selection)
+  assert(colorscheme.default(selection) == "palette-choice", "an unreadable rice.json falls back")
+  assert(not colorscheme.save("nord", selection), "an unreadable rice.json is not overwritten")
+  assert(vim.fn.readfile(selection)[1] == "not json")
+  package.loaded["config.rice"] = nil
+
   vim.fn.delete(directory, "rf")
-  print("Neovim syntax, autosave, dashboard, and explorer checks passed")
+  print("Neovim syntax, autosave, dashboard, explorer, and colorscheme checks passed")
 end
 local ok, err = pcall(check)
 if not ok then

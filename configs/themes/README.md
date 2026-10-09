@@ -32,8 +32,10 @@ palette (see `backup-sddm` and `restore-sddm`).
 `ansi` means bat and delta highlight with the terminal's own sixteen colours,
 which are the palette's.
 
-To give Neovim its own colorscheme whatever the palette, add it to
-`home-manager/rice.json` and rebuild; `rice` keeps it when switching:
+To give Neovim its own colorscheme whatever the palette, pick one in Neovim
+with `<leader>th`: the picker saves it as the `"nvim"` entry of
+`home-manager/rice.json`, Neovim reads it at its next start (no rebuild), and
+`rice` keeps it when switching:
 
 ```json
 {
