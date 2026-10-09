@@ -49,7 +49,6 @@
   },
   "apps": {
     "nvim": "gruvbox-baby",
-    "sddm": "gruvbox",
     "bat": "gruvbox-dark",
     "zed": {
       "theme": "Gruvbox Dark",

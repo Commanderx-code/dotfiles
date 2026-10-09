@@ -49,7 +49,6 @@
   },
   "apps": {
     "nvim": "nord",
-    "sddm": "nord",
     "bat": "Nord",
     "zed": {
       "theme": "Nord",

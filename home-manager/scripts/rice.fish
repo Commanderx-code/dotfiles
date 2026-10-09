@@ -1,6 +1,7 @@
 #!/usr/bin/env fish
-# Switch the workstation's palette: terminals, prompt, editors, CLI tools,
-# Plasma's colour scheme and the SDDM login screen, from configs/themes/<name>.json.
+# Switch the workstation's palette: terminals, prompt, editors, CLI tools and
+# Plasma's colour scheme, from configs/themes/<name>.json. The SDDM login screen
+# is never touched.
 
 set -l settings_file (path dirname (status filename))/lib/settings.fish
 if not test -f "$settings_file"
@@ -10,21 +11,18 @@ source "$settings_file"; or exit 1
 
 # Overridable for recovery and fixture tests.
 set -q RICE_REBUILD; or set -l RICE_REBUILD hm-rebuild
-set -q RICE_SUDO; or set -l RICE_SUDO sudo
-set -q RICE_SDDM_THEME_DIR; or set -l RICE_SDDM_THEME_DIR /usr/share/sddm/themes/silent
 
 set -l themes_dir "$DOTFILES_DIR/configs/themes"
 set -l selection "$DOTFILES_DIR/home-manager/rice.json"
 set -l zed_settings "$DOTFILES_DIR/configs/zed/settings.json"
-set -l sddm_repo "$DOTFILES_DIR/sddm"
 
 function __rice_usage
     echo "Usage: rice                       show the current palette and the others"
     echo "       rice show [NAME]           colour swatches (default: the current one)"
-    echo "       rice NAME [--no-rebuild] [--no-sddm]"
+    echo "       rice NAME [--no-rebuild]"
     echo
-    echo "Switching writes home-manager/rice.json and Zed's theme, rebuilds Home Manager,"
-    echo "then sets the SDDM login screen (asks for sudo). Commit the changed files to keep it."
+    echo "Switching writes home-manager/rice.json and Zed's theme and rebuilds Home Manager."
+    echo "The login screen is left alone. Commit the changed files to keep it."
 end
 
 function __rice_names --argument-names directory
@@ -58,7 +56,7 @@ function __rice_scheme_name --argument-names name
     echo Commander(string join '' $words)
 end
 
-argparse h/help no-rebuild no-sddm -- $argv
+argparse h/help no-rebuild -- $argv
 or begin
     __rice_usage
     exit 2
@@ -154,43 +152,6 @@ if not set -q _flag_no_rebuild; and command -q plasma-apply-colorscheme; and str
     plasma-apply-colorscheme $scheme >/dev/null
 end
 
-set -l sddm (jq -r '.apps.sddm // empty' $theme_file)
-if set -q _flag_no_sddm
-    echo "Login screen left as it is (--no-sddm)."
-else if test -z "$sddm"
-    echo "This palette has no SDDM preset; the login screen is left as it is."
-else if not test -f "$sddm_repo/configs/$sddm.conf"; or not test -f "$sddm_repo/metadata.desktop"
-    echo "SDDM preset $sddm is missing from $sddm_repo; the login screen is left as it is." >&2
-else
-    # One ConfigFile= line is active; the other presets stay listed, commented out.
-    set -l metadata "$sddm_repo/metadata.desktop"
-    set -l lines
-    set -l found 0
-    for line in (cat $metadata)
-        set -l preset (string match -rg '^#?\s*ConfigFile=configs/(.+)\.conf$' -- $line)
-        if test -z "$preset"
-            set -a lines $line
-        else if test "$preset" = "$sddm"
-            set -a lines "ConfigFile=configs/$sddm.conf"
-            set found 1
-        else
-            set -a lines "# ConfigFile=configs/$preset.conf"
-        end
-    end
-    if test $found -eq 0
-        set -a lines "ConfigFile=configs/$sddm.conf"
-    end
-    printf '%s\n' $lines >$metadata
-    if test -d "$RICE_SDDM_THEME_DIR"
-        $RICE_SUDO install -m644 "$sddm_repo/configs/$sddm.conf" "$RICE_SDDM_THEME_DIR/configs/$sddm.conf"
-        and $RICE_SUDO install -m644 $metadata "$RICE_SDDM_THEME_DIR/metadata.desktop"
-        and echo "Login screen: $sddm (seen at the next login)."
-        or echo "Could not install the SDDM preset; run restore-sddm later." >&2
-    else
-        echo "SilentSDDM is not installed at $RICE_SDDM_THEME_DIR; sddm/metadata.desktop is updated for restore-sddm."
-    end
-end
-
 set -l ghostty_config "$HOME/.config/ghostty/config"
 set -q XDG_CONFIG_HOME; and set ghostty_config "$XDG_CONFIG_HOME/ghostty/config"
 if test -f "$ghostty_config"; and not string match -qr '^\s*theme\s*=\s*commander\s*$' -- (cat $ghostty_config)
@@ -199,4 +160,4 @@ end
 
 echo
 echo "Open a new terminal to see it. To keep this palette, commit:"
-echo "  home-manager/rice.json configs/zed/settings.json sddm/metadata.desktop"
+echo "  home-manager/rice.json configs/zed/settings.json"

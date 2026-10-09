@@ -49,7 +49,6 @@
   },
   "apps": {
     "nvim": "catppuccin-mocha",
-    "sddm": "catppuccin-mocha",
     "bat": "Catppuccin Mocha",
     "zed": {
       "theme": "Catppuccin Mocha",

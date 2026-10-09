@@ -8,23 +8,26 @@ One palette colours the whole workstation. Each file here is a palette;
 ```fish
 rice                    # the current palette and the others
 rice show nord          # colour swatches in the terminal
-rice catppuccin-mocha   # switch: rebuild, then the login screen (asks for sudo)
-rice nord --no-sddm     # switch, leaving the login screen as it is
+rice catppuccin-mocha   # switch: writes the choice and rebuilds
 ```
 
-`rice NAME` writes `rice.json` and Zed's theme, runs `hm-rebuild`, applies
-Plasma's colour scheme in a Plasma session, and sets the SilentSDDM preset.
-If the rebuild fails, the previous palette stays. Commit the changed files
-(`home-manager/rice.json`, `configs/zed/settings.json`, `sddm/metadata.desktop`)
-to keep the choice; they are listed when it finishes.
+`rice NAME` writes `rice.json` and Zed's theme, runs `hm-rebuild`, and applies
+Plasma's colour scheme in a Plasma session. If the rebuild fails, the previous
+palette stays. Commit the changed files (`home-manager/rice.json`,
+`configs/zed/settings.json`) to keep the choice; they are listed when it
+finishes.
 
-| Palette | Neovim | SDDM preset | Zed | bat / delta |
-| --- | --- | --- | --- | --- |
-| `eldritch` | eldritch | eldritch-cthulhu | Eldritch | ansi |
-| `catppuccin-mocha` | catppuccin-mocha | catppuccin-mocha | Catppuccin Mocha | Catppuccin Mocha |
-| `tokyonight-storm` | tokyonight-storm | (unchanged) | Tokyo Night Storm | ansi |
-| `nord` | nord | nord | Nord | Nord |
-| `gruvbox` | gruvbox-baby | gruvbox | Gruvbox Dark | gruvbox-dark |
+The SDDM login screen is not part of the palette: `rice` never touches it, so
+the SilentSDDM preset chosen in `sddm/metadata.desktop` stays whatever the
+palette (see `backup-sddm` and `restore-sddm`).
+
+| Palette | Neovim | Zed | bat / delta |
+| --- | --- | --- | --- |
+| `eldritch` | eldritch | Eldritch | ansi |
+| `catppuccin-mocha` | catppuccin-mocha | Catppuccin Mocha | Catppuccin Mocha |
+| `tokyonight-storm` | tokyonight-storm | Tokyo Night Storm | ansi |
+| `nord` | nord | Nord | Nord |
+| `gruvbox` | gruvbox-baby | Gruvbox Dark | gruvbox-dark |
 
 `ansi` means bat and delta highlight with the terminal's own sixteen colours,
 which are the palette's.
@@ -40,7 +43,6 @@ which are the palette's.
 | Neovim | `lua/config/rice.lua` sets LazyVim's colorscheme |
 | Zed | `theme.dark` in its settings, set by `rice` |
 | Plasma | The `Commander<Name>` colour scheme, through plasma-manager |
-| SDDM | The SilentSDDM preset named in `apps.sddm`, set by `rice` |
 | fzf, bat | `fish/conf.d/rice.fish` (generated) adds `--color` and `BAT_THEME` |
 | delta | Git's pager, with the palette's diff colours |
 | eza | `~/.config/eza/theme.yml` |
@@ -78,8 +80,8 @@ change its values; every colour is `#rrggbb`.
 - `terminal`: the sixteen ANSI colours, cursor and selection.
 - `diff`: delta's background for added and removed lines, and a stronger shade for the changed words.
 - `apps`: the Neovim colorscheme (its plugin must be in
-  `configs/nvim/lua/plugins/colorscheme.lua`), the SDDM preset in
-  `sddm/configs/` or `null`, the bat theme (`bat --list-themes`, or `ansi`),
+  `configs/nvim/lua/plugins/colorscheme.lua`), the bat theme
+  (`bat --list-themes`, or `ansi`),
   and Zed's theme with the extension that provides it (`null` for a built-in).
 
 Stage the new file before switching to it: the flake only sees files Git

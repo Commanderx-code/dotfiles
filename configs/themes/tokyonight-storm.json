@@ -49,7 +49,6 @@
   },
   "apps": {
     "nvim": "tokyonight-storm",
-    "sddm": null,
     "bat": "ansi",
     "zed": {
       "theme": "Tokyo Night Storm",

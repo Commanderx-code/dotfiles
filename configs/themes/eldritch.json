@@ -49,7 +49,6 @@
   },
   "apps": {
     "nvim": "eldritch",
-    "sddm": "eldritch-cthulhu",
     "bat": "ansi",
     "zed": {
       "theme": "Eldritch",

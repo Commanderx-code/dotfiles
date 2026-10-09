@@ -37,8 +37,7 @@ class PaletteTests(unittest.TestCase):
                 apps = theme['apps']
                 # The Neovim colorscheme's plugin is installed (lazy-loaded) in colorscheme.lua.
                 self.assertIn(apps['nvim'].split('-')[0], colorschemes)
-                if apps['sddm'] is not None:
-                    self.assertTrue((ROOT / 'sddm/configs' / f"{apps['sddm']}.conf").is_file())
+                self.assertNotIn('sddm', apps)
                 self.assertTrue(apps['bat'])
                 self.assertIn('theme', apps['zed'])
 
@@ -67,20 +66,18 @@ class RiceCommandTests(unittest.TestCase):
             shutil.copytree(ROOT / name, self.repo / name)
         for name in ('home-manager/rice.json', 'home-manager/machine.json'):
             shutil.copy(ROOT / name, self.repo / name)
-        self.theme_dir = self.root / 'silent'
-        (self.theme_dir / 'configs').mkdir(parents=True)
         self.log = self.root / 'log'
         bin_dir = self.root / 'bin'
         bin_dir.mkdir()
         for name, body in (('rebuild', 'echo rebuild >> "$LOG"; exit "${FAIL:-0}"'),
-                           ('sudo', 'echo sudo "$1" >> "$LOG"; "$@"')):
+                           ('sudo', 'echo sudo "$1" >> "$LOG"; exit 1')):
             script = bin_dir / name
             script.write_text(f'#!/bin/sh\n{body}\n')
             script.chmod(0o755)
         self.env = dict(os.environ, DOTFILES_DIR=str(self.repo), LOG=str(self.log),
                         DOTFILES_MACHINE_CONFIG=str(self.repo / 'home-manager/machine.json'),
-                        RICE_REBUILD=str(bin_dir / 'rebuild'), RICE_SUDO=str(bin_dir / 'sudo'),
-                        RICE_SDDM_THEME_DIR=str(self.theme_dir), XDG_CONFIG_HOME=str(self.root / 'config'))
+                        RICE_REBUILD=str(bin_dir / 'rebuild'), XDG_CONFIG_HOME=str(self.root / 'config'),
+                        PATH=str(bin_dir) + os.pathsep + os.environ['PATH'])
         self.env.pop('XDG_CURRENT_DESKTOP', None)
 
     def rice(self, *args, **env):
@@ -90,20 +87,17 @@ class RiceCommandTests(unittest.TestCase):
     def selection(self):
         return json.loads((self.repo / 'home-manager/rice.json').read_text())['theme']
 
-    def test_switch_writes_choice_zed_and_one_active_sddm_preset(self):
+    def test_switch_writes_choice_and_zed_but_never_the_login_screen(self):
+        metadata = (self.repo / 'sddm/metadata.desktop').read_bytes()
         result = self.rice('catppuccin-mocha')
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.selection(), 'catppuccin-mocha')
         zed = json.loads((self.repo / 'configs/zed/settings.json').read_text())
         self.assertEqual(zed['theme']['dark'], 'Catppuccin Mocha')
         self.assertTrue(zed['auto_install_extensions']['catppuccin'])
-        metadata = (self.repo / 'sddm/metadata.desktop').read_text().splitlines()
-        self.assertEqual([line for line in metadata if line.startswith('ConfigFile=')],
-                         ['ConfigFile=configs/catppuccin-mocha.conf'])
-        self.assertIn('# ConfigFile=configs/sw.conf', metadata)
-        self.assertEqual((self.theme_dir / 'metadata.desktop').read_text().splitlines(), metadata)
-        self.assertTrue((self.theme_dir / 'configs/catppuccin-mocha.conf').is_file())
-        self.assertEqual(self.log.read_text().split('\n')[0], 'rebuild')
+        # The SDDM selection is untouched and sudo is never called.
+        self.assertEqual((self.repo / 'sddm/metadata.desktop').read_bytes(), metadata)
+        self.assertEqual(self.log.read_text().splitlines(), ['rebuild'])
 
     def test_failed_rebuild_restores_the_previous_choice(self):
         zed = (self.repo / 'configs/zed/settings.json').read_text()
@@ -112,7 +106,6 @@ class RiceCommandTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertEqual(self.selection(), before)
         self.assertEqual((self.repo / 'configs/zed/settings.json').read_text(), zed)
-        self.assertFalse((self.theme_dir / 'metadata.desktop').exists())
 
     def test_unknown_or_unsafe_names_change_nothing(self):
         for name in ('missing', '../eldritch', '-x'):
@@ -121,10 +114,9 @@ class RiceCommandTests(unittest.TestCase):
                 self.assertEqual(self.selection(), 'eldritch')
         self.assertFalse(self.log.exists())
 
-    def test_palette_without_sddm_preset_and_listing(self):
+    def test_no_rebuild_and_listing(self):
         result = self.rice('tokyonight-storm', '--no-rebuild')
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('no SDDM preset', result.stdout)
         self.assertFalse(self.log.exists())
         listing = self.rice()
         self.assertIn('* tokyonight-storm', listing.stdout)

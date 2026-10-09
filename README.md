@@ -12,7 +12,7 @@ truth, alongside terminal settings and backup/recovery helpers.
 
 | Area | What lives here |
 | :--- | :--- |
-| **Theme** | One palette (Eldritch by default) for terminals, prompt, editors, CLI tools, Plasma and the login screen; `rice` switches it. See [palettes](configs/themes/README.md). |
+| **Theme** | One palette (Eldritch by default) for terminals, prompt, editors, CLI tools and Plasma; `rice` switches it. The SDDM login screen stays separate. See [palettes](configs/themes/README.md). |
 | **Shell** | Fish functions and aliases, fzf navigation and previews, zoxide, and a Starship prompt. |
 | **System overview** | Fastfetch with tree-style sections, a Garuda eagle logo, a rainbow ghost row, and alternative artwork. |
 | **Editor** | Neovim / LazyVim with Snacks for the dashboard, explorer and pickers, plus language and formatting tools. |
