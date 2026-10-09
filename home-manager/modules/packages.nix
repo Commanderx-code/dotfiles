@@ -41,9 +41,14 @@
 
   # KDE misses new Nix desktop entries because store files share one fixed
   # timestamp, so rebuild its application cache after every switch.
+  # Activation runs with a PATH of Nix store tools only. KDE drops every
+  # application whose TryExec it cannot find there, which hid Konsole, Zed, mpv
+  # and others from the launcher until the cache was next rebuilt, so the
+  # rebuild gets the directories a login session has.
   home.activation.refreshKdeAppCache = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
     if [ -x /usr/bin/kbuildsycoca6 ]; then
-      run /usr/bin/kbuildsycoca6 --noincremental
+      PATH="$HOME/.nix-profile/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:$PATH" \
+        run /usr/bin/kbuildsycoca6 --noincremental
     fi
   '';
 }
