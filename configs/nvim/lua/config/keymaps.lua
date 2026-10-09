@@ -40,7 +40,7 @@ vim.keymap.set("n", "<leader>fw", function() Snacks.picker.grep() end, { desc = 
 vim.keymap.set({ "n", "t" }, "<A-i>", lazyterm, { desc = "Toggle Terminal", remap = true })
 
 --color scheme
-vim.keymap.set("n", "<leader>th", function() Snacks.picker.colorschemes() end, { desc = "Colorschemes" })
+vim.keymap.set("n", "<leader>th", function() require("config.colorscheme").pick() end, { desc = "Colorschemes (remembered)" })
 
 -- move selection in visual mode
 vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { desc = "Move selection up" })
