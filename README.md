@@ -27,16 +27,36 @@ and which are reference presets or recovery material.
 
 ## Setup
 
-This is a personal workstation configuration for `x86_64-linux`. It expects an
-existing Garuda/KDE installation with Nix and Home Manager available. Review
-[home-manager/machine.json](home-manager/machine.json) before applying it to
-another account or machine: it defines the username, home directory, repository
-paths, backup destination and KWallet identifiers.
+This is a personal workstation configuration for `x86_64-linux` on Garuda/KDE.
+[home-manager/machine.json](home-manager/machine.json) holds everything tied to
+one person and machine: the username, home directory, greeting name, Git
+identity, repository path, backup destination and KWallet identifiers.
+
+### On a new machine
 
 ```sh
 git clone https://github.com/Commanderx-code/dotfiles.git ~/github/projects/dotfiles
 cd ~/github/projects/dotfiles
+scripts/setup
+```
 
+`scripts/setup` asks for your greeting name, Git identity and backup drive, shows
+its plan and waits for `APPLY`. It then rewrites `machine.json` for your account,
+installs Zed, Ghostty and the other system applications with Pacman, installs Nix
+when missing, and builds and activates Home Manager. Existing files that Home
+Manager replaces are kept with a `.before-dotfiles` suffix.
+
+With an external drive mounted it also installs Restic, stores a repository
+password in KDE Wallet and creates the repository. Without one, run it again once
+the drive is attached. `scripts/setup --dry-run` asks the same questions and only
+prints what would change. Fork the repository first if you plan to commit your
+own `machine.json`.
+
+### By hand
+
+With Nix and Home Manager already available, edit `machine.json` and run:
+
+```sh
 home-manager build --flake ./home-manager#commander
 home-manager switch --flake ./home-manager#commander
 ```

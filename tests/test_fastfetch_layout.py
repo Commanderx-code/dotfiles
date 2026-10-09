@@ -210,7 +210,7 @@ class LayoutTests(unittest.TestCase):
                 if select.select([master], [], [], 0.05)[0]:
                     resized += read_chunk()
             self.assertNotIn(b'\x1b[2J', resized)
-            for marker in (b'LAYOUT', b'Hello, Commander', b'DETAIL', b'STALE_REDRAW'):
+            for marker in (b'LAYOUT', b'Hello, ', b'DETAIL', b'STALE_REDRAW'):
                 self.assertNotIn(marker, resized)
         os.write(master, b"printf 'WORK_RETAINED\\n'\n")
         read_until(b'WORK_RETAINED\r\n')

@@ -1,4 +1,4 @@
-{ ... }:
+{ machine, ... }:
 
 {
   programs.git = {
@@ -6,8 +6,8 @@
 
     settings = {
       user = {
-        name = "Commanderx-code";
-        email = "65996567+Commanderx-code@users.noreply.github.com";
+        name = machine.gitName;
+        email = machine.gitEmail;
       };
 
       init.defaultBranch = "main";

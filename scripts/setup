@@ -1,0 +1,303 @@
+#!/usr/bin/env bash
+# Guided first-time setup for a new Garuda/Arch machine: personalise
+# machine.json, install the system applications, Nix and the Home Manager
+# configuration, and prepare Restic when an external drive is attached.
+set -euo pipefail
+
+repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+machine="$repo/home-manager/machine.json"
+zed_settings="$repo/configs/zed/settings.json"
+dry_run=false
+
+case "${1:-}" in
+  '') ;;
+  --dry-run) dry_run=true ;;
+  --help | -h)
+    echo 'Usage: scripts/setup [--dry-run]'
+    echo 'Asks for your name, Git identity and backup drive, then installs everything.'
+    echo '--dry-run asks the same questions and prints what would change.'
+    exit 0
+    ;;
+  *)
+    echo "Unknown argument: $1" >&2
+    exit 1
+    ;;
+esac
+
+die() {
+  echo "Error: $*" >&2
+  exit 1
+}
+
+run() {
+  if "$dry_run"; then
+    printf 'Would run:'
+    printf ' %q' "$@"
+    printf '\n'
+  else
+    "$@"
+  fi
+}
+
+ask() {
+  local prompt=$1 default=${2:-} answer
+  while true; do
+    if [[ -n "$default" ]]; then
+      read -r -p "$prompt [$default]: " answer
+    else
+      read -r -p "$prompt: " answer
+    fi
+    answer=${answer:-$default}
+    [[ -n "$answer" ]] && break
+    echo 'A value is required.' >&2
+  done
+  printf '%s\n' "$answer"
+}
+
+# A value from machine.json, but only once it describes this account, so a
+# rerun offers your own answers and a fresh clone does not offer the author's.
+saved() {
+  python3 -I - "$machine" "$USER" "$1" <<'PY'
+import json, sys
+path, user, key = sys.argv[1:]
+try:
+    data = json.load(open(path))
+except (OSError, ValueError):
+    data = {}
+if data.get('username') == user:
+    print(data.get(key, ''))
+PY
+}
+
+((EUID != 0)) || die 'run as your normal user, without sudo.'
+[[ $(uname -m) == x86_64 ]] || die 'this configuration targets x86_64.'
+command -v pacman >/dev/null || die 'pacman was not found; this setup targets Garuda and other Arch-family systems.'
+git -C "$repo" rev-parse --git-dir >/dev/null 2>&1 || die 'clone this repository with Git; a downloaded ZIP cannot be built.'
+[[ -t 0 ]] || die 'run this in a terminal; it asks questions.'
+command -v python3 >/dev/null || run sudo pacman -S --needed python
+
+echo '==> About you'
+default_name=$(saved displayName)
+display_name=$(ask 'Name for the terminal greeting' "${default_name:-${USER^}}")
+default_git_name=$(saved gitName)
+git_name=$(ask 'Git author name' "${default_git_name:-$(git config --global user.name 2>/dev/null || true)}")
+default_git_email=$(saved gitEmail)
+git_email=$(ask 'Git author email' "${default_git_email:-$(git config --global user.email 2>/dev/null || true)}")
+
+echo
+echo '==> Backup drive'
+backup=false
+wallet=$(saved wallet)
+wallet=${wallet:-kdewallet}
+wallet_folder=$(saved walletFolder)
+wallet_folder=${wallet_folder:-Restic}
+backup_mount=$(saved backupMount)
+drives=()
+for directory in "/run/media/$USER"/*/; do
+  [[ -d "$directory" ]] && mountpoint -q "${directory%/}" && drives+=("${directory%/}")
+done
+if ((${#drives[@]} == 0)); then
+  backup_mount=${backup_mount:-/run/media/$USER/Backup}
+  echo 'No external drive is mounted, so Restic setup is skipped.'
+  echo 'Attach and unlock your backup drive, then run this script again.'
+else
+  # A saved drive that is not attached right now stays configured unless another is picked.
+  default_choice=1
+  [[ -n "$backup_mount" ]] && default_choice=0
+  for i in "${!drives[@]}"; do
+    [[ "${drives[$i]}" == "$backup_mount" ]] && default_choice=$((i + 1))
+    printf '  %d) %s (%s free)\n' "$((i + 1))" "${drives[$i]}" "$(df -h --output=avail "${drives[$i]}" | tail -n 1 | tr -d ' ')"
+  done
+  echo '  0) Skip backup setup for now'
+  while true; do
+    choice=$(ask 'Drive to keep backups on' "$default_choice")
+    [[ "$choice" =~ ^[0-9]+$ ]] && ((choice <= ${#drives[@]})) && break
+    echo 'Choose one of the listed numbers.' >&2
+  done
+  if ((choice == 0)); then
+    backup_mount=${backup_mount:-${drives[0]}}
+  else
+    backup=true
+    backup_mount=${drives[$((choice - 1))]}
+  fi
+fi
+restic_repository="$backup_mount/restic"
+wallet_entry=$(saved walletEntry)
+# Each drive keeps its own KWallet entry, named after it.
+if "$backup" || [[ -z "$wallet_entry" ]]; then
+  wallet_entry=$(basename -- "$backup_mount")
+fi
+
+echo
+echo '==> Plan'
+echo "  Greeting name:  $display_name"
+echo "  Git identity:   $git_name <$git_email>"
+echo "  Account:        $USER ($HOME)"
+echo "  Dotfiles:       $repo"
+if "$backup"; then
+  echo "  Backups:        $restic_repository (KWallet: $wallet / $wallet_folder / $wallet_entry)"
+else
+  echo '  Backups:        not set up in this run'
+fi
+echo '  Installs:       Zed, Ghostty, Konsole, KWallet, GnuPG, Nix and the Home Manager configuration'
+echo
+read -r -p 'Type APPLY to continue: ' confirmation
+[[ "$confirmation" == APPLY ]] || die 'cancelled; nothing was changed.'
+
+echo
+echo '==> Machine settings'
+settings=$(
+  DISPLAY_NAME=$display_name GIT_NAME=$git_name GIT_EMAIL=$git_email REPO=$repo \
+    BACKUP_MOUNT=$backup_mount RESTIC_REPOSITORY=$restic_repository \
+    WALLET=$wallet WALLET_FOLDER=$wallet_folder WALLET_ENTRY=$wallet_entry python3 -I - <<'PY'
+import json, os
+env = os.environ
+print(json.dumps({
+    'username': env['USER'],
+    'homeDirectory': env['HOME'],
+    'displayName': env['DISPLAY_NAME'],
+    'gitName': env['GIT_NAME'],
+    'gitEmail': env['GIT_EMAIL'],
+    'system': 'x86_64-linux',
+    'dotfilesDirectory': env['REPO'],
+    'backupMount': env['BACKUP_MOUNT'],
+    'resticRepository': env['RESTIC_REPOSITORY'],
+    'wallet': env['WALLET'],
+    'walletFolder': env['WALLET_FOLDER'],
+    'walletEntry': env['WALLET_ENTRY'],
+}, indent=2, ensure_ascii=False))
+PY
+)
+if "$dry_run"; then
+  echo "Would write $machine:"
+  printf '%s\n' "$settings"
+  echo "Would point the Nix profile paths in $zed_settings at $HOME."
+else
+  printf '%s\n' "$settings" >"$machine"
+  # Zed keeps this file writable and takes absolute paths to the Nix tools.
+  python3 -I - "$zed_settings" "$HOME" <<'PY'
+import re, sys
+from pathlib import Path
+path, home = Path(sys.argv[1]), sys.argv[2]
+text = path.read_text()
+updated = re.sub(r'"/home/[^/"]+/\.nix-profile/', lambda _: f'"{home}/.nix-profile/', text)
+if updated != text:
+    path.write_text(updated)
+PY
+  echo "Wrote $machine"
+fi
+
+echo
+echo '==> System applications'
+packages=(git zed ghostty konsole kwallet qt6-tools gnupg)
+"$backup" && packages+=(restic)
+run sudo pacman -S --needed "${packages[@]}"
+
+echo
+echo '==> Nix'
+load_nix() {
+  local profile=/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+  if [[ -r "$profile" ]]; then
+    set +u
+    # shellcheck disable=SC1090
+    . "$profile"
+    set -u
+  fi
+}
+command -v nix >/dev/null || load_nix
+if command -v nix >/dev/null; then
+  echo 'Nix is already installed.'
+elif "$dry_run"; then
+  echo 'Would download and run the Determinate Nix installer.'
+else
+  [[ ! -d /nix ]] || die '/nix exists but nix is unavailable; repair that installation first.'
+  echo 'Nix installs into /nix with build users and a system daemon.'
+  read -r -p 'Download and run the Determinate Nix installer? [y/N] ' answer
+  [[ "$answer" == [yY]* ]] || die 'Nix is required for the Home Manager configuration.'
+  installer=$(mktemp)
+  curl --fail --show-error --silent --location --proto '=https' --tlsv1.2 \
+    https://install.determinate.systems/nix -o "$installer"
+  sh "$installer" install || {
+    rm -f -- "$installer"
+    die 'the Nix installer did not finish.'
+  }
+  rm -f -- "$installer"
+  load_nix
+  command -v nix >/dev/null || die 'open a new terminal and run this script again to load Nix.'
+fi
+
+echo
+echo '==> Home Manager'
+attribute="$repo/home-manager#homeConfigurations.\"$USER\".activationPackage"
+if "$dry_run"; then
+  echo "Would build and activate $attribute"
+else
+  generation=$(nix --extra-experimental-features 'nix-command flakes' build --no-link --print-out-paths "$attribute")
+  # Garuda ships its own Fish and terminal settings; keep them beside the new ones.
+  HOME_MANAGER_BACKUP_EXT=before-dotfiles "$generation/activate"
+fi
+
+if "$backup"; then
+  echo
+  echo '==> Restic repository'
+  password_command=$(printf '%q ' kwallet-query -f "$wallet_folder" -r "$wallet_entry" "$wallet")
+  if "$dry_run"; then
+    if [[ -f "$restic_repository/config" ]]; then
+      echo "Would reuse the repository at $restic_repository."
+    else
+      echo "Would store a new password in KWallet and create $restic_repository."
+    fi
+  else
+    if ! kwallet-query -f "$wallet_folder" -r "$wallet_entry" "$wallet" >/dev/null 2>&1; then
+      if [[ -f "$restic_repository/config" ]]; then
+        echo "Enter the existing password for $restic_repository."
+      else
+        echo 'Choose a password for the new backup repository. Keep a copy away from this drive:'
+        echo 'without it the backups cannot be read.'
+      fi
+      while true; do
+        read -r -s -p 'Repository password: ' password
+        echo
+        read -r -s -p 'Repeat it: ' repeated
+        echo
+        [[ -n "$password" && "$password" == "$repeated" ]] && break
+        echo 'The passwords were empty or did not match.' >&2
+      done
+      # kwallet-query cannot create folders itself.
+      handle=$(qdbus6 org.kde.kwalletd6 /modules/kwalletd6 org.kde.KWallet.open "$wallet" 0 dotfiles-setup)
+      [[ "$handle" =~ ^[0-9]+$ ]] || die "could not open the $wallet wallet."
+      qdbus6 org.kde.kwalletd6 /modules/kwalletd6 org.kde.KWallet.createFolder "$handle" "$wallet_folder" dotfiles-setup >/dev/null
+      printf '%s' "$password" | kwallet-query -f "$wallet_folder" -w "$wallet_entry" "$wallet"
+      [[ $(kwallet-query -f "$wallet_folder" -r "$wallet_entry" "$wallet") == "$password" ]] ||
+        die "KWallet did not return the stored password; check $wallet / $wallet_folder / $wallet_entry in KWalletManager."
+      unset password repeated
+    else
+      echo "Using the password already stored in KWallet ($wallet_folder / $wallet_entry)."
+    fi
+    if [[ -f "$restic_repository/config" ]]; then
+      restic --repo "$restic_repository" --password-command "$password_command" snapshots --latest 1 >/dev/null ||
+        die "the stored password does not open $restic_repository."
+      echo "Reusing the repository at $restic_repository."
+    else
+      # udisks mounts some filesystems with a root-owned top directory. Create
+      # only a new directory there: never chown something the drive supplied.
+      if [[ ! -w "$backup_mount" ]]; then
+        [[ ! -e "$restic_repository" && ! -L "$restic_repository" ]] ||
+          die "$restic_repository already exists and is not a Restic repository; move it aside first."
+        sudo mkdir -- "$restic_repository"
+        sudo chown --no-dereference "$USER:$(id -gn)" -- "$restic_repository"
+      fi
+      restic --repo "$restic_repository" --password-command "$password_command" init
+    fi
+  fi
+fi
+
+echo
+echo 'Setup complete.'
+echo '  - Close every terminal window and open a new one.'
+echo '  - hm-rebuild applies later changes to this repository.'
+if "$backup"; then
+  echo '  - backup-personal runs your first backup; later ones start when the drive mounts.'
+else
+  echo '  - Run scripts/setup again with your backup drive attached to set up Restic.'
+fi
