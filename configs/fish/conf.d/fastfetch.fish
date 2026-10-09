@@ -1,3 +1,6 @@
+# This welcome replaces Fish's own "Welcome to fish" greeting.
+set -g fish_greeting
+
 # Print once. Repainting a fetch taller than the window on WINCH repeatedly
 # pushes copies into scrollback and competes with Fish's prompt renderer.
 if not status is-interactive
