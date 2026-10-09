@@ -46,6 +46,11 @@ installs Zed, Ghostty and the other system applications with Pacman, installs Ni
 when missing, and builds and activates Home Manager. Existing files that Home
 Manager replaces are kept with a `.before-dotfiles` suffix.
 
+It also installs the Rust, Go, Python and Node.js toolchains that Neovim's
+language tools are built with, makes Ghostty the default terminal, and copies the
+[Ghostty preset](configs/ghostty/config) when Ghostty has no config yet. An
+existing Ghostty config is left alone.
+
 With an external drive mounted it also installs Restic, stores a repository
 password in KDE Wallet and creates the repository. Without one, run it again once
 the drive is attached. `scripts/setup --dry-run` asks the same questions and only
