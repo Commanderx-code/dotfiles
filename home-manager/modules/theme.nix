@@ -287,9 +287,10 @@ in
     home.file.".local/share/konsole/Commander.colorscheme".text = konsoleScheme;
 
     # Neovim reads its colorscheme from here (see lua/plugins/colorscheme.lua).
+    # An "nvim" entry in rice.json overrides the palette's choice and survives palette switches.
     xdg.configFile."nvim/lua/config/rice.lua".text = ''
       -- Generated from configs/themes/${theme.id}.json by modules/theme.nix.
-      return { colorscheme = "${theme.apps.nvim}" }
+      return { colorscheme = "${selection.nvim or theme.apps.nvim}" }
     '';
 
     xdg.configFile."eza/theme.yml".source = yaml.generate "eza-theme.yml" ezaTheme;

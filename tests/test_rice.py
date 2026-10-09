@@ -44,6 +44,10 @@ class PaletteTests(unittest.TestCase):
     def test_selection_names_a_palette(self):
         selection = json.loads((ROOT / 'home-manager/rice.json').read_text())
         self.assertIn(selection['theme'], themes())
+        # An optional Neovim override must name an installed colorscheme plugin too.
+        if 'nvim' in selection:
+            colorschemes = (ROOT / 'configs/nvim/lua/plugins/colorscheme.lua').read_text()
+            self.assertIn(selection['nvim'].split('-')[0], colorschemes)
 
     def test_shared_prompt_palette_matches_the_eldritch_file(self):
         prompt = tomllib.loads((ROOT / 'configs/starship/starship.toml').read_text())
@@ -98,6 +102,13 @@ class RiceCommandTests(unittest.TestCase):
         # The SDDM selection is untouched and sudo is never called.
         self.assertEqual((self.repo / 'sddm/metadata.desktop').read_bytes(), metadata)
         self.assertEqual(self.log.read_text().splitlines(), ['rebuild'])
+
+    def test_neovim_override_survives_a_palette_switch_and_is_listed(self):
+        selection = self.repo / 'home-manager/rice.json'
+        selection.write_text(json.dumps({'theme': 'eldritch', 'nvim': 'tokyonight-storm'}))
+        self.assertEqual(self.rice('nord').returncode, 0)
+        self.assertEqual(json.loads(selection.read_text()), {'theme': 'nord', 'nvim': 'tokyonight-storm'})
+        self.assertIn('Neovim colorscheme: tokyonight-storm', self.rice().stdout)
 
     def test_failed_rebuild_restores_the_previous_choice(self):
         zed = (self.repo / 'configs/zed/settings.json').read_text()
