@@ -36,7 +36,13 @@ function or an explicit override. Removed upstream functions are removed only
 when the local copy still matches its recorded hash. Collisions, direct edits,
 missing files, and symlinks stop the import for review.
 
-This sync shares Fish function files. Myfish's portable startup scripts and
+The Starship prompt is shared the same way: `modules/starship.toml` in Myfish
+is imported as `configs/starship/starship.toml`, recorded under `configs` in
+`shared-source.json`. Edit the layout in Myfish. Its colours are named; dotfiles
+swaps in the palette chosen with `rice`, so changing palettes never edits the
+shared file.
+
+This sync shares Fish function files and the prompt. Myfish's portable startup scripts and
 installers, and dotfiles' workstation configuration, keep their own ownership.
 It does not attempt to translate arbitrary machine-specific changes into portable
 code or commit unfinished local edits.

@@ -39,9 +39,9 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add configs/fish/functions configs/fish/shared-source.json
+          git add configs/fish/functions configs/fish/shared-source.json configs/starship/starship.toml
           git diff --cached --check
-          git commit -m 'Sync tested shared Fish functions from Myfish'
+          git commit -m 'Sync tested shared Fish and prompt from Myfish'
           git push origin HEAD:main
       - name: Ensure the published commit receives its own validation
         env:

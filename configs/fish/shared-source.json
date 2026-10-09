@@ -24,5 +24,11 @@
     "lazyg.fish": "e527b32dbaafbfd5bb3b6dafef996566195e855097e9b4ca47252de8d10c4831",
     "mkcd.fish": "4a8e9138f0a6909b162637ee2c4c71cd68116ca7e5d2b1d147bb360c67b79d01",
     "psg.fish": "af5faaa4ee8dbefb5b40954aee39fe4083e96e438e4b5e4c13846498c3bc3b14"
+  },
+  "configs": {
+    "configs/starship/starship.toml": {
+      "source": "modules/starship.toml",
+      "sha256": "2178211425f2529d4b36d3556cc3d59cc9e291a8bba7dd53f5c3060b0a3ed0db"
+    }
   }
 }

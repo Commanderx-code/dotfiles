@@ -6,8 +6,8 @@
     ./terminal-trials.nix
   ];
 
+  # The Ghostty theme, topbar.css and Konsole's Commander colours come from modules/theme.nix.
   xdg.configFile."ghostty/spotatui.conf".source = ../../configs/ghostty/spotatui.conf;
-  xdg.configFile."ghostty/topbar.css".source = ../../configs/ghostty/topbar.css;
 
   # fzf preview helper used by Fish/fzf.
   home.file.".local/bin/fzf-preview" = {
@@ -28,7 +28,7 @@
   # Konsole global configuration.
   xdg.configFile."konsolerc".source = ../../configs/konsole/konsolerc;
 
-  # Konsole profile and color scheme.
+  # Konsole profile; Sweet stays available as an alternative scheme.
   home.file.".local/share/konsole/Garuda.profile".source = ../../configs/konsole/Garuda.profile;
 
   home.file.".local/share/konsole/Sweet.colorscheme".source = ../../configs/konsole/Sweet.colorscheme;
