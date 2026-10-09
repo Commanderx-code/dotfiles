@@ -19,6 +19,7 @@ set -l zed_settings "$DOTFILES_DIR/configs/zed/settings.json"
 function __rice_usage
     echo "Usage: rice                       show the current palette and the others"
     echo "       rice show [NAME]           colour swatches (default: the current one)"
+    echo "       rice pick [--no-rebuild]   choose from a list, with a swatch preview"
     echo "       rice NAME [--no-rebuild]"
     echo
     echo "Switching writes home-manager/rice.json and Zed's theme and rebuilds Home Manager."
@@ -83,7 +84,7 @@ if test (count $argv) -eq 0
         printf '%s%-18s %s\n' $marker $name (jq -r .name $themes_dir/$name.json)
     end
     echo
-    echo "rice show NAME previews one; rice NAME switches to it."
+    echo "rice pick chooses from a list; rice show NAME previews one; rice NAME switches to it."
     exit 0
 end
 
@@ -96,6 +97,33 @@ if test "$argv[1]" = show
     end
     __rice_swatches $themes_dir/$name.json
     exit 0
+end
+
+# rice pick: an fzf list of the palettes, each previewed with its swatches.
+if test "$argv[1]" = pick; and test (count $argv) -eq 1
+    if not command -q fzf
+        echo "rice pick needs fzf; rice lists the palettes and rice NAME switches." >&2
+        exit 1
+    end
+    set -l self (path resolve (status filename))
+    set -l choice (
+        for name in (__rice_names $themes_dir)
+            set -l marker "  "
+            test "$name" = "$current"; and set marker "* "
+            printf '%s\t%s%s\n' $name $marker (jq -r .name $themes_dir/$name.json)
+        end | fzf --ansi --no-multi --delimiter '\t' --with-nth 2 \
+            --prompt 'palette> ' --header 'Enter switches the workstation, Esc cancels (* is the current one)' \
+            --preview "fish $self show {1}" --preview-window 'right,55%,nowrap'
+    )
+    if test -z "$choice"
+        echo "No palette picked; still on $current."
+        exit 0
+    end
+    set argv (string split -f 1 \t -- $choice)
+    if test "$argv[1]" = "$current"
+        echo "Already on $current."
+        exit 0
+    end
 end
 
 set -l name $argv[1]
