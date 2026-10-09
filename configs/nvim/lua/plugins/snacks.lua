@@ -35,14 +35,6 @@ return {
             ignored = true,
             follow_file = true,
             git_status = true,
-            on_show = function(picker)
-              -- The sidebar uses a separate split underneath its floating windows.
-              local root = picker.layout.root
-              vim.api.nvim_win_call(root.win, function()
-                vim.opt_local.fillchars:append({ vert = " " })
-                root.opts.wo.fillchars = vim.wo.fillchars
-              end)
-            end,
             layout = { preset = "sidebar", layout = { position = "left" } },
             icons = { git = {
               added = "A", modified = "M", deleted = "X", renamed = "=>",

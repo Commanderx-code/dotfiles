@@ -74,6 +74,8 @@ end
 
 if test (count $argv) -eq 0
     echo "Current palette: $current"
+    set -l nvim_override (jq -r '.nvim // empty' $selection)
+    test -n "$nvim_override"; and echo "Neovim colorscheme: $nvim_override (set in rice.json)"
     echo
     for name in (__rice_names $themes_dir)
         set -l marker "  "
@@ -117,7 +119,8 @@ function __rice_restore --inherit-variable selection --inherit-variable zed_sett
     test -n "$previous_zed"; and printf '%s\n' "$previous_zed" >$zed_settings
 end
 
-jq -n --arg theme $name '{theme: $theme}' >$selection.tmp; and command mv $selection.tmp $selection
+# Only the palette changes; other choices in the file (such as "nvim") are kept.
+jq --arg theme $name '.theme = $theme' $selection >$selection.tmp; and command mv $selection.tmp $selection
 or begin
     echo "Could not write $selection" >&2
     exit 1
