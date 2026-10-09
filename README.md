@@ -79,6 +79,7 @@ For individual application configurations and Linux setup menus, see
 | `pkg-owner <command>` | Inspect whether a command comes from Pacman, Nix or another location. |
 | `pkg-install <package>` | Help choose between Home Manager and system package management. |
 | `zellij` | Start an optional terminal session. |
+| `commander-toolbox` / `toolbox` | Open [Commander Toolbox](https://github.com/Commanderx-code/commander-toolbox), fetching its newest release first. |
 | `zapfast` | Native WhatsApp client, built from its upstream flake and run through nixGL. |
 | `netwatch` / `tfm` / `cassette` | Network dashboard, visual file manager and Spotify player; see the [setup notes](configs/terminal-tools/README.md). |
 | `zwork` / `zdev` | Pick a project session or open an editor, shell and Git workspace. |
