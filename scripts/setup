@@ -128,6 +128,9 @@ if "$backup" || [[ -z "$wallet_entry" ]]; then
   wallet_entry=$(basename -- "$backup_mount")
 fi
 
+login_shell=$(getent passwd "$USER" | cut -d: -f7)
+shell_changed=false
+
 echo
 echo '==> Plan'
 echo "  Greeting name:  $display_name"
@@ -140,6 +143,9 @@ else
   echo '  Backups:        not set up in this run'
 fi
 echo '  Installs:       Zed, Ghostty, Konsole, KWallet, GnuPG, Nix and the Home Manager configuration'
+echo '  Languages:      Rust, Go, Python and Node.js, which the Neovim tools are built with'
+echo '  Terminal:       Ghostty becomes the default, with the dotfiles preset if it has no config yet'
+[[ "$login_shell" == */fish ]] || echo "  Login shell:    Fish, replacing $login_shell"
 echo
 read -r -p 'Type APPLY to continue: ' confirmation
 [[ "$confirmation" == APPLY ]] || die 'cancelled; nothing was changed.'
@@ -189,9 +195,19 @@ fi
 
 echo
 echo '==> System applications'
-packages=(git zed ghostty konsole kwallet qt6-tools gnupg)
+packages=(git fish zed ghostty konsole kwallet qt6-tools gnupg)
+# Mason builds Neovim's language servers, formatters and debuggers with these.
+packages+=(rustup go python npm base-devel unzip)
+# Any installed Node.js serves; Pacman would otherwise ask to replace it.
+command -v node >/dev/null || packages+=(nodejs-lts-jod)
 "$backup" && packages+=(restic)
 run sudo pacman -S --needed "${packages[@]}"
+# The rustup package ships no compiler until a toolchain is chosen.
+if "$dry_run"; then
+  echo 'Would select the stable Rust toolchain if none is set.'
+elif ! rustup default >/dev/null 2>&1; then
+  rustup default stable
+fi
 
 echo
 echo '==> Nix'
@@ -235,6 +251,38 @@ else
   generation=$(nix --extra-experimental-features 'nix-command flakes' build --no-link --print-out-paths "$attribute")
   # Garuda ships its own Fish and terminal settings; keep them beside the new ones.
   HOME_MANAGER_BACKUP_EXT=before-dotfiles "$generation/activate"
+fi
+
+echo
+echo '==> Ghostty'
+config_home=${XDG_CONFIG_HOME:-$HOME/.config}
+ghostty_config="$config_home/ghostty/config"
+if [[ -e "$ghostty_config" || -L "$ghostty_config" ]]; then
+  echo "Keeping the existing $ghostty_config."
+elif "$dry_run"; then
+  echo "Would copy the Ghostty preset to $ghostty_config."
+else
+  mkdir -p "$config_home/ghostty"
+  # Ghostty reads both names, so an empty config.ghostty would conflict with the preset.
+  if [[ -e "$config_home/ghostty/config.ghostty" ]]; then
+    mv -- "$config_home/ghostty/config.ghostty" "$HOME/ghostty-config.ghostty.before-dotfiles"
+  fi
+  # A writable copy: Home Manager owns only the theme and tab bar beside it.
+  install -m 644 "$repo/configs/ghostty/config" "$ghostty_config"
+  echo "Copied the Ghostty preset to $ghostty_config."
+fi
+run kwriteconfig6 --file kdeglobals --group General --key TerminalApplication '/usr/bin/ghostty --gtk-single-instance=true'
+run kwriteconfig6 --file kdeglobals --group General --key TerminalService com.mitchellh.ghostty.desktop
+
+echo
+echo '==> Login shell'
+# Terminals open the login shell, and the Fish configuration is the one set up here.
+if [[ "$login_shell" == */fish ]]; then
+  echo 'Fish is already the login shell.'
+elif run chsh -s /usr/bin/fish; then
+  shell_changed=true
+else
+  echo 'The login shell was not changed; run chsh -s /usr/bin/fish yourself.' >&2
 fi
 
 if "$backup"; then
@@ -294,7 +342,11 @@ fi
 
 echo
 echo 'Setup complete.'
-echo '  - Close every terminal window and open a new one.'
+if "$shell_changed"; then
+  echo '  - Log out and back in: terminals open Fish only after a new login.'
+else
+  echo '  - Close every terminal window and open a new one.'
+fi
 echo '  - hm-rebuild applies later changes to this repository.'
 if "$backup"; then
   echo '  - backup-personal runs your first backup; later ones start when the drive mounts.'
