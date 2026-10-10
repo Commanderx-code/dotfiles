@@ -16,6 +16,8 @@ adjust-cell-height = 8%
 window-padding-x = 14
 window-padding-y = 12
 window-padding-balance = true
+# Full-screen apps such as Neovim paint to the window edge instead of leaving a frame.
+window-padding-color = extend
 
 # Default opening dimensions, in terminal cells.
 window-width = 125
