@@ -200,6 +200,8 @@ packages=(git fish zed ghostty konsole kwallet qt6-tools gnupg)
 packages+=(rustup go python npm base-devel unzip)
 # Any installed Node.js serves; Pacman would otherwise ask to replace it.
 command -v node >/dev/null || packages+=(nodejs-lts-jod)
+# iwgetid gives the welcome its Wi-Fi name without asking NetworkManager.
+packages+=(wireless_tools)
 "$backup" && packages+=(restic)
 run sudo pacman -S --needed "${packages[@]}"
 # The rustup package ships no compiler until a toolchain is chosen.
