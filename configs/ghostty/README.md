@@ -38,6 +38,10 @@ in System Settings. Ghostty's blur intensity is controlled by KDE on Wayland.
 Without that effect, the window still has subtle transparency.
 Set `background-opacity = 1` for an opaque background.
 
+`window-padding-color = extend` lets full-screen applications such as Neovim
+paint their background into the window padding, so no frame of the terminal's
+own background shows around them. The shell prompt keeps its normal padding.
+
 The live config loads `gtk-custom-css = ~/.config/ghostty/topbar.css` to give
 only the tab/title bar an opaque background in the palette's darkest shade. The
 terminal's 94% opacity and blur are unchanged. This stylesheet is loaded by Ghostty only;
