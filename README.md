@@ -57,6 +57,10 @@ provide, and the script installs those too: `pacman-contrib` and `paru` for the
 update commands, `pkgfile` for command suggestions (with its first package list),
 `ksshaskpass`, `libnotify`, `7zip`, `unrar` and `poppler`.
 
+It also offers a set of everyday apps, which you can decline: Brave Origin,
+LibreOffice, GitHub CLI, bottom, yt-dlp, System Monitor and Stacer, plus Proton
+Pass, Proton Mail, RustDesk and Mission Center from Flathub.
+
 With an external drive mounted it also installs Restic, stores a repository
 password in KDE Wallet and creates the repository. Without one, run it again once
 the drive is attached. `scripts/setup --dry-run` asks the same questions and only

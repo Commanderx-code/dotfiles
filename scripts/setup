@@ -132,6 +132,14 @@ login_shell=$(getent passwd "$USER" | cut -d: -f7)
 shell_changed=false
 
 echo
+echo '==> Everyday apps'
+echo '  Brave Origin, LibreOffice, GitHub CLI, bottom, yt-dlp, System Monitor and Stacer,'
+echo '  plus Proton Pass, Proton Mail, RustDesk and Mission Center from Flathub.'
+read -r -p 'Install these too? [Y/n] ' answer
+apps=true
+[[ "$answer" == [nN]* ]] && apps=false
+
+echo
 echo '==> Plan'
 echo "  Greeting name:  $display_name"
 echo "  Git identity:   $git_name <$git_email>"
@@ -145,6 +153,9 @@ fi
 echo '  Installs:       Zed, Ghostty, Konsole, KWallet, GnuPG, Nix and the Home Manager configuration'
 echo '  Languages:      Rust, Go, Python and Node.js, which the Neovim tools are built with'
 echo '  Shell helpers:  the Pacman tools, archive tools and notifier that the Fish commands call'
+if "$apps"; then
+  echo '  Everyday apps:  the browser, office, monitoring, Proton and remote desktop apps listed above'
+fi
 echo '  Terminal:       Ghostty becomes the default, with the dotfiles preset if it has no config yet'
 [[ "$login_shell" == */fish ]] || echo "  Login shell:    Fish, replacing $login_shell"
 echo
@@ -210,6 +221,11 @@ packages+=(pacman-contrib pkgfile ksshaskpass libnotify 7zip unrar poppler)
 # upgrade and full-upgrade-devel use paru, which Garuda's repositories carry
 # and plain Arch's do not.
 pacman -Si paru >/dev/null 2>&1 && packages+=(paru)
+if "$apps"; then
+  packages+=(libreoffice-fresh github-cli bottom yt-dlp plasma-systemmonitor flatpak)
+  # Brave Origin comes from Chaotic-AUR, which plain Arch does not enable.
+  pacman -Si brave-origin-bin >/dev/null 2>&1 && packages+=(brave-origin-bin)
+fi
 "$backup" && packages+=(restic)
 run sudo pacman -S --needed "${packages[@]}"
 # Command suggestions read a per-user package file list, which starts out missing.
@@ -224,6 +240,21 @@ if "$dry_run"; then
   echo 'Would select the stable Rust toolchain if none is set.'
 elif ! rustup default >/dev/null 2>&1; then
   rustup default stable
+fi
+
+if "$apps"; then
+  echo
+  echo '==> Everyday apps'
+  # A failed download here should not stop the rest of the setup.
+  run sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo &&
+    run sudo flatpak install -y flathub me.proton.Pass me.proton.Mail com.rustdesk.RustDesk io.missioncenter.MissionCenter ||
+    echo 'Some Flathub apps were not installed; install them from Discover later.' >&2
+  # Stacer is only in the AUR.
+  if "$dry_run" || command -v paru >/dev/null; then
+    run paru -S --needed stacer-bin || echo 'Stacer was not installed; run paru -S stacer-bin later.' >&2
+  else
+    echo 'Stacer needs an AUR helper such as paru; skipped.'
+  fi
 fi
 
 echo
