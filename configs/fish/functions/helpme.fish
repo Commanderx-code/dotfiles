@@ -84,7 +84,6 @@ function helpme --description "Show Commander shortcuts, tools, and Config Bible
     echo "  $c""serve [port]$n          → quick web server (default 8000)"
     echo "  $c""dirsize$n               → size of current directory"
     echo "  $c""psg <name>$n            → search running processes"
-    echo "  $c""docker-clean$n          → prune Docker resources"
     echo "  $c""extract <file>$n        → extract common archive formats"
     echo ""
 
