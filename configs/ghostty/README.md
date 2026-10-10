@@ -194,7 +194,6 @@ The image preview helper selects Kitty graphics in Ghostty and Sixel in
 Konsole. Fish syntax colors use the terminal palette; Starship has its own
 explicit colors, so changing Ghostty's theme does not recolor the entire prompt.
 
-Some helpers are intentionally specific: `kssh` invokes Kitty's SSH kitten.
 `clickpaste` uses `wl-paste` and `dotool` on KDE Wayland, with `xclip` and
 `xdotool` as an X11 fallback. Run it, then click the target within three seconds;
 `clickpaste --delay 5` gives more time. `clickpaste --check` checks dependencies
