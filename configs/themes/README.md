@@ -29,9 +29,13 @@ palette (see `backup-sddm` and `restore-sddm`).
 | `tokyonight-storm` | tokyonight-storm | Tokyo Night Storm | ansi |
 | `nord` | nord | Nord | Nord |
 | `gruvbox` | gruvbox-baby | Gruvbox Dark | gruvbox-dark |
+| `sweet` | tokyonight-night | Tokyo Night | ansi |
 
 `ansi` means bat and delta highlight with the terminal's own sixteen colours,
 which are the palette's.
+
+Sweet takes its terminal colours from Konsole's Sweet scheme. Neovim and Zed
+have no Sweet theme, so it pairs them with Tokyo Night, the closest in tone.
 
 To give Neovim its own colorscheme whatever the palette, pick one in Neovim
 with `<leader>th`: the picker saves it as the `"nvim"` entry of
