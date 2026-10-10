@@ -1,13 +1,10 @@
 # Personal command aliases and interactive abbreviations.
-alias spico="sudo pico"
 alias snano="sudo nano"
 alias vim="nvim"
 alias history="history | fzf"
 alias fixpacman 'sudo rm /var/lib/pacman/db.lck'
-alias fresh="fr"
 alias toolbox="commander-toolbox"
 
-alias web="cd /var/www/html"
 alias da='date "+%Y-%m-%d %A %T %Z"'
 
 alias cp="cp -i"
@@ -52,10 +49,5 @@ end
 
 alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
 
-alias kssh="kitty +kitten ssh"
 alias sha1="openssl sha1"
 alias mountedinfo="df -hT"
-
-alias docker-clean='docker container prune -f; docker image prune -f; docker network prune -f; docker volume prune -f'
-alias hug="systemctl --user restart hugo"
-alias lanm="systemctl --user restart lan-mouse"
