@@ -144,6 +144,7 @@ else
 fi
 echo '  Installs:       Zed, Ghostty, Konsole, KWallet, GnuPG, Nix and the Home Manager configuration'
 echo '  Languages:      Rust, Go, Python and Node.js, which the Neovim tools are built with'
+echo '  Shell helpers:  the Pacman tools, archive tools and notifier that the Fish commands call'
 echo '  Terminal:       Ghostty becomes the default, with the dotfiles preset if it has no config yet'
 [[ "$login_shell" == */fish ]] || echo "  Login shell:    Fish, replacing $login_shell"
 echo
@@ -202,8 +203,22 @@ packages+=(rustup go python npm base-devel unzip)
 command -v node >/dev/null || packages+=(nodejs-lts-jod)
 # iwgetid gives the welcome its Wi-Fi name without asking NetworkManager.
 packages+=(wireless_tools)
+# Called by the Fish configuration: checkupdates and paccache (update, cleanup),
+# command suggestions, the SSH key prompt, finished-command notifications,
+# archive extraction and PDF previews.
+packages+=(pacman-contrib pkgfile ksshaskpass libnotify 7zip unrar poppler)
+# upgrade and full-upgrade-devel use paru, which Garuda's repositories carry
+# and plain Arch's do not.
+pacman -Si paru >/dev/null 2>&1 && packages+=(paru)
 "$backup" && packages+=(restic)
 run sudo pacman -S --needed "${packages[@]}"
+# Command suggestions read a per-user package file list, which starts out missing.
+pkgfile_cache=${XDG_CACHE_HOME:-$HOME/.cache}/pkgfile
+if [[ ! -d "$pkgfile_cache" ]]; then
+  run mkdir -p "$pkgfile_cache"
+  run pkgfile --cachedir "$pkgfile_cache" --update ||
+    echo "The package file list was not downloaded; run pkgfile --cachedir $pkgfile_cache --update later." >&2
+fi
 # The rustup package ships no compiler until a toolchain is chosen.
 if "$dry_run"; then
   echo 'Would select the stable Rust toolchain if none is set.'
