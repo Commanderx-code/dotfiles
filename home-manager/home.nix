@@ -30,6 +30,16 @@
   # No "unread news items" reminder after each rebuild; `home-manager news` still shows them.
   news.display = "silent";
 
+  # Every rebuild leaves a generation behind. Once a week, drop those older
+  # than two weeks and the store paths only they used; the current one stays.
+  services.home-manager.autoExpire = {
+    enable = true;
+    frequency = "weekly";
+    timestamp = "-14 days";
+    store.cleanup = true;
+    store.options = "--delete-older-than 14d";
+  };
+
   home.file.".local/bin/backup-sddm" = {
     source = ./scripts/backup-sddm.sh;
     executable = true;
