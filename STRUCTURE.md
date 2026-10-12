@@ -144,6 +144,8 @@ sockets, lock files, and random-seed state are excluded from its archive.
 dates, snapshot metadata, backup service results, and unfinished capture folders.
 It works offline and never unlocks KWallet. `backup-health --json` provides the
 same information for automation; exit 1 means attention or verification is needed.
+A daily timer runs `backup-health --remind`, which sends a desktop notification
+once the last successful backup is more than three days old.
 Personal backup dates start being recorded after installing this version and
 completing a successful backup. An unknown date is not evidence of a failed backup.
 A personal backup older than 24 hours is flagged for review.

@@ -151,6 +151,35 @@ sys.exit(int(sys.argv[2]))
             (self.root / '.system-backup-capture-failed').mkdir()
             self.assertTrue(health.collect(env)['needs_attention'])
 
+    def test_reminder_waits_a_few_days_and_names_the_next_step(self):
+        def report(age, mounted=False):
+            job = {'completed_at': None} if age is None else {'completed_at': 'recorded', 'age_days': age}
+            return {'jobs': {'backup': job}, 'drive_mounted': mounted}
+
+        self.assertIsNone(health.reminder(report(0.5)))
+        self.assertIsNone(health.reminder(report(2.9)))
+        self.assertEqual(health.reminder(report(10.4)),
+                         ('Backup overdue', 'Last successful backup: 10 days ago. Connect the backup drive to run it.'))
+        self.assertIn('Run backup-health', health.reminder(report(4, mounted=True))[1])
+        self.assertIn('never recorded', health.reminder(report(None))[1])
+
+    def test_remind_notifies_only_when_overdue(self):
+        env = dict(RESTIC_REPOSITORY=str(self.root / 'repo'), DOTFILES_DIR=str(self.root),
+                   BACKUP_MOUNT=str(self.root / 'drive'), XDG_STATE_HOME=str(self.root / 'state'),
+                   BACKUP_NOTIFIER='notifier-fixture')
+        units = subprocess.CompletedProcess([], 0, 'LoadState=loaded\nResult=success\n')
+        for age, sent in [(10, True), (1, False)]:
+            with self.subTest(age=age), patch.dict(os.environ, env), \
+                 patch.object(sys, 'argv', ['backup-health', '--remind']), \
+                 patch.object(health.subprocess, 'run', return_value=units) as run, \
+                 patch.object(health, 'completion',
+                              return_value={'status': 'overdue', 'completed_at': 'recorded', 'age_days': age}):
+                self.assertEqual(health.main(), 0)
+                notified = [call.args[0] for call in run.call_args_list if call.args[0][0] == 'notifier-fixture']
+                self.assertEqual(len(notified), 1 if sent else 0)
+                if sent:
+                    self.assertEqual(notified[0][1:3], ['--app-name=Backups', 'Backup overdue'])
+
     def test_gnupg_archive_layout_excludes_runtime_files_and_cleans_failure(self):
         # GPG is a fixture sink; no actual keyring is read and no passphrase is needed.
         keyring = self.root / '.gnupg'
