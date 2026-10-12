@@ -52,6 +52,37 @@
     };
   };
 
+  # Backups only run when the drive is connected, so nothing fails while it
+  # stays unplugged. This says so once the last backup is a few days old.
+  systemd.user.services.backup-reminder = {
+    Unit = {
+      Description = "Remind about an overdue backup";
+      After = [ "graphical-session.target" ];
+    };
+
+    Service = {
+      Type = "oneshot";
+      Environment = [ "BACKUP_NOTIFIER=${pkgs.libnotify}/bin/notify-send" ];
+      ExecStart = "%h/.local/bin/backup-health --remind";
+    };
+  };
+
+  systemd.user.timers.backup-reminder = {
+    Unit = {
+      Description = "Daily check for an overdue backup";
+    };
+
+    Timer = {
+      OnCalendar = "daily";
+      Persistent = true;
+      RandomizedDelaySec = "30m";
+    };
+
+    Install = {
+      WantedBy = [ "timers.target" ];
+    };
+  };
+
   systemd.user.services.restic-maintenance = {
     Unit = {
       Description = "Prune old Restic snapshots and verify repository";
