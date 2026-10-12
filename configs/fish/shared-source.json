@@ -29,6 +29,14 @@
     "configs/starship/starship.toml": {
       "source": "modules/starship.toml",
       "sha256": "097e0a514e2de68699c21aea301be1d32c2f55e1ccd51b0f2a4e83f52eb1c943"
+    },
+    "configs/fish/conf.d/done.fish": {
+      "source": "modules/fish/conf.d/80-done.fish",
+      "sha256": "0fa573826be05f09b93a0074b24475e5ca71abf3d4aba31613f75f8af30c8f8d"
+    },
+    "configs/fish/conf.d/theme.fish": {
+      "source": "modules/fish/conf.d/20-colors.fish",
+      "sha256": "0567700b89b8f231a5fbc0652db3a0657e64d3e7d6c22b08e08dd3e813bacefc"
     }
   }
 }
