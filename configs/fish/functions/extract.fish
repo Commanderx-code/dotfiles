@@ -1,6 +1,10 @@
-function extract
-    if not test -f $argv[1]
-        echo "❌ File not found: $argv[1]"
+function extract --description 'Extract an archive into the current directory'
+    if test (count $argv) -ne 1
+        echo 'Usage: extract <archive-file>' >&2
+        return 1
+    end
+    if not test -f "$argv[1]"
+        echo "❌ File not found: $argv[1]" >&2
         return 1
     end
 
@@ -26,6 +30,7 @@ function extract
         case "*.7z"
             7z x $argv[1]
         case "*"
-            echo "Unknown archive: $argv[1]"
+            echo "Unknown archive: $argv[1]" >&2
+            return 1
     end
 end

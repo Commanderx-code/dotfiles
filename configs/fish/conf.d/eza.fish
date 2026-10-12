@@ -12,7 +12,7 @@ if set -q EZA_COLORS
 end
 
 # Replacements
-alias ls="eza --icons --group-directories-first --colour=always"
+alias ls="eza --icons --group-directories-first"
 alias ll="eza -lh --icons --group-directories-first --time-style=long-iso"
 alias la="eza -lha --icons --group-directories-first"
 alias tree="eza --tree --level=2 --icons"
