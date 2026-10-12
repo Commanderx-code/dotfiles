@@ -120,7 +120,7 @@ in
           pane size="65%" name="Editor" command="${pkgs.neovim}/bin/nvim" focus=true
           pane {
             pane name="Fish"
-            pane name="Git" command="${pkgs.lazygit}/bin/lazygit" start_suspended=true
+            pane name="Git" command="${pkgs.lazygit}/bin/lazygit"
           }
         }
       }

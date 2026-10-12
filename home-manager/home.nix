@@ -1,4 +1,4 @@
-{ machine, ... }:
+{ machine, lib, ... }:
 
 {
   imports = [
@@ -40,67 +40,30 @@
     store.options = "--delete-older-than 14d";
   };
 
-  home.file.".local/bin/backup-sddm" = {
-    source = ./scripts/backup-sddm.sh;
-    executable = true;
-  };
-
-  home.file.".local/bin/restore-sddm" = {
-    source = ./scripts/restore-sddm.sh;
-    executable = true;
-  };
-
-  home.file.".local/bin/backup-system-state" = {
-    source = ./scripts/backup-system-state.fish;
-    executable = true;
-  };
-
-  home.file.".local/bin/backup-secrets" = {
-    source = ./scripts/backup-secrets.fish;
-    executable = true;
-  };
-
-  home.file.".local/bin/backup-personal" = {
-    source = ./scripts/backup-personal.fish;
-    executable = true;
-  };
-  home.file.".local/bin/backup-everything" = {
-    source = ./scripts/backup-everything.fish;
-    executable = true;
-  };
-  home.file.".local/bin/backup-restic-credential" = {
-    source = ./scripts/backup-restic-credential.fish;
-    executable = true;
-  };
-  home.file.".local/bin/restore-system" = {
-    source = ./scripts/restore-system.fish;
-    executable = true;
-  };
-  home.file.".local/bin/pkg-owner" = {
-    source = ./scripts/pkg-owner.fish;
-    executable = true;
-  };
-
-  home.file.".local/bin/pkg-install" = {
-    source = ./scripts/pkg-install.fish;
-    executable = true;
-  };
-
-  home.file.".local/bin/hm-rebuild" = {
-    source = ./scripts/hm-rebuild.fish;
-    executable = true;
-  };
-
-  home.file.".local/bin/rice" = {
-    source = ./scripts/rice.fish;
-    executable = true;
-  };
-  home.file.".local/bin/backup-app-inventory" = {
-    source = ./scripts/backup-app-inventory.fish;
-    executable = true;
-  };
-  home.file.".local/bin/restore-apps" = {
-    source = ./scripts/restore-apps.fish;
-    executable = true;
-  };
+  # Commands installed into ~/.local/bin, each from a script in ./scripts.
+  home.file =
+    lib.mapAttrs'
+      (
+        name: source:
+        lib.nameValuePair ".local/bin/${name}" {
+          inherit source;
+          executable = true;
+        }
+      )
+      {
+        backup-sddm = ./scripts/backup-sddm.sh;
+        restore-sddm = ./scripts/restore-sddm.sh;
+        backup-system-state = ./scripts/backup-system-state.fish;
+        backup-secrets = ./scripts/backup-secrets.fish;
+        backup-personal = ./scripts/backup-personal.fish;
+        backup-everything = ./scripts/backup-everything.fish;
+        backup-restic-credential = ./scripts/backup-restic-credential.fish;
+        restore-system = ./scripts/restore-system.fish;
+        pkg-owner = ./scripts/pkg-owner.fish;
+        pkg-install = ./scripts/pkg-install.fish;
+        hm-rebuild = ./scripts/hm-rebuild.fish;
+        rice = ./scripts/rice.fish;
+        backup-app-inventory = ./scripts/backup-app-inventory.fish;
+        restore-apps = ./scripts/restore-apps.fish;
+      };
 }
