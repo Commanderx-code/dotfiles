@@ -1,11 +1,11 @@
 function fzf_rg_search --description "Search text with ripgrep + fzf and open result in nvim"
     if not command -q rg
-        echo "ripgrep not installed: sudo pacman -S ripgrep"
+        echo "ripgrep not installed: sudo pacman -S ripgrep" >&2
         return 1
     end
 
     if not command -q fzf
-        echo "fzf not installed: sudo pacman -S fzf"
+        echo "fzf not installed: sudo pacman -S fzf" >&2
         return 1
     end
 
