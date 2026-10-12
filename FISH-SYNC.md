@@ -25,7 +25,7 @@ hashes, and six explicit workstation overrides. Imported functions have a source
 comment at the top. CI rejects direct changes to these copies. Their fixes belong
 in Myfish, so Linux and macOS are checked before dotfiles receives them.
 
-Your startup snippets, personal functions, archive commands, direct `fdi`/`rgi`
+Your other startup snippets, personal functions, archive commands, direct `fdi`/`rgi`
 shortcuts, expanded text-search roots, key bindings, and LAN server command remain
 owned by dotfiles. The overrides are deliberate differences, not shared copies.
 To make another function workstation-specific, record the reason in `overrides`
@@ -42,7 +42,13 @@ is imported as `configs/starship/starship.toml`, recorded under `configs` in
 swaps in the palette chosen with `rice`, so changing palettes never edits the
 shared file.
 
-This sync shares Fish function files and the prompt. Myfish's portable startup scripts and
+Two startup snippets are shared too, because both repositories need the same
+file: the long-running command notifications (`80-done.fish`, imported as
+`conf.d/done.fish`) and the syntax colours (`20-colors.fish`, imported as
+`conf.d/theme.fish`). The other startup snippets differ on purpose and stay
+separate.
+
+This sync shares Fish function files, the prompt and those two snippets. Myfish's other startup scripts and
 installers, and dotfiles' workstation configuration, keep their own ownership.
 It does not attempt to translate arbitrary machine-specific changes into portable
 code or commit unfinished local edits.
