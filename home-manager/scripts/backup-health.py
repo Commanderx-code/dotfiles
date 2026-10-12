@@ -11,6 +11,8 @@ import time
 
 JOBS = {'backup': 86400, 'maintenance': 7 * 86400, 'deep-check': 30 * 86400}
 UNITS = ['backup-on-mount.service', 'restic-maintenance.service', 'restic-deep-check.service']
+# The drive is connected by hand, so a reminder waits a few days rather than one.
+REMIND_AFTER_DAYS = 3
 
 
 def completion(stamp, interval, now):
@@ -61,11 +63,29 @@ def collect(env=os.environ):
     return report
 
 
+def reminder(report):
+    """The desktop notification to send when the last backup is too old, if any."""
+    job = report['jobs']['backup']
+    if job['completed_at'] and job['age_days'] < REMIND_AFTER_DAYS:
+        return None
+    age = f"{int(job['age_days'])} days ago" if job['completed_at'] else 'never recorded'
+    step = 'Run backup-health for details.' if report['drive_mounted'] else 'Connect the backup drive to run it.'
+    return 'Backup overdue', f'Last successful backup: {age}. {step}'
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--json', action='store_true')
+    parser.add_argument('--remind', action='store_true',
+                        help='only send a desktop notification when the last backup is overdue')
     args = parser.parse_args()
     report = collect()
+    if args.remind:
+        message = reminder(report)
+        if message:
+            subprocess.run([os.environ.get('BACKUP_NOTIFIER', 'notify-send'), '--app-name=Backups', *message],
+                           check=True)
+        return 0
     if args.json:
         print(json.dumps(report, indent=2))
     else:
