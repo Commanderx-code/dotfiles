@@ -1,7 +1,7 @@
 {
   "version": 1,
   "repository": "Commanderx-code/Myfish",
-  "revision": "ac4c75441124371faf663ae17152ee8a3e3804f5",
+  "revision": "420e889298f649d56d70f05cde81e08daa03d477",
   "overrides": {
     "extract.fish": "Workstation archive commands, including unrar.",
     "fdi.fish": "Direct editor shortcut rather than a command-line widget.",
@@ -28,7 +28,7 @@
   "configs": {
     "configs/starship/starship.toml": {
       "source": "modules/starship.toml",
-      "sha256": "2178211425f2529d4b36d3556cc3d59cc9e291a8bba7dd53f5c3060b0a3ed0db"
+      "sha256": "e6614ed03d634f02be983e18751e8345bbada04320620dd5dd10cb11200a5f18"
     }
   }
 }
