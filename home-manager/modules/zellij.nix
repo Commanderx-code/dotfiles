@@ -71,6 +71,9 @@ in
       default_shell = "${pkgs.fish}/bin/fish";
       default_mode = "locked";
       default_layout = "commander";
+      # A pane's shell is the top level there, so the prompt's nested-shell
+      # marker shows only for shells started inside a pane.
+      env.SHLVL = 0;
     };
     extraConfig = ''
       // The palette chosen with `rice` (modules/theme.nix).
