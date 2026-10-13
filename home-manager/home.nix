@@ -67,11 +67,15 @@
         restore-apps = ./scripts/restore-apps.fish;
       };
 
-  # Garuda's own ~/.config/environment.d/garuda.conf sets BROWSER to FireDragon,
-  # which is not installed here, so command-line tools such as gh failed to open
-  # a page. These files load in name order and later ones win; this one sorts
-  # after garuda.conf. Takes effect at the next login.
-  xdg.configFile."environment.d/zz-browser.conf".text = ''
+  # Garuda's own ~/.config/environment.d/garuda.conf names programs this
+  # workstation does not use: FireDragon, which is not installed (so gh and other
+  # command-line tools failed to open a page), micro as EDITOR, and a VISUAL
+  # value in curly quotes that no program can run. These files load in name
+  # order and later ones win; this one sorts after garuda.conf. The editor
+  # matches conf.d/exports.fish. Takes effect at the next login.
+  xdg.configFile."environment.d/zz-workstation.conf".text = ''
     BROWSER=brave
+    EDITOR=nvim
+    VISUAL=nvim
   '';
 }
