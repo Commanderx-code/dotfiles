@@ -1,7 +1,7 @@
 { config, lib, ... }:
 
-# Plasma settings owned by these dotfiles: the palette's colour scheme and the
-# shared fixed-width font. Everything else in Plasma (panels, shortcuts, window
+# Plasma settings owned by these dotfiles: the palette's colour scheme, the
+# shared fixed-width font and title bars on maximized windows. Everything else in Plasma (panels, shortcuts, window
 # decorations, Kvantum) keeps the settings made in System Settings; plasma-manager
 # writes only the keys declared here (overrideConfig stays off).
 let
@@ -100,5 +100,9 @@ in
       family = "JetBrainsMono Nerd Font Mono";
       pointSize = 10;
     };
+    # Garuda hides the title bar of a maximized window, expecting a panel widget
+    # with the window buttons. This panel has none, so keep the title bar and
+    # its minimize, maximize and close buttons.
+    kwin.borderlessMaximizedWindows = false;
   };
 }
