@@ -38,6 +38,19 @@ in System Settings. Ghostty's blur intensity is controlled by KDE on Wayland.
 Without that effect, the window still has subtle transparency.
 Set `background-opacity = 1` for an opaque background.
 
+For a background image, create `~/.config/ghostty/background.conf`; the preset
+loads it when it exists. The picture itself stays outside this repository:
+
+```
+background-image = ~/Pictures/wallpapers/astronomy-3082853_1920.jpg
+background-image-fit = cover
+background-image-position = center
+background-image-opacity = 0.3
+```
+
+A dark, low-detail picture at 0.15 to 0.3 keeps text readable. Each split draws
+its own copy of the image. Delete the file and reload for a plain window.
+
 `window-padding-color = extend` lets full-screen applications such as Neovim
 paint their background into the window padding, so no frame of the terminal's
 own background shows around them. The shell prompt keeps its normal padding.

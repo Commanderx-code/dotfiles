@@ -8,6 +8,9 @@ gtk-custom-css = ~/.config/ghostty/topbar.css
 background-opacity = 0.9
 background-blur = true
 window-theme = dark
+# A background image is a per-machine choice: background.conf beside this file is
+# loaded when it exists (see the README), and the window stays plain without it.
+config-file = ?background.conf
 
 # The Nerd Font is already provided by Home Manager.
 font-family = MesloLGS Nerd Font
