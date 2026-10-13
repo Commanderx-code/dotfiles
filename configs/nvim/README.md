@@ -5,7 +5,8 @@ LazyVim manages plugins, languages and formatting. Language extras are listed in
 `lazyvim.json` so LazyVim orders their integrations.
 
 Home Manager installs this folder read-only and provides nil, nixfmt, statix,
-marksman, markdownlint-cli2, markdown-toc and prettier. The Markdown rendering and
+marksman, markdownlint-cli2, markdown-toc, prettier, the tree-sitter CLI, and the
+basedpyright, ruff and Bash language servers it shares with Zed. The Markdown rendering and
 browser-preview plugins are pinned by Nix; their specs are in the generated
 `lua/plugins/nix-dependencies.lua`. Plugin versions are recorded in
 `lazy-lock.json` in this checkout.
@@ -40,7 +41,8 @@ A/M/X/=>/?/[/]/S/Y; a staged S takes precedence.
 
 ## Behaviour
 
-- The explorer opens once, on the first named file, and follows the current file.
+- The explorer opens once, on the first named file, without taking the cursor, and
+  follows the current file.
   Dotfiles and ignored files stay visible.
 - Autosave waits 750 ms after a normal-mode edit or leaving Insert mode, cancels
   while you type and reports only failures.
