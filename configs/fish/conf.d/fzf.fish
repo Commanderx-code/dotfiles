@@ -2,8 +2,6 @@
 # FZF (Fish)
 # -----------------------------
 
-# Load fzf fish keybindings + completion
-
 # Default file list for plain `fzf` and Ctrl+T
 set -l _fzf_fd_base "fd --type f --hidden --exclude .git --exclude node_modules --exclude .cache --exclude .cargo --exclude go/pkg/mod --exclude .local/share"
 
@@ -15,6 +13,8 @@ set -gx FZF_ALT_C_COMMAND "fd --type d --hidden --exclude .git --exclude node_mo
 
 # Full-screen fzf.
 # Important: no --height here. Full-screen mode clears sixel previews much better.
+# The preview assumes each line is a path; pickers that list anything else
+# pass --no-preview.
 set -gx FZF_DEFAULT_OPTS "--layout=reverse --border --ansi --preview-window=right,60%,nowrap --preview='$HOME/.local/bin/fzf-preview {}' --bind='ctrl-/:toggle-preview'"
 
 # Ctrl+T file picker preview

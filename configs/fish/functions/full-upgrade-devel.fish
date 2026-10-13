@@ -2,8 +2,13 @@ function full-upgrade-devel --description "Full upgrade including -git/VCS packa
     echo " Updating development/VCS packages..."
     echo
 
+    # Check both tools first, so a missing one is reported before anything runs.
     if not command -q paru
-        echo "ℹ️ paru not installed"
+        echo "ℹ️ paru not installed" >&2
+        return 1
+    end
+    if not command -q topgrade
+        echo "ℹ️ topgrade not installed (install: sudo pacman -S topgrade)" >&2
         return 1
     end
 
@@ -12,11 +17,6 @@ function full-upgrade-devel --description "Full upgrade including -git/VCS packa
     set -l paru_status $status
 
     echo
-
-    if not command -q topgrade
-        echo "ℹ️ topgrade not installed (install: sudo pacman -S topgrade)"
-        return 1
-    end
 
     echo " Running Topgrade..."
     topgrade
