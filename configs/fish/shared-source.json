@@ -3,7 +3,6 @@
   "repository": "Commanderx-code/Myfish",
   "revision": "75b3cdda4fa7c1d314abcbd4489a57da71eeafc7",
   "overrides": {
-    "fdi.fish": "Direct editor shortcut rather than a command-line widget.",
     "rgi.fish": "Accepts ripgrep arguments instead of prompting for a query.",
     "fzf_rg_search.fish": "Searches the workstation local-bin directory as well as the current directory.",
     "fish_user_key_bindings.fish": "Workstation Ctrl-R and history bindings.",
@@ -19,6 +18,7 @@
     "dirsize.fish": "8f27095b232af773cbc9438f37f700a8899e0e07701268dbfb67f41f3012c171",
     "extract.fish": "d091ce067d2a88f97b9d9e43cf4c6bd3247e36a48c6584628d5c6b713f3295df",
     "fcd.fish": "f7807d11e02ce3ae0847beec4da731c27baae3a621ac6b0667a337077fb4cd14",
+    "fdi.fish": "2651806fc57e6282ee67976f423b1ae7035b0359ddae72f120b49c948b7154af",
     "fzf_open_file.fish": "46bbe3cd7737bde51de901e740d57c12e1ef4945f03f2e9ce0c5719dc93d062c",
     "gcom.fish": "8dd5a0245debfd165c7ef02334a38e5853b66872726eda6704bc9e822ddd0bb5",
     "lazyg.fish": "e527b32dbaafbfd5bb3b6dafef996566195e855097e9b4ca47252de8d10c4831",
