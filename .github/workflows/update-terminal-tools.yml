@@ -16,7 +16,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      actions: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -42,9 +41,16 @@ jobs:
           git diff --cached --check
           git commit -m 'Update pinned terminal tools' -m "$SUMMARY"
           git push --force origin "$branch"
-          if [ "$(gh pr view "$branch" --json state --jq .state 2>/dev/null)" != OPEN ]; then
-            gh pr create --head "$branch" --base main --title 'Update pinned terminal tools' \
-              --body "Newer releases were published: $SUMMARY. Each hash is the SHA-256 of the downloaded release file."
+          # The description always matches the diff, also when an open pull
+          # request is refreshed with a later release.
+          body="Newer releases were published: $SUMMARY.
+
+          Each hash is the SHA-256 of the file this workflow downloaded, so it shows the pin is consistent, not that the release is trustworthy. The build runs each new program once. Look at the upstream release before approving the validation run on this pull request."
+          if [ "$(gh pr view "$branch" --json state --jq .state 2>/dev/null)" = OPEN ]; then
+            gh pr edit "$branch" --body "$body"
+          else
+            gh pr create --head "$branch" --base main --title 'Update pinned terminal tools' --body "$body"
           fi
-          # GITHUB_TOKEN pushes do not trigger workflows, so start validation here.
-          gh workflow run check.yml --ref "$branch"
+          # Validation is not started from here on purpose: it builds and runs
+          # the newly downloaded programs, so it waits for the owner to approve
+          # the run on the pull request after reading the diff.
