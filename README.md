@@ -65,6 +65,11 @@ It also offers a set of everyday apps, which you can decline: Brave Origin,
 LibreOffice, GitHub CLI, bottom, yt-dlp, System Monitor and Stacer, plus Proton
 Pass, Proton Mail, RustDesk and Mission Center from Flathub.
 
+On a machine that uses SDDM it offers the login screen as well: the SilentSDDM
+theme from the AUR with the presets in `sddm/` applied by `restore-sddm`. That
+also turns Num Lock on at the login screen and automatic login off. Preview the
+result with `/usr/share/sddm/themes/silent/test.sh` before restarting.
+
 With an external drive mounted it also installs Restic, stores a repository
 password in KDE Wallet and creates the repository. Without one, run it again once
 the drive is attached. `scripts/setup --dry-run` asks the same questions and only
