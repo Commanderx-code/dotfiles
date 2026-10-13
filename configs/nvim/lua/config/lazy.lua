@@ -20,11 +20,6 @@ require("lazy").setup({
   -- ui = {
   --   border = "rounded",
   -- },
-  -- dev = {
-  --   path = "/Users/gambhirsharma/Coding/NeoVim-Plugins-dev/",
-  --   patterns = { "gambhir" },
-  --   fallback = false,
-  -- },
   spec = {
     -- lazyvim.json lets LazyVim order extras and their integrations correctly.
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
