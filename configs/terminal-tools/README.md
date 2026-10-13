@@ -15,7 +15,7 @@ Update those pins and run the repository build checks before publishing changes.
 
 NetWatch runs without root for ordinary monitoring. Packet capture needs extra
 privileges; installation does not grant capabilities, start a daemon or change DNS.
-TFM is a beta release. Its writable settings live under `~/.config/tfm/`; image,
+TFM keeps its writable settings under `~/.config/tfm/`; image,
 video and Wayland clipboard helpers are included. Cross-application drag-and-drop
 is an upstream Kitty-specific feature.
 
