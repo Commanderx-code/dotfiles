@@ -134,7 +134,10 @@ health reporting and failure notifications.
 and protected by Restic; a fresh clone does not contain those captures. Recover
 them from your backup before using the system or application restore helpers.
 The tracked `sddm/` directory has a separate role as a login-theme customization
-source.
+source. Its `metadata.desktop` names the active preset; to use a different one on
+a single machine, put the preset's name (for example `sw`) in
+`~/.config/dotfiles/sddm-preset`. `restore-sddm` then selects it, and
+`backup-sddm` leaves the repository's choice alone.
 
 Backups do not commit or push Git changes automatically. Keep recovery passphrases
 separate from the backup drive. Follow [RECOVERY.md](RECOVERY.md) for prerequisites,

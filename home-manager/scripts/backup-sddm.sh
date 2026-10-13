@@ -30,7 +30,13 @@ cp -a "$THEME_DIR/backgrounds/." "$REPO_DIR/backgrounds/"
 # Files we customized in SilentSDDM.
 cp -a "$THEME_DIR/components/BatteryIndicator.qml" "$REPO_DIR/components/"
 cp -a "$THEME_DIR/components/LoginScreen.qml" "$REPO_DIR/components/"
+# A preset chosen only for this machine stays out of the repository.
+preset_file="${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/sddm-preset"
+repository_preset="$(grep -m 1 '^ConfigFile=' "$REPO_DIR/metadata.desktop" 2>/dev/null || true)"
 cp -a "$THEME_DIR/metadata.desktop" "$REPO_DIR/"
+if [[ -s "$preset_file" && -n "$repository_preset" ]]; then
+  sed -i "s|^ConfigFile=.*|$repository_preset|" "$REPO_DIR/metadata.desktop"
+fi
 
 # SDDM configuration.
 cp -a "$SDDM_CONF_DIR/." "$REPO_DIR/sddm-conf/"

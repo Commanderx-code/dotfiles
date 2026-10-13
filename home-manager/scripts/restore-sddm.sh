@@ -53,6 +53,19 @@ if [[ -f "$REPO_DIR/metadata.desktop" ]]; then
   sudo install -m644 "$REPO_DIR/metadata.desktop" "$THEME_DIR/metadata.desktop"
 fi
 
+# A machine can keep its own active preset: its name, such as "sw", in
+# ~/.config/dotfiles/sddm-preset replaces the repository's choice here.
+preset_file="${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/sddm-preset"
+if [[ -s "$preset_file" ]]; then
+  preset="$(head -n 1 "$preset_file" | tr -d '[:space:]')"
+  if [[ "$preset" =~ ^[A-Za-z0-9._-]+$ && -f "$THEME_DIR/configs/$preset.conf" ]]; then
+    sudo sed -i "s|^ConfigFile=.*|ConfigFile=configs/$preset.conf|" "$THEME_DIR/metadata.desktop"
+    echo "Active preset from $preset_file: $preset"
+  else
+    echo "Ignoring $preset_file: $THEME_DIR/configs has no preset named '$preset'." >&2
+  fi
+fi
+
 # The theme starts its background video with a play() call that Qt 6.12 ignores
 # while the file is still loading, leaving the login screen on the placeholder
 # image. Letting the player start by itself avoids that.
