@@ -4,7 +4,9 @@ NetWatch, TFM and Cassette are installed by the workstation's Home Manager
 configuration. They start manually; existing file managers and music players
 remain available. All three upstream Linux x86_64 releases are pinned by version
 and SHA-256 in [terminal-tools.nix](../../home-manager/terminal-tools.nix).
-Update those pins and run the repository build checks before publishing changes.
+A weekly workflow runs `scripts/update-terminal-tools.py`, which compares each pin
+with the tool's latest release and opens a pull request with the new version and
+hash; the usual build checks run on it. Run the script by hand for an update sooner.
 
 | Command | Use |
 | --- | --- |
