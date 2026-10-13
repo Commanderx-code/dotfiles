@@ -65,14 +65,23 @@ in
         opts = { server = { cmd = { "${pkgs.rust-analyzer}/bin/rust-analyzer" } } },
       },
       -- Keep language tools and browser preview reproducible through Nix.
+      -- basedpyright, ruff and bash-language-server are installed by zed.nix.
       {
         "neovim/nvim-lspconfig",
-        opts = { servers = { nil_ls = { mason = false }, marksman = { mason = false } } },
+        opts = {
+          servers = {
+            nil_ls = { mason = false },
+            marksman = { mason = false },
+            basedpyright = { mason = false },
+            ruff = { mason = false },
+            bashls = { mason = false },
+          },
+        },
       },
       {
         "mason-org/mason.nvim",
         opts = function(_, opts)
-          local provided = { ["markdownlint-cli2"] = true, ["markdown-toc"] = true, prettier = true }
+          local provided = { ["markdownlint-cli2"] = true, ["markdown-toc"] = true, prettier = true, ["tree-sitter-cli"] = true }
           opts.ensure_installed = vim.tbl_filter(function(tool) return not provided[tool] end, opts.ensure_installed or {})
         end,
       },
