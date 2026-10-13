@@ -1,7 +1,7 @@
 {
   "version": 1,
   "repository": "Commanderx-code/Myfish",
-  "revision": "c9d9160a0d3f199217afc44481b943f80881f2bf",
+  "revision": "75b3cdda4fa7c1d314abcbd4489a57da71eeafc7",
   "overrides": {
     "fdi.fish": "Direct editor shortcut rather than a command-line widget.",
     "rgi.fish": "Accepts ripgrep arguments instead of prompting for a query.",
