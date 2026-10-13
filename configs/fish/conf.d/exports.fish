@@ -31,11 +31,6 @@ for directory in "$HOME/.local/bin" "$HOME/.cargo/bin" \
     end
 end
 
-# Let Homebrew configure its own environment and paths once.
-if test -x /home/linuxbrew/.linuxbrew/bin/brew
-    /home/linuxbrew/.linuxbrew/bin/brew shellenv fish | source
-end
-
 # Export per-shell defaults without rewriting Fish's universal variables.
 set -q GOPATH; or set -gx GOPATH "$HOME/go"
 set -q GOBIN; or set -gx GOBIN "$GOPATH[1]/bin"
