@@ -3,7 +3,6 @@ local M = {}
 function M.setup()
   local group = vim.api.nvim_create_augroup("DashboardHideBars", { clear = true })
   local saved
-  local disabled = {}
 
   local function update()
     local buf = vim.api.nvim_get_current_buf()
@@ -11,22 +10,12 @@ function M.setup()
       if not saved then
         saved = { vim.o.laststatus, vim.o.showtabline, vim.o.cmdheight }
       end
-      if disabled[buf] == nil then
-        disabled[buf] = { value = vim.b[buf].lualine_disable }
-      end
-      vim.b[buf].lualine_disable = true
       vim.o.laststatus = 0
       vim.o.showtabline = 0
       vim.o.cmdheight = 0
     elseif saved then
       vim.o.laststatus, vim.o.showtabline, vim.o.cmdheight = unpack(saved)
       saved = nil
-      for dashboard_buf, state in pairs(disabled) do
-        if vim.api.nvim_buf_is_valid(dashboard_buf) then
-          vim.b[dashboard_buf].lualine_disable = state.value
-        end
-      end
-      disabled = {}
     end
   end
 
