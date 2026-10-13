@@ -1,7 +1,7 @@
 # Ghostty
 
 The [starting preset](config) uses the workstation [palette](../themes/README.md)
-(`theme = commander`), JetBrainsMono Nerd Font at 13 pt, 94% opacity, balanced
+(`theme = commander`), MesloLGS Nerd Font at 13 pt, 90% opacity, balanced
 padding, and compact Linux tabs.
 New windows open with a usable grid of 125 columns by 33 rows
 (`window-width = 125`, `window-height = 35`; the integrated tab bar takes two
@@ -44,7 +44,7 @@ own background shows around them. The shell prompt keeps its normal padding.
 
 The live config loads `gtk-custom-css = ~/.config/ghostty/topbar.css` to give
 only the tab/title bar an opaque background in the palette's darkest shade. The
-terminal's 94% opacity and blur are unchanged. This stylesheet is loaded by Ghostty only;
+terminal's 90% opacity and blur are unchanged. This stylesheet is loaded by Ghostty only;
 it does not change KDE or other GTK applications. Remove that config line to
 restore the transparent top bar.
 
