@@ -53,6 +53,13 @@ if [[ -f "$REPO_DIR/metadata.desktop" ]]; then
   sudo install -m644 "$REPO_DIR/metadata.desktop" "$THEME_DIR/metadata.desktop"
 fi
 
+# The theme starts its background video with a play() call that Qt 6.12 ignores
+# while the file is still loading, leaving the login screen on the placeholder
+# image. Letting the player start by itself avoids that.
+if [[ -f "$THEME_DIR/Main.qml" ]]; then
+  sudo sed -i 's/^\( *\)autoPlay: false/\1autoPlay: true/' "$THEME_DIR/Main.qml"
+fi
+
 # Restore SDDM configuration snippets.
 if [[ -d "$REPO_DIR/sddm-conf" ]]; then
   while IFS= read -r -d '' file; do
