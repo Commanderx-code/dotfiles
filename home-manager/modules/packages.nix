@@ -9,7 +9,6 @@
     ripgrep
     broot
     yazi
-    nnn
 
     # Monitoring / process tools
     btop
