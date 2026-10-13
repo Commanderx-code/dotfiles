@@ -72,6 +72,8 @@ changes that do not apply to an existing window.
 | Ctrl+Alt+arrow | Move between splits |
 | Ctrl+Shift+Z | Zoom / unzoom split |
 | Ctrl+Shift+= | Equalize splits |
+| Ctrl+0 / Ctrl+1 | Fullscreen, and back (both keys toggle) |
+| Ctrl+Shift+0 | Reset the font size |
 | Ctrl+Shift+F | Search scrollback |
 | Ctrl+, | Open config |
 | Ctrl+plus / minus / 0 | Increase / decrease / reset font size |
