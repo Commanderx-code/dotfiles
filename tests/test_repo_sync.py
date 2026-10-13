@@ -147,6 +147,11 @@ class ImportTests(unittest.TestCase):
 
 class LocalUpdateTests(unittest.TestCase):
     def setUp(self):
+        # The fixture repositories must not pick up this machine's Git settings,
+        # such as commit signing, which needs a key and an agent.
+        isolated = patch.dict(os.environ, GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_SYSTEM=os.devnull)
+        isolated.start()
+        self.addCleanup(isolated.stop)
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.base = Path(temporary.name)
