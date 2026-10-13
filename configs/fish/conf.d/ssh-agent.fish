@@ -8,8 +8,12 @@ set -gx SSH_AUTH_SOCK "$socket"
 
 if status is-interactive; and test -f ~/.ssh/id_ed25519
     if not ssh-add -l >/dev/null 2>&1
-        set -lx SSH_ASKPASS /usr/bin/ksshaskpass
-        set -lx SSH_ASKPASS_REQUIRE force
-        ssh-add ~/.ssh/id_ed25519 </dev/null
+        # KDE's prompt reads the passphrase from KWallet; without it ssh-add
+        # asks in the terminal as usual.
+        if test -x /usr/bin/ksshaskpass
+            SSH_ASKPASS=/usr/bin/ksshaskpass SSH_ASKPASS_REQUIRE=force ssh-add ~/.ssh/id_ed25519 </dev/null
+        else
+            ssh-add ~/.ssh/id_ed25519
+        end
     end
 end

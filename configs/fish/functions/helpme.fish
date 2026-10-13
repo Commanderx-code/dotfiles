@@ -40,11 +40,18 @@ function helpme --description "Show Commander shortcuts, tools, and Config Bible
 
     echo "$b$g🔎 Search / fzf$n"
     echo "  $c""Ctrl-P$n                → fuzzy open file"
-    echo "  $c""Ctrl-F$n                → ripgrep search → open in Neovim"
+    echo "  $c""Ctrl-F$n                → ripgrep search → open in your editor"
     echo "  $c""Ctrl-H$n                → fuzzy shell history"
     echo "  $c** + Tab$n              → fuzzy path completion"
     echo "  history                 → fuzzy shell history"
-    echo "  psg <pattern>           → search running processes"
+    echo "  $c""fdi$n                   → pick a file and open it in Neovim"
+    echo "  $c""rgi <pattern>$n         → browse ripgrep matches"
+    echo "  $c""br$n                    → broot file tree (cd on exit)"
+    echo ""
+
+    echo "$b$g🪟 Workspaces (Zellij)$n"
+    echo "  $c""zdev$n                  → editor, Fish and Git workspace here"
+    echo "  $c""zwork [dir]$n           → pick a project or session"
     echo ""
 
     echo "$b$g🏠 Home Manager$n"
@@ -64,6 +71,7 @@ function helpme --description "Show Commander shortcuts, tools, and Config Bible
     echo "  $c""restic-deep-check$n     → deeper Restic verification"
     echo "  $c""restore-system$n        → guided system-state restore"
     echo "  $c""restore-apps$n          → review / restore applications"
+    echo "  $c""backup-health$n         → when each backup last succeeded"
     echo ""
 
     echo "$b$g🛠 Updates$n"
@@ -72,6 +80,7 @@ function helpme --description "Show Commander shortcuts, tools, and Config Bible
     echo "  $c""full-upgrade$n          → full system + Topgrade update"
     echo "  $c""full-upgrade-devel$n    → full update + -git/VCS packages"
     echo "  $c""topgrade$n              → run Topgrade directly"
+    echo "  $c""cleanup$n               → orphans, package cache, Flatpak, journal"
     echo ""
 
     echo "$b$g🌱 Git$n"
@@ -85,6 +94,8 @@ function helpme --description "Show Commander shortcuts, tools, and Config Bible
     echo "  $c""dirsize$n               → size of current directory"
     echo "  $c""psg <name>$n            → search running processes"
     echo "  $c""extract <file>$n        → extract common archive formats"
+    echo "  $c""rice [palette]$n        → switch the colour palette"
+    echo "  $c""toolbox$n               → Commander toolbox menu"
     echo ""
 
     echo "$b$g📝 Neovim$n"

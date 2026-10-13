@@ -9,7 +9,7 @@ function zwork --description 'Pick a Zesh project/session without nesting Zellij
     else
         set -l choices (command zesh list)
         or return $status
-        set target (printf '%s\n' $choices | command fzf --no-multi --prompt='Zellij project > ')
+        set target (printf '%s\n' $choices | command fzf --no-multi --no-preview --prompt='Zellij project > ')
         or return 0
     end
     test -n "$target"; or return 0
