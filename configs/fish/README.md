@@ -11,7 +11,7 @@ Starship or Zoxide startup loaders.
 | --- | --- |
 | `aliases-shared.fish` | Everyday aliases and abbreviations (imported from Myfish) |
 | `aliases.fish` | Workstation-only shortcuts and abbreviations |
-| `exports.fish` | Environment, executable paths, Homebrew, Go, workstation settings |
+| `exports.fish` | Environment, executable paths, Go, workstation settings |
 | `eza-shared.fish` | Listing shortcuts (imported from Myfish) |
 | `eza.fish` | Clears a stale `EZA_COLORS`; colours come from the palette's `eza/theme.yml` |
 | `fzf.fish` | Search and preview defaults |
