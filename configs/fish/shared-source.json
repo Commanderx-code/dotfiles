@@ -3,7 +3,6 @@
   "repository": "Commanderx-code/Myfish",
   "revision": "efcf0bd60bcc31f21b151d609bb58e0e6499cf22",
   "overrides": {
-    "extract.fish": "Workstation archive commands, including unrar.",
     "fdi.fish": "Direct editor shortcut rather than a command-line widget.",
     "rgi.fish": "Accepts ripgrep arguments instead of prompting for a query.",
     "fzf_rg_search.fish": "Searches the workstation local-bin directory as well as the current directory.",
@@ -18,6 +17,7 @@
     "br.fish": "509b24a5312058c28aae8bc852276c8cbb8367e9fa40b84084055a96e5f46296",
     "cdi.fish": "de02f30dc6d9ea39eb0984e20432e52ccdef1f8c41774eebce5fb49e6f62a630",
     "dirsize.fish": "8f27095b232af773cbc9438f37f700a8899e0e07701268dbfb67f41f3012c171",
+    "extract.fish": "d091ce067d2a88f97b9d9e43cf4c6bd3247e36a48c6584628d5c6b713f3295df",
     "fcd.fish": "f7807d11e02ce3ae0847beec4da731c27baae3a621ac6b0667a337077fb4cd14",
     "fzf_open_file.fish": "46bbe3cd7737bde51de901e740d57c12e1ef4945f03f2e9ce0c5719dc93d062c",
     "gcom.fish": "8dd5a0245debfd165c7ef02334a38e5853b66872726eda6704bc9e822ddd0bb5",
@@ -37,6 +37,14 @@
     "configs/fish/conf.d/theme.fish": {
       "source": "modules/fish/conf.d/20-colors.fish",
       "sha256": "0567700b89b8f231a5fbc0652db3a0657e64d3e7d6c22b08e08dd3e813bacefc"
+    },
+    "configs/fish/conf.d/aliases-shared.fish": {
+      "source": "modules/fish/conf.d/15-aliases.fish",
+      "sha256": "825f3ae5c43c96a9645afe2381017583f3c3eb55aecf3a6a8d6c65e50964685d"
+    },
+    "configs/fish/conf.d/eza-shared.fish": {
+      "source": "modules/fish/conf.d/21-eza-aliases.fish",
+      "sha256": "34b93cfc465e15b93623073b3d1b44957ae538adb6d0407e2c15fbf55202f951"
     }
   }
 }

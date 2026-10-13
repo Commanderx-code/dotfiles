@@ -46,6 +46,7 @@ class SearchSecurity(unittest.TestCase):
                     file.chmod(0o700)
                 log = directory / 'args.json'
                 code = '''source "$argv[1]"
+set -p fish_function_path (path dirname "$argv[1]")
 function commandline
     if test "$argv[1]" = -r
         set -g test_command "$argv[3]"

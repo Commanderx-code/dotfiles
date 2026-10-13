@@ -1,4 +1,4 @@
-function fzf_rg_search --description "Search text with ripgrep + fzf and open result in nvim"
+function fzf_rg_search --description "Search text with ripgrep + fzf and open the result in an editor"
     if not command -q rg
         echo "ripgrep not installed: sudo pacman -S ripgrep" >&2
         return 1
@@ -65,10 +65,7 @@ function fzf_rg_search --description "Search text with ripgrep + fzf and open re
     set -l file "$selected[1]"
     set -l line "$selected[2]"
 
-    if command -q nvim
-        commandline -r -- (string join ' ' -- (string escape -- nvim "+$line" -- "$file"))
-        commandline -f execute
-    else
-        echo "$file:$line"
-    end
+    set -l editor (__commander_editor); or return
+    commandline -r -- (string join ' ' -- (string escape -- $editor "+$line" -- "$file"))
+    commandline -f execute
 end

@@ -42,13 +42,16 @@ is imported as `configs/starship/starship.toml`, recorded under `configs` in
 swaps in the palette chosen with `rice`, so changing palettes never edits the
 shared file.
 
-Two startup snippets are shared too, because both repositories need the same
+Four startup snippets are shared too, because both repositories need the same
 file: the long-running command notifications (`80-done.fish`, imported as
-`conf.d/done.fish`) and the syntax colours (`20-colors.fish`, imported as
-`conf.d/theme.fish`). The other startup snippets differ on purpose and stay
-separate.
+`conf.d/done.fish`), the syntax colours (`20-colors.fish`, imported as
+`conf.d/theme.fish`), the everyday aliases (`15-aliases.fish`, imported as
+`conf.d/aliases-shared.fish`) and the listing shortcuts (`21-eza-aliases.fish`,
+imported as `conf.d/eza-shared.fish`). Workstation-only aliases stay in
+`conf.d/aliases.fish`, which loads after the shared file. The other startup
+snippets differ on purpose and stay separate.
 
-This sync shares Fish function files, the prompt and those two snippets. Myfish's other startup scripts and
+This sync shares Fish function files, the prompt and those four snippets. Myfish's other startup scripts and
 installers, and dotfiles' workstation configuration, keep their own ownership.
 It does not attempt to translate arbitrary machine-specific changes into portable
 code or commit unfinished local edits.

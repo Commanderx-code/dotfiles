@@ -112,9 +112,9 @@ class Workflows(unittest.TestCase):
         (self.root / 'directory').mkdir()
         (self.root / 'file').touch()
         for alias, expected, absent in [('ldir', 'directory', 'file'), ('lf', 'file', 'directory')]:
-            result = subprocess.run([FISH, '--no-config', '-c',
+            result = subprocess.run([FISH, '--no-config', '--interactive', '-c',
                 'source $argv[1]; ' + alias + ' --color=never --icons=never $argv[2]',
-                str(ROOT / 'configs/fish/conf.d/eza.fish'), str(self.root)],
+                str(ROOT / 'configs/fish/conf.d/eza-shared.fish'), str(self.root)],
                 env=self.env, capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn(expected, result.stdout)

@@ -9,9 +9,11 @@ Starship or Zoxide startup loaders.
 
 | File in `conf.d/` | Purpose |
 | --- | --- |
-| `aliases.fish` | Personal shortcuts and interactive abbreviations |
+| `aliases-shared.fish` | Everyday aliases and abbreviations (imported from Myfish) |
+| `aliases.fish` | Workstation-only shortcuts and abbreviations |
 | `exports.fish` | Environment, executable paths, Homebrew, Go, workstation settings |
-| `eza.fish` | Listing shortcuts (colours come from the palette's `eza/theme.yml`) |
+| `eza-shared.fish` | Listing shortcuts (imported from Myfish) |
+| `eza.fish` | Clears a stale `EZA_COLORS`; colours come from the palette's `eza/theme.yml` |
 | `fzf.fish` | Search and preview defaults |
 | `theme.fish` | Fish syntax and pager colors (imported from Myfish) |
 | `fastfetch.fish` | Terminal welcome |
