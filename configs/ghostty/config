@@ -49,3 +49,8 @@ scrollback-limit = 25000000
 keybind = ctrl+shift+r=reload_config
 keybind = ctrl+shift+z=toggle_split_zoom
 keybind = ctrl+shift+equal=equalize_splits
+# Ctrl+0 goes fullscreen and Ctrl+1 comes back. Ghostty only has a toggle, so
+# either key does both; Ctrl+0 no longer resets the font size (Ctrl+Shift+0 does).
+keybind = ctrl+0=toggle_fullscreen
+keybind = ctrl+1=toggle_fullscreen
+keybind = ctrl+shift+0=reset_font_size
