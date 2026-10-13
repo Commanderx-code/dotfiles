@@ -3,7 +3,7 @@ function full-upgrade --description "Run full system and development environment
     echo
 
     if not command -q topgrade
-        echo "ℹ️ topgrade not installed (install: sudo pacman -S topgrade)"
+        echo "ℹ️ topgrade not installed (install: sudo pacman -S topgrade)" >&2
         return 1
     end
 

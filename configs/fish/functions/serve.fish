@@ -1,4 +1,4 @@
-function serve
+function serve --description 'Serve the current directory to the local network'
     set -l port 8000
     if test (count $argv) -ge 1
         set port $argv[1]
