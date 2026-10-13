@@ -66,4 +66,12 @@
         backup-app-inventory = ./scripts/backup-app-inventory.fish;
         restore-apps = ./scripts/restore-apps.fish;
       };
+
+  # Garuda's own ~/.config/environment.d/garuda.conf sets BROWSER to FireDragon,
+  # which is not installed here, so command-line tools such as gh failed to open
+  # a page. These files load in name order and later ones win; this one sorts
+  # after garuda.conf. Takes effect at the next login.
+  xdg.configFile."environment.d/zz-browser.conf".text = ''
+    BROWSER=brave
+  '';
 }
