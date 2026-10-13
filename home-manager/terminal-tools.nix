@@ -57,9 +57,9 @@ in
   tfm = binary {
     name = "tfm";
     helpText = "terminal file manager";
-    version = "0.1.0-beta.0";
-    url = "https://github.com/clarkarch/tfm-tui/releases/download/v0.1.0-beta.0/tfm-x86_64-linux.gz";
-    sha256 = "46e48344b23affa7e6dc8332b19c857a2012dc5de5eacda895cb7a9cb550eb9f";
+    version = "1.0.0";
+    url = "https://github.com/clarkarch/tfm-tui/releases/download/v1.0.0/tfm-x86_64-linux.gz";
+    sha256 = "d6201d96d763f16be567f56ab22c1dd523142b35b7a7ce4f1ffd2c5eb89f326c";
     unpack = ''gzip -dc "$src" > "$out/libexec/tfm"'';
     runtime = [
       pkgs.xdg-utils
