@@ -17,7 +17,7 @@ truth, alongside terminal settings and backup/recovery helpers.
 | **System overview** | Fastfetch with tree-style sections, a Garuda eagle logo, a rainbow ghost row, and alternative artwork. |
 | **Editor** | Neovim / LazyVim with Snacks for the dashboard, explorer and pickers, plus language and formatting tools. |
 | **Terminals** | Konsole profiles and colors, a Ghostty appearance preset, and optional Zellij workspaces. |
-| **Packages and fonts** | Home Manager modules for personal tools and JetBrainsMono Nerd Font, pinned through the Nix flake lockfile. |
+| **Packages and fonts** | Home Manager modules for personal tools and the JetBrainsMono and MesloLGS Nerd Fonts, pinned through the Nix flake lockfile. |
 | **Recovery** | Restic backups, encrypted secrets archives, system snapshots, application inventories and restore helpers. |
 
 Home Manager owns user packages and managed configuration. Pacman owns the
@@ -110,7 +110,7 @@ For individual application configurations and Linux setup menus, see
 
 Zellij starts manually in locked mode; **Ctrl+G** unlocks its controls. See the
 [terminal notes](configs/ghostty/README.md) for shortcuts and project workflows,
-and the [Neovim notes](configs/nvim/AUDIT.md) for editor behavior.
+and the [Neovim notes](configs/nvim/README.md) for editor behavior.
 
 ## Backup and recovery
 

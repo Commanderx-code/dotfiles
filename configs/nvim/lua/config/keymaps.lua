@@ -2,7 +2,7 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
--- setting up the var of r lazyterm
+-- A terminal in the project root.
 local lazyterm = function()
   Snacks.terminal(nil, { cwd = LazyVim.root() })
 end
@@ -24,10 +24,9 @@ vim.keymap.set({ "t" }, "<C-j>", "<C-\\><C-n><C-w>j")
 vim.keymap.set({ "t" }, "<C-k>", "<C-\\><C-n><C-w>k")
 vim.keymap.set({ "t" }, "<C-l>", "<C-\\><C-n><C-w>l")
 
-vim.keymap.set("n", "<C-K>", "<C-W>K", { desc = "Move to top window" })
 vim.keymap.set("n", "<leader>tb", ":12split | :terminal <CR>", { desc = "Open horizontal terminal split" })
 
--- open finder 
+-- Open the working directory in the file manager.
 vim.keymap.set("n", "<leader>of", function() vim.ui.open(vim.fn.getcwd()) end, { desc = "Open directory in file manager" })
 
 -- vim.keymap.set("n", ";", ":", { desc = "Enter command mode" })
@@ -45,12 +44,3 @@ vim.keymap.set("n", "<leader>th", function() require("config.colorscheme").pick(
 -- move selection in visual mode
 vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { desc = "Move selection up" })
 vim.keymap.set("v", "J", ":move '>+1<CR>gv=gv", { desc = "Move selection down" })
-
--- Notes
-vim.keymap.set("n", "<leader>nt", function() Snacks.picker.files({ cwd = vim.fn.expand("~/Documents/Notes") }) end, { desc = "Notes" })
-vim.keymap.set(
-  "n",
-  "<leader>dn",
-  function() Snacks.picker.files({ cwd = vim.fn.expand("~/Documents/Gambhir/Daily-Todos") }) end,
-  { desc = "Daily Journal" }
-)

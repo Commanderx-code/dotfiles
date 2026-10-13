@@ -43,7 +43,7 @@ return {
             filter = "octagon",
         })
         end,
-    }, -- :contentReference[oaicite:5]{index=5}
+    },
 
     { "eldritch-theme/eldritch.nvim", lazy = true, priority = 1000 },
 

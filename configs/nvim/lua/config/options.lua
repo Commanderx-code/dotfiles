@@ -8,8 +8,6 @@ vim.opt.spell = false
 vim.opt.textwidth = 0
 vim.opt.wrap = false
 
-vim.g.nightflyTransparent = true
-
 -- Optional: silence providers you don't use
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
