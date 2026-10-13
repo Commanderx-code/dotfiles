@@ -17,13 +17,11 @@ function history --wraps history --description 'Fuzzy-pick from history, or run 
         __commander_fish_history $argv
     end
 end
-alias fixpacman 'sudo rm /var/lib/pacman/db.lck'
 alias toolbox="commander-toolbox"
 
 alias mkdir="mkdir -p"
 alias ping="ping -c 10"
 alias less="less -R"
-alias home="cd ~"
 
 # command shortcuts
 abbr -a up update
