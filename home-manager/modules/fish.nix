@@ -32,6 +32,11 @@
     recursive = true;
   };
 
+  xdg.configFile."fish/completions" = {
+    source = ../../configs/fish/completions;
+    recursive = true;
+  };
+
   xdg.configFile."fish/functions" = {
     source = ../../configs/fish/functions;
     recursive = true;
