@@ -9,8 +9,7 @@ of the configured rows). Check the usable grid with `stty size`; display
 scaling can affect it in this GTK build.
 Ghostty supplies an integrated tab/title bar with client-side window controls.
 The tab bar is always enabled, including with one tab, and is not hidden when
-maximized. This also avoids relying on KDE's titlebar, which this desktop hides
-for maximized windows.
+maximized. It does not rely on KDE's titlebar.
 It was validated with Ghostty 1.3.1 on Garuda KDE/Wayland.
 
 The live `~/.config/ghostty/config` is a **writable copy**, so SpookiUI
