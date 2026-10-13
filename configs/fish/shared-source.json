@@ -1,7 +1,7 @@
 {
   "version": 1,
   "repository": "Commanderx-code/Myfish",
-  "revision": "75b3cdda4fa7c1d314abcbd4489a57da71eeafc7",
+  "revision": "6f6685c9299458f65093a8242279ec43e2d1718e",
   "overrides": {
     "rgi.fish": "Accepts ripgrep arguments instead of prompting for a query.",
     "fzf_rg_search.fish": "Searches the workstation local-bin directory as well as the current directory.",
@@ -19,7 +19,7 @@
     "extract.fish": "d091ce067d2a88f97b9d9e43cf4c6bd3247e36a48c6584628d5c6b713f3295df",
     "fcd.fish": "f7807d11e02ce3ae0847beec4da731c27baae3a621ac6b0667a337077fb4cd14",
     "fdi.fish": "2651806fc57e6282ee67976f423b1ae7035b0359ddae72f120b49c948b7154af",
-    "fzf_open_file.fish": "46bbe3cd7737bde51de901e740d57c12e1ef4945f03f2e9ce0c5719dc93d062c",
+    "fzf_open_file.fish": "0aff21d65671a9c31f44f78557cf0a8a4df05e15e5ccb7cc449842806092ebcf",
     "gcom.fish": "8dd5a0245debfd165c7ef02334a38e5853b66872726eda6704bc9e822ddd0bb5",
     "lazyg.fish": "e527b32dbaafbfd5bb3b6dafef996566195e855097e9b4ca47252de8d10c4831",
     "mkcd.fish": "4a8e9138f0a6909b162637ee2c4c71cd68116ca7e5d2b1d147bb360c67b79d01",
