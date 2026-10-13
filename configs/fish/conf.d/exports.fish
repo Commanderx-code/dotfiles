@@ -19,9 +19,13 @@ set -gx BAT_PAGER ""
 set -gx EDITOR nvim
 set -gx VISUAL nvim
 
-# Each existing directory is prepended, retaining the previous priority order.
+# Each existing directory is prepended, so the last one listed is searched
+# first. The Nix profile comes last: dotfiles-settings below needs its jq even in
+# a session that did not put the profile on PATH, and Home Manager's commands
+# take priority over an older copy of the same name in ~/.local/bin.
 for directory in "$HOME/.local/bin" "$HOME/.cargo/bin" \
-        /var/lib/flatpak/exports/bin "$HOME/.local/share/flatpak/exports/bin" /snap/bin
+        /var/lib/flatpak/exports/bin "$HOME/.local/share/flatpak/exports/bin" /snap/bin \
+        "$HOME/.nix-profile/bin"
     if test -d "$directory"
         fish_add_path -g "$directory"
     end
