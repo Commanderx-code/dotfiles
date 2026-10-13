@@ -131,6 +131,7 @@ fi
 
 login_shell=$(getent passwd "$USER" | cut -d: -f7)
 shell_changed=false
+login_theme_installed=false
 
 echo
 echo '==> Everyday apps'
@@ -139,6 +140,17 @@ echo '  plus Proton Pass, Proton Mail, RustDesk and Mission Center from Flathub.
 read -r -p 'Install these too? [Y/n] ' answer
 apps=true
 [[ "$answer" == [nN]* ]] && apps=false
+
+login_theme=false
+if [[ -x /usr/bin/sddm ]]; then
+  echo
+  echo '==> Login screen'
+  echo '  The SilentSDDM theme with the presets and backgrounds in sddm/. It also turns'
+  echo '  Num Lock on at the login screen and automatic login off.'
+  read -r -p 'Install it too? [Y/n] ' answer
+  login_theme=true
+  [[ "$answer" == [nN]* ]] && login_theme=false
+fi
 
 echo
 echo '==> Plan'
@@ -156,6 +168,9 @@ echo '  Languages:      Rust, Go, Python and Node.js, which the Neovim tools are
 echo '  Shell helpers:  the Pacman tools, archive tools and notifier that the Fish commands call'
 if "$apps"; then
   echo '  Everyday apps:  the browser, office, monitoring, Proton and remote desktop apps listed above'
+fi
+if "$login_theme"; then
+  echo '  Login screen:   SilentSDDM with the presets in sddm/'
 fi
 echo '  Terminal:       Ghostty becomes the default, with the dotfiles preset if it has no config yet'
 [[ "$login_shell" == */fish ]] || echo "  Login shell:    Fish, replacing $login_shell"
@@ -334,6 +349,23 @@ else
   echo 'The login shell was not changed; run chsh -s /usr/bin/fish yourself.' >&2
 fi
 
+if "$login_theme"; then
+  echo
+  echo '==> Login screen'
+  # SilentSDDM is only in the AUR; restore-sddm puts the presets in sddm/ on top.
+  if "$dry_run"; then
+    run paru -S --needed sddm-silent-theme-git
+    run env "DOTFILES_DIR=$repo" "$repo/home-manager/scripts/restore-sddm.sh"
+  elif ! command -v paru >/dev/null; then
+    echo 'SilentSDDM needs an AUR helper such as paru; skipped.'
+  elif paru -S --needed sddm-silent-theme-git &&
+    DOTFILES_DIR=$repo "$repo/home-manager/scripts/restore-sddm.sh"; then
+    login_theme_installed=true
+  else
+    echo 'The login screen was not changed; run paru -S sddm-silent-theme-git and restore-sddm later.' >&2
+  fi
+fi
+
 if "$backup"; then
   echo
   echo '==> Restic repository'
@@ -410,6 +442,9 @@ else
   echo '  - Close every terminal window and open a new one.'
 fi
 echo '  - hm-rebuild applies later changes to this repository.'
+if "$login_theme_installed"; then
+  echo '  - Preview the login screen before restarting: /usr/share/sddm/themes/silent/test.sh'
+fi
 if "$backup"; then
   echo '  - backup-personal runs your first backup; later ones start when the drive mounts.'
 else
