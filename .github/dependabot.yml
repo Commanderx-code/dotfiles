@@ -9,3 +9,11 @@ updates:
     groups:
       actions:
         patterns: ['*']
+  # home-manager/flake.lock: the package snapshot the workstation is built from.
+  - package-ecosystem: nix
+    directory: /home-manager
+    schedule:
+      interval: weekly
+    groups:
+      flake-inputs:
+        patterns: ['*']

@@ -1,0 +1,50 @@
+name: Update pinned terminal tools
+on:
+  schedule:
+    - cron: '23 6 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: update-terminal-tools
+  cancel-in-progress: false
+jobs:
+  update:
+    if: github.repository == 'Commanderx-code/dotfiles'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+      # netwatch, tfm and cassette are fixed download links that Dependabot
+      # cannot follow, so this compares each with its latest release.
+      - name: Look for newer releases
+        id: update
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -B scripts/update-terminal-tools.py
+      - name: Open or refresh the pull request
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUMMARY: ${{ steps.update.outputs.summary }}
+        run: |
+          branch=update-terminal-tools
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch --force-create "$branch"
+          git add home-manager/terminal-tools.nix
+          git diff --cached --check
+          git commit -m 'Update pinned terminal tools' -m "$SUMMARY"
+          git push --force origin "$branch"
+          if [ "$(gh pr view "$branch" --json state --jq .state 2>/dev/null)" != OPEN ]; then
+            gh pr create --head "$branch" --base main --title 'Update pinned terminal tools' \
+              --body "Newer releases were published: $SUMMARY. Each hash is the SHA-256 of the downloaded release file."
+          fi
+          # GITHUB_TOKEN pushes do not trigger workflows, so start validation here.
+          gh workflow run check.yml --ref "$branch"
