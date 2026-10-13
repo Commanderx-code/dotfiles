@@ -46,6 +46,10 @@ installs Zed, Ghostty and the other system applications with Pacman, installs Ni
 when missing, and builds and activates Home Manager. Existing files that Home
 Manager replaces are kept with a `.before-dotfiles` suffix.
 
+Commits and tags are signed with `~/.ssh/id_ed25519` when that key exists. For
+GitHub to show them as verified, add the public key to your account once as a
+signing key: `gh ssh-key add ~/.ssh/id_ed25519.pub --type signing`.
+
 It also installs the Rust, Go, Python and Node.js toolchains that Neovim's
 language tools are built with, makes Ghostty the default terminal, and copies the
 [Ghostty preset](configs/ghostty/config) when Ghostty has no config yet. An
