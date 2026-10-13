@@ -1,6 +1,8 @@
 -- Use Snacks for search, LSP pickers, and the file explorer.
 vim.g.lazyvim_picker = "snacks"
 vim.g.lazyvim_explorer = "snacks"
+-- The same Python type checker as Zed; Home Manager provides it.
+vim.g.lazyvim_python_lsp = "basedpyright"
 
 vim.opt.spelllang = 'en_us'
 vim.opt.spell = false

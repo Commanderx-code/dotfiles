@@ -98,12 +98,13 @@ local function check()
   assert(vim.o.laststatus == 2 and vim.o.cmdheight == 2)
   -- Opening a named file should show the sidebar once, never reopen it after
   -- an explicit close; focusing an existing explorer must not duplicate it.
-  local current, opens, focuses = nil, 0, 0
+  local current, opens, focuses, options = nil, 0, 0, nil
   _G.Snacks = {
     config = { explorer = { enabled = true } },
     picker = { get = function() return current and { current } or {} end },
-    explorer = function()
+    explorer = function(opts)
       opens = opens + 1
+      options = opts
       current = {
         close = function() current = nil end,
         focus = function() focuses = focuses + 1 end,
@@ -117,6 +118,7 @@ local function check()
   assert(opens == 0, "dashboard must not open the explorer")
   vim.api.nvim_set_current_buf(failed)
   assert(vim.wait(200, function() return opens == 1 end), "named file must open explorer")
+  assert(options and options.focus == false, "opening a file must leave the cursor in it")
   explorer.focus()
   assert(opens == 1 and focuses == 1, "focus must reuse explorer")
   explorer.toggle()

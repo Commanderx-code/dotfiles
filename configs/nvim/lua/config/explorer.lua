@@ -33,7 +33,8 @@ function M.setup()
     -- Defer window changes until the buffer event is finished.
     vim.schedule(function()
       if vim.api.nvim_get_current_buf() == buf and not Snacks.picker.get({ source = "explorer" })[1] then
-        Snacks.explorer()
+        -- Show the sidebar but leave the cursor in the file that was opened.
+        Snacks.explorer({ focus = false })
       end
     end)
   end
