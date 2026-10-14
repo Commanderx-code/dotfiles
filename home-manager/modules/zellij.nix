@@ -7,22 +7,31 @@
 let
   c = config.commander.theme.colors;
   ansi = config.commander.theme.terminal.ansi;
-  # Release hashes from each upstream's GitHub asset metadata / SHA256SUMS.
-  zjstatus = pkgs.fetchurl {
-    url = "https://github.com/dj95/zjstatus/releases/download/v0.24.0/zjstatus.wasm";
-    sha256 = "1ccedece1ded62cf3e209be690cdd39ca6fb9e8228ed71a951f6507f9956669b";
-  };
-  harpoon = pkgs.fetchurl {
-    url = "https://github.com/Nacho114/harpoon/releases/download/v0.3.0/harpoon.wasm";
-    sha256 = "7f8cf57a71f1dbbbd115337a31638780d7e18e9b876def1c81c970188caa32f2";
-  };
-  zesh = pkgs.stdenvNoCC.mkDerivation {
-    pname = "zesh";
-    version = "0.3.0";
-    src = pkgs.fetchurl {
+  # Pinned downloads; scripts/update-terminal-tools.py moves them to newer
+  # releases. Each hash is the SHA-256 of the release asset.
+  pins = {
+    zjstatus = {
+      version = "0.25.0";
+      url = "https://github.com/dj95/zjstatus/releases/download/v0.25.0/zjstatus.wasm";
+      sha256 = "282ceab219e56e1908c9fac33907241fe6c3e1ef7d85faab3e5f438cef87b8fe";
+    };
+    harpoon = {
+      version = "0.3.0";
+      url = "https://github.com/Nacho114/harpoon/releases/download/v0.3.0/harpoon.wasm";
+      sha256 = "7f8cf57a71f1dbbbd115337a31638780d7e18e9b876def1c81c970188caa32f2";
+    };
+    zesh = {
+      version = "0.3.0";
       url = "https://github.com/roberte777/zesh/releases/download/zesh-v0.3.0/zesh";
       sha256 = "2d4112a54938171c0adc47296505c3c306d014e10b964dd1f5776d767a5e4e1f";
     };
+  };
+  zjstatus = pkgs.fetchurl { inherit (pins.zjstatus) url sha256; };
+  harpoon = pkgs.fetchurl { inherit (pins.harpoon) url sha256; };
+  zesh = pkgs.stdenvNoCC.mkDerivation {
+    pname = "zesh";
+    inherit (pins.zesh) version;
+    src = pkgs.fetchurl { inherit (pins.zesh) url sha256; };
     dontUnpack = true;
     nativeBuildInputs = [ pkgs.autoPatchelfHook ];
     buildInputs = [ pkgs.stdenv.cc.cc.lib ];
