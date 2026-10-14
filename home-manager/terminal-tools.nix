@@ -9,6 +9,7 @@ let
       unpack,
       helpText,
       runtime ? [ ],
+      wrapperArgs ? [ ],
     }:
     pkgs.stdenvNoCC.mkDerivation {
       pname = name;
@@ -27,7 +28,8 @@ let
         ${unpack}
         chmod 755 "$out/libexec/${name}"
         makeWrapper "$out/libexec/${name}" "$out/bin/${name}" \
-          --prefix PATH : ${pkgs.lib.escapeShellArg (pkgs.lib.makeBinPath runtime)}
+          --prefix PATH : ${pkgs.lib.escapeShellArg (pkgs.lib.makeBinPath runtime)} \
+          ${pkgs.lib.escapeShellArgs wrapperArgs}
         runHook postInstall
       '';
       # Exercise the final binary after stripping/ELF fixups, not just the download.
@@ -67,6 +69,13 @@ in
       pkgs.imagemagick
       pkgs.ffmpeg
       pkgs.wl-clipboard
+    ];
+    # TFM looks for video previews' ffmpeg only in TFM_FFMPEG or beside its own
+    # binary, never on PATH, so point it at the Nix one.
+    wrapperArgs = [
+      "--set-default"
+      "TFM_FFMPEG"
+      "${pkgs.ffmpeg}/bin/ffmpeg"
     ];
   };
   # This is OreoMuncher45's Spotify TUI, not the unrelated pkgs.cassette app.
