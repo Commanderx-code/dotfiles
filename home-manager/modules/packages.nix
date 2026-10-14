@@ -7,6 +7,12 @@
     bat
     fd
     ripgrep
+    broot
+    yazi
+
+    # Monitoring / process tools
+    btop
+    procs
 
     # Git / development helpers
     lazygit
