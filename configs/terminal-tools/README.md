@@ -5,7 +5,8 @@ configuration. They start manually; existing file managers and music players
 remain available. All three upstream Linux x86_64 releases are pinned by version
 and SHA-256 in [terminal-tools.nix](../../home-manager/terminal-tools.nix).
 A weekly workflow runs `scripts/update-terminal-tools.py`, which compares each pin
-with the tool's latest release and opens a pull request with the new version and
+(and the Zellij add-ons pinned in `modules/zellij.nix`: zjstatus, harpoon and
+zesh) with its latest release and opens a pull request with the new version and
 hash. The build checks on that pull request wait for your approval, because they
 run the newly downloaded programs: read the upstream release first, then choose
 "Approve and run". Run the script by hand for an update sooner.

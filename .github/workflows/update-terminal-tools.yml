@@ -20,8 +20,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
-      # netwatch, tfm and cassette are fixed download links that Dependabot
-      # cannot follow, so this compares each with its latest release.
+      # netwatch, tfm, cassette and the Zellij add-ons are fixed download links
+      # that Dependabot cannot follow, so this compares each with its latest release.
       - name: Look for newer releases
         id: update
         env:
@@ -37,7 +37,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git switch --force-create "$branch"
-          git add home-manager/terminal-tools.nix
+          git add home-manager/terminal-tools.nix home-manager/modules/zellij.nix
           git diff --cached --check
           git commit -m 'Update pinned terminal tools' -m "$SUMMARY"
           git push --force origin "$branch"
@@ -45,7 +45,7 @@ jobs:
           # request is refreshed with a later release.
           body="Newer releases were published: $SUMMARY.
 
-          Each hash is the SHA-256 of the file this workflow downloaded, so it shows the pin is consistent, not that the release is trustworthy. The build runs each new program once. Look at the upstream release before approving the validation run on this pull request."
+          Each hash is the SHA-256 of the file this workflow downloaded, so it shows the pin is consistent, not that the release is trustworthy. The build runs each new terminal program once; Zellij add-ons are only downloaded. Look at the upstream release before approving the validation run on this pull request."
           if [ "$(gh pr view "$branch" --json state --jq .state 2>/dev/null)" = OPEN ]; then
             gh pr edit "$branch" --body "$body"
           else
