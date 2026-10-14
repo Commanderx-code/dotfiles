@@ -1,6 +1,12 @@
-{ config, machine, ... }:
+{
+  config,
+  machine,
+  pkgs,
+  ...
+}:
 
 let
+  tools = import ../terminal-tools.nix { inherit pkgs; };
   # Konsole rewrites these when settings change, so they stay writable in the
   # checkout, like Zed's settings; commit the changes to keep them.
   editable =
@@ -30,7 +36,9 @@ in
     onChange = "/usr/bin/systemctl --user daemon-reload || true";
   };
 
-  # fzf preview helper used by Fish/fzf.
+  # fzf preview helper used by Fish/fzf, and the kitten that draws its image
+  # previews in Ghostty.
+  home.packages = [ tools.kitten ];
   home.file.".local/bin/fzf-preview" = {
     source = ../../configs/scripts/fzf-preview;
     executable = true;

@@ -67,4 +67,4 @@ class TerminalToolPinTests(unittest.TestCase):
     def test_every_tool_in_the_real_file_is_recognised(self):
         pins = [pin for path in tools.PINS for pin in tools.PIN.finditer((ROOT / path).read_text())]
         self.assertEqual(sorted(pin['repository'].split('/')[1] for pin in pins),
-                         ['cassette', 'harpoon', 'netwatch', 'tfm-tui', 'zesh', 'zjstatus'])
+                         ['cassette', 'harpoon', 'kitty', 'netwatch', 'tfm-tui', 'zesh', 'zjstatus'])
