@@ -7,9 +7,7 @@ function M.setup()
   local function update()
     local buf = vim.api.nvim_get_current_buf()
     if vim.bo[buf].filetype == "snacks_dashboard" then
-      if not saved then
-        saved = { vim.o.laststatus, vim.o.showtabline, vim.o.cmdheight }
-      end
+      if not saved then saved = { vim.o.laststatus, vim.o.showtabline, vim.o.cmdheight } end
       vim.o.laststatus = 0
       vim.o.showtabline = 0
       vim.o.cmdheight = 0

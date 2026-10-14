@@ -1,5 +1,11 @@
-{ ... }:
+{ config, machine, ... }:
 
+let
+  # Konsole rewrites these when settings change, so they stay writable in the
+  # checkout, like Zed's settings; commit the changes to keep them.
+  editable =
+    name: config.lib.file.mkOutOfStoreSymlink "${machine.dotfilesDirectory}/configs/konsole/${name}";
+in
 {
   imports = [
     ./zellij.nix
@@ -41,10 +47,10 @@
   };
 
   # Konsole global configuration.
-  xdg.configFile."konsolerc".source = ../../configs/konsole/konsolerc;
+  xdg.configFile."konsolerc".source = editable "konsolerc";
 
   # Konsole profile; Sweet stays available as an alternative scheme.
-  home.file.".local/share/konsole/Garuda.profile".source = ../../configs/konsole/Garuda.profile;
+  home.file.".local/share/konsole/Garuda.profile".source = editable "Garuda.profile";
 
   home.file.".local/share/konsole/Sweet.colorscheme".source = ../../configs/konsole/Sweet.colorscheme;
 }

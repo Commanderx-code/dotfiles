@@ -11,9 +11,7 @@ vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 -- Without that file, lazy keeps its default next to this config.
 local ok, machine = pcall(require, "config.machine")
 local lockfile = ok and machine.lockfile or nil
-if lockfile and not vim.uv.fs_stat(vim.fs.dirname(lockfile)) then
-  lockfile = nil
-end
+if lockfile and not vim.uv.fs_stat(vim.fs.dirname(lockfile)) then lockfile = nil end
 
 require("lazy").setup({
   lockfile = lockfile,
@@ -38,8 +36,8 @@ require("lazy").setup({
     version = false, -- always use the latest git commit
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
-  checker = { 
-    enabled = true,  -- automatically check for plugin updates
+  checker = {
+    enabled = true, -- automatically check for plugin updates
     notify = false, -- get a notification when new updates are found
   },
   performance = {

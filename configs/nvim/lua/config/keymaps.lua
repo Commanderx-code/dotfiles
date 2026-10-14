@@ -3,9 +3,7 @@
 -- Add any additional keymaps here
 
 -- A terminal in the project root.
-local lazyterm = function()
-  Snacks.terminal(nil, { cwd = LazyVim.root() })
-end
+local lazyterm = function() Snacks.terminal(nil, { cwd = LazyVim.root() }) end
 
 -- Insert-mode jk/jj are managed by better-escape (plugins/editor.lua).
 vim.keymap.set("n", "<leader>qw", "<cmd>quit<CR>", { desc = "Quit Window" })
@@ -27,7 +25,12 @@ vim.keymap.set({ "t" }, "<C-l>", "<C-\\><C-n><C-w>l")
 vim.keymap.set("n", "<leader>tb", ":12split | :terminal <CR>", { desc = "Open horizontal terminal split" })
 
 -- Open the working directory in the file manager.
-vim.keymap.set("n", "<leader>of", function() vim.ui.open(vim.fn.getcwd()) end, { desc = "Open directory in file manager" })
+vim.keymap.set(
+  "n",
+  "<leader>of",
+  function() vim.ui.open(vim.fn.getcwd()) end,
+  { desc = "Open directory in file manager" }
+)
 
 -- vim.keymap.set("n", ";", ":", { desc = "Enter command mode" })
 -- Use LazyVim defaults: <leader>bd deletes a buffer; <leader>cd shows diagnostics.
@@ -39,7 +42,12 @@ vim.keymap.set("n", "<leader>fw", function() Snacks.picker.grep() end, { desc = 
 vim.keymap.set({ "n", "t" }, "<A-i>", lazyterm, { desc = "Toggle Terminal", remap = true })
 
 --color scheme
-vim.keymap.set("n", "<leader>th", function() require("config.colorscheme").pick() end, { desc = "Colorschemes (remembered)" })
+vim.keymap.set(
+  "n",
+  "<leader>th",
+  function() require("config.colorscheme").pick() end,
+  { desc = "Colorschemes (remembered)" }
+)
 
 -- move selection in visual mode
 vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { desc = "Move selection up" })
