@@ -232,8 +232,8 @@ command -v node >/dev/null || packages+=(nodejs-lts-jod)
 packages+=(wireless_tools)
 # Called by the Fish configuration: checkupdates and paccache (update, cleanup),
 # command suggestions, the SSH key prompt, finished-command notifications,
-# archive extraction and PDF previews.
-packages+=(pacman-contrib pkgfile ksshaskpass libnotify 7zip unrar poppler)
+# archive extraction, PDF previews and video previews.
+packages+=(pacman-contrib pkgfile ksshaskpass libnotify 7zip unrar poppler ffmpeg)
 # upgrade and full-upgrade-devel use paru, which Garuda's repositories carry
 # and plain Arch's do not.
 pacman -Si paru >/dev/null 2>&1 && packages+=(paru)
