@@ -29,7 +29,7 @@ it as `~/.config/dotfiles/machine.json`; operational scripts read the same JSON 
 | `home-manager/scripts/` | Installed backup, restore, and package helpers; `lib/settings.fish` supplies shared settings. |
 | `home-manager/modules/backup-automation.nix` | Owns user backup services, mount watcher, and maintenance timers. |
 | `sddm/` | Customization backup used by `backup-sddm` and `restore-sddm`. Restore requires an existing SilentSDDM installation. |
-| `grub/` | The GRUB theme (diegons490's CachyOS theme, GPLv3) that `restore-grub` installs to `/usr/share/grub/themes/cachyos`, with the boot resolution and the `lsm=` kernel parameter that turns AppArmor on; it then regenerates the GRUB menu. An `lsm=` already in `/etc/default/grub` is left alone. |
+| `grub/grub` | `/etc/default/grub` as these machines boot: the Garuda dr460nized theme (the `grub-theme-garuda-dr460nized` package), a two-second menu, the boot resolution and the `lsm=` kernel parameter that turns AppArmor on. `restore-grub` installs it verbatim, keeping the machine's previous file as `grub.before-dotfiles` once, installs the theme package when the repositories have it, and regenerates the GRUB menu. |
 | `system-backup/sddm/` | Full installed SDDM snapshot used by `backup-system-state` and `restore-system`. It serves a different restore scope from `sddm/`. |
 | Other `system-backup/` directories | Captured system/desktop state and inventories, restored explicitly rather than deployed through Home Manager. |
 

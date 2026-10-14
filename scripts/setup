@@ -157,8 +157,9 @@ boot_theme=false
 if [[ -f /etc/default/grub ]]; then
   echo
   echo '==> Boot'
-  echo '  The GRUB theme in grub/ and the kernel parameter that turns AppArmor on, with'
-  echo '  the AppArmor service enabled. Both apply at the next reboot.'
+  echo '  The GRUB settings in grub/: the Garuda dr460nized theme, a two-second menu and'
+  echo '  the kernel parameter that turns AppArmor on, with the AppArmor service enabled.'
+  echo '  They apply at the next reboot.'
   read -r -p 'Set these up too? [Y/n] ' answer
   boot_theme=true
   [[ "$answer" == [nN]* ]] && boot_theme=false
@@ -194,7 +195,7 @@ if "$login_theme"; then
   echo '  Login screen:   SilentSDDM with the presets in sddm/'
 fi
 if "$boot_theme"; then
-  echo '  Boot:           the GRUB theme in grub/, AppArmor on at the next reboot'
+  echo '  Boot:           the GRUB settings and theme in grub/, AppArmor on at the next reboot'
 fi
 if "$firewall"; then
   echo '  Firewall:       UFW on, incoming blocked, outgoing allowed'
@@ -271,6 +272,8 @@ if "$apps"; then
 fi
 "$backup" && packages+=(restic)
 "$boot_theme" && packages+=(apparmor)
+# The theme is a Garuda package; restore-grub says so when a plain Arch lacks it.
+"$boot_theme" && pacman -Si grub-theme-garuda-dr460nized >/dev/null 2>&1 && packages+=(grub-theme-garuda-dr460nized)
 "$firewall" && packages+=(ufw gufw)
 run sudo pacman -S --needed "${packages[@]}"
 # Command suggestions read a per-user package file list, which starts out missing.
@@ -398,8 +401,8 @@ fi
 if "$boot_theme"; then
   echo
   echo '==> Boot'
-  # restore-grub installs the theme, sets the resolution and the AppArmor
-  # kernel parameter, and regenerates the GRUB menu.
+  # restore-grub installs grub/grub as /etc/default/grub, keeping the previous
+  # file beside it, and regenerates the GRUB menu.
   if run env "DOTFILES_DIR=$repo" "$repo/home-manager/scripts/restore-grub.sh"; then
     # The service loads the profiles; it starts working once the kernel boots with AppArmor.
     run sudo systemctl enable apparmor

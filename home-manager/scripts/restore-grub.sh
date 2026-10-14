@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Install the GRUB theme kept in grub/ and the boot settings this configuration
-# relies on: the theme, a boot resolution and the kernel parameter that turns
-# AppArmor on. Then regenerate the GRUB menu.
+# Install the GRUB settings kept in grub/grub as /etc/default/grub: the Garuda
+# dr460nized theme, the boot resolution, a two-second menu and the kernel
+# parameter that turns AppArmor on. Then regenerate the GRUB menu.
 set -euo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,61 +10,43 @@ if [[ ! -f "$machine_config" ]]; then
   machine_config="${DOTFILES_MACHINE_CONFIG:-${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/machine.json}"
 fi
 DOTFILES_DIR="${DOTFILES_DIR:-$(jq -er '.dotfilesDirectory' "$machine_config")}"
-REPO_DIR="$DOTFILES_DIR/grub/cachyos"
+SOURCE="$DOTFILES_DIR/grub/grub"
 # Overridable for fixture tests.
-THEME_DIR="${GRUB_THEME_DIR:-/usr/share/grub/themes/cachyos}"
 GRUB_DEFAULT="${GRUB_DEFAULT_FILE:-/etc/default/grub}"
-GFXMODE="${GRUB_GFXMODE_VALUE:-1920x1080}"
-LSM="landlock,lockdown,yama,integrity,apparmor,bpf"
+THEME_PACKAGE=grub-theme-garuda-dr460nized
 
-if [[ ! -f "$REPO_DIR/theme.txt" ]]; then
-  echo "GRUB theme was not found at: $REPO_DIR" >&2
+if [[ ! -f "$SOURCE" ]]; then
+  echo "GRUB settings were not found at: $SOURCE" >&2
   exit 1
 fi
 
-# The theme: every file, including the distribution icons.
-while IFS= read -r -d '' directory; do
-  sudo install -d -m755 "$THEME_DIR/${directory#"$REPO_DIR"/}"
-done < <(find "$REPO_DIR" -mindepth 1 -type d -print0)
-sudo install -d -m755 "$THEME_DIR"
-while IFS= read -r -d '' file; do
-  sudo install -m644 "$file" "$THEME_DIR/${file#"$REPO_DIR"/}"
-done < <(find "$REPO_DIR" -type f -print0)
-
-# The settings, edited on a copy and installed in one step.
-work=$(mktemp)
-trap 'rm -f -- "$work"' EXIT
-if [[ -f "$GRUB_DEFAULT" ]]; then
-  cp -- "$GRUB_DEFAULT" "$work"
-fi
-
-set_key() {
-  local key=$1 value=$2
-  if grep -q -E "^#?\s*$key=" "$work"; then
-    sed -i -E "s|^#?\s*$key=.*|$key=$value|" "$work"
+# The theme is a Garuda package; plain Arch does not carry it.
+theme=$(sed -n 's/^GRUB_THEME="\(.*\)"$/\1/p' "$SOURCE")
+if command -v pacman >/dev/null && ! pacman -Q "$THEME_PACKAGE" >/dev/null 2>&1; then
+  if pacman -Si "$THEME_PACKAGE" >/dev/null 2>&1; then
+    sudo pacman -S --needed "$THEME_PACKAGE"
   else
-    printf '%s=%s\n' "$key" "$value" >> "$work"
+    echo "The $THEME_PACKAGE package is not in the enabled repositories; GRUB falls back to its plain menu until the theme exists." >&2
   fi
-}
-
-set_key GRUB_THEME "\"$THEME_DIR/theme.txt\""
-# A resolution GRUB can draw the theme at; an explicit choice already there stays.
-if ! grep -q -E '^GRUB_GFXMODE=' "$work" || grep -q -E '^GRUB_GFXMODE=("?)auto\1$' "$work"; then
-  set_key GRUB_GFXMODE "$GFXMODE"
 fi
-# AppArmor is only active when the kernel loads it; an lsm= already present is
-# the machine's own choice and stays.
-if ! grep -q -E '^GRUB_CMDLINE_LINUX_DEFAULT=' "$work"; then
-  printf 'GRUB_CMDLINE_LINUX_DEFAULT="lsm=%s quiet"\n' "$LSM" >> "$work"
-elif ! grep -E '^GRUB_CMDLINE_LINUX_DEFAULT=' "$work" | grep -q 'lsm='; then
-  sed -i -E "s|^(GRUB_CMDLINE_LINUX_DEFAULT=\"?)|\1lsm=$LSM |" "$work"
+if [[ -n "$theme" && ! -f "${GRUB_THEME_ROOT:-}$theme" ]]; then
+  echo "Theme file missing: $theme" >&2
+fi
+kernel=$(sed -n 's/^GRUB_TOP_LEVEL="\(.*\)"$/\1/p' "$SOURCE")
+if [[ -n "$kernel" && ! -e "${GRUB_THEME_ROOT:-}$kernel" ]]; then
+  echo "GRUB_TOP_LEVEL names $kernel, which this machine does not have; the menu keeps its usual order." >&2
 fi
 
-if [[ -f "$GRUB_DEFAULT" ]] && cmp -s "$work" "$GRUB_DEFAULT"; then
+if [[ -f "$GRUB_DEFAULT" ]] && cmp -s "$SOURCE" "$GRUB_DEFAULT"; then
   echo "Boot settings already current: $GRUB_DEFAULT"
 else
-  sudo install -m644 "$work" "$GRUB_DEFAULT"
-  echo "Updated $GRUB_DEFAULT"
+  # The machine's previous settings stay beside the new ones, once.
+  if [[ -f "$GRUB_DEFAULT" && ! -f "$GRUB_DEFAULT.before-dotfiles" ]]; then
+    sudo cp -- "$GRUB_DEFAULT" "$GRUB_DEFAULT.before-dotfiles"
+    echo "Previous settings kept at $GRUB_DEFAULT.before-dotfiles"
+  fi
+  sudo install -m644 "$SOURCE" "$GRUB_DEFAULT"
+  echo "Installed $GRUB_DEFAULT"
 fi
 
 if command -v update-grub >/dev/null 2>&1; then
@@ -73,7 +55,7 @@ else
   sudo grub-mkconfig -o /boot/grub/grub.cfg
 fi
 
-printf '\nGRUB theme and boot settings installed. They apply at the next reboot.\n'
+printf '\nGRUB settings installed. They apply at the next reboot.\n'
 if command -v aa-enabled >/dev/null 2>&1 && [[ "$(aa-enabled 2>/dev/null || true)" != Yes ]]; then
   echo 'AppArmor becomes active after that reboot; check with aa-enabled.'
 fi
