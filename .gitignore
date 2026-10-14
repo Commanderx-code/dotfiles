@@ -60,11 +60,6 @@ result-*
 *.img
 
 
-# ============================================================
-# Package/cache directories
-# ============================================================
-brew-cache/
-
 # Lazygit is installed through Home Manager, not bundled in the repository.
 /lazygit
 
