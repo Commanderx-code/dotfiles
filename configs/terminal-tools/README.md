@@ -2,7 +2,9 @@
 
 NetWatch, TFM and Cassette are installed by the workstation's Home Manager
 configuration. They start manually; existing file managers and music players
-remain available. All three upstream Linux x86_64 releases are pinned by version
+remain available. The standalone `kitten` from the kitty releases is pinned the
+same way: `fzf-preview` uses `kitten icat` for full-resolution image previews in
+Ghostty. All four upstream Linux x86_64 releases are pinned by version
 and SHA-256 in [terminal-tools.nix](../../home-manager/terminal-tools.nix).
 A weekly workflow runs `scripts/update-terminal-tools.py`, which compares each pin
 (and the Zellij add-ons pinned in `modules/zellij.nix`: zjstatus, harpoon and
@@ -17,6 +19,7 @@ run the newly downloaded programs: read the upstream release first, then choose
 | `netwatch --demo` | Explore the dashboard using demonstration data. |
 | `tfm` | Mouse-friendly file manager; use a full Ghostty window for image previews. |
 | `cassette` | Spotify player; requires Premium, a developer app and initial login. |
+| `kitten icat FILE` | Show an image in the terminal; fzf's preview pane uses it. |
 
 NetWatch runs without root for ordinary monitoring. Packet capture needs extra
 privileges; installation does not grant capabilities, start a daemon or change DNS.
