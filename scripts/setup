@@ -132,6 +132,7 @@ fi
 login_shell=$(getent passwd "$USER" | cut -d: -f7)
 shell_changed=false
 login_theme_installed=false
+boot_theme_installed=false
 
 echo
 echo '==> Everyday apps'
@@ -152,6 +153,27 @@ if [[ -x /usr/bin/sddm ]]; then
   [[ "$answer" == [nN]* ]] && login_theme=false
 fi
 
+boot_theme=false
+if [[ -f /etc/default/grub ]]; then
+  echo
+  echo '==> Boot'
+  echo '  The GRUB settings in grub/: the Garuda dr460nized theme, a two-second menu and'
+  echo '  the kernel parameter that turns AppArmor on, with the AppArmor service enabled.'
+  echo '  They apply at the next reboot.'
+  read -r -p 'Set these up too? [Y/n] ' answer
+  boot_theme=true
+  [[ "$answer" == [nN]* ]] && boot_theme=false
+fi
+
+echo
+echo '==> Firewall'
+echo '  UFW blocking unsolicited incoming connections and allowing outgoing ones, with'
+echo '  logging on low, plus the gufw window to manage it. If KDE Connect is installed,'
+echo '  its ports are allowed from the local network only.'
+read -r -p 'Turn it on too? [Y/n] ' answer
+firewall=true
+[[ "$answer" == [nN]* ]] && firewall=false
+
 echo
 echo '==> Plan'
 echo "  Greeting name:  $display_name"
@@ -171,6 +193,12 @@ if "$apps"; then
 fi
 if "$login_theme"; then
   echo '  Login screen:   SilentSDDM with the presets in sddm/'
+fi
+if "$boot_theme"; then
+  echo '  Boot:           the GRUB settings and theme in grub/, AppArmor on at the next reboot'
+fi
+if "$firewall"; then
+  echo '  Firewall:       UFW on, incoming blocked, outgoing allowed'
 fi
 echo '  Terminal:       Ghostty becomes the default, with the dotfiles preset if it has no config yet'
 [[ "$login_shell" == */fish ]] || echo "  Login shell:    Fish, replacing $login_shell"
@@ -243,6 +271,10 @@ if "$apps"; then
   pacman -Si brave-origin-bin >/dev/null 2>&1 && packages+=(brave-origin-bin)
 fi
 "$backup" && packages+=(restic)
+"$boot_theme" && packages+=(apparmor)
+# The theme is a Garuda package; restore-grub says so when a plain Arch lacks it.
+"$boot_theme" && pacman -Si grub-theme-garuda-dr460nized >/dev/null 2>&1 && packages+=(grub-theme-garuda-dr460nized)
+"$firewall" && packages+=(ufw gufw)
 run sudo pacman -S --needed "${packages[@]}"
 # Command suggestions read a per-user package file list, which starts out missing.
 pkgfile_cache=${XDG_CACHE_HOME:-$HOME/.cache}/pkgfile
@@ -366,6 +398,43 @@ if "$login_theme"; then
   fi
 fi
 
+if "$boot_theme"; then
+  echo
+  echo '==> Boot'
+  # restore-grub installs grub/grub as /etc/default/grub, keeping the previous
+  # file beside it, and regenerates the GRUB menu.
+  if run env "DOTFILES_DIR=$repo" "$repo/home-manager/scripts/restore-grub.sh"; then
+    # The service loads the profiles; it starts working once the kernel boots with AppArmor.
+    run sudo systemctl enable apparmor
+    boot_theme_installed=true
+  else
+    echo 'The boot settings were not changed; run restore-grub later.' >&2
+  fi
+fi
+
+if "$firewall"; then
+  echo
+  echo '==> Firewall'
+  if command -v firewalld >/dev/null && systemctl is-enabled --quiet firewalld 2>/dev/null; then
+    # Two firewalls editing the same rules give confusing results.
+    run sudo systemctl disable --now firewalld
+  fi
+  run sudo ufw default deny incoming
+  run sudo ufw default allow outgoing
+  run sudo ufw logging low
+  if pacman -Q kdeconnect-kde >/dev/null 2>&1; then
+    # KDE Connect pairs over the local network; the rule stops at that network.
+    lan=$(ip -4 -o addr show scope global 2>/dev/null | awk '{ print $4; exit }')
+    if [[ -n "$lan" ]]; then
+      lan=$(python3 -I -c 'import ipaddress, sys; print(ipaddress.ip_interface(sys.argv[1]).network)' "$lan")
+      run sudo ufw allow from "$lan" to any port 1714:1764 proto tcp
+      run sudo ufw allow from "$lan" to any port 1714:1764 proto udp
+    fi
+  fi
+  run sudo ufw --force enable
+  run sudo systemctl enable --now ufw
+fi
+
 if "$backup"; then
   echo
   echo '==> Restic repository'
@@ -444,6 +513,9 @@ fi
 echo '  - hm-rebuild applies later changes to this repository.'
 if "$login_theme_installed"; then
   echo '  - Preview the login screen before restarting: /usr/share/sddm/themes/silent/test.sh'
+fi
+if "$boot_theme_installed"; then
+  echo '  - Reboot to see the GRUB theme; aa-enabled then prints Yes.'
 fi
 if "$backup"; then
   echo '  - backup-personal runs your first backup; later ones start when the drive mounts.'
