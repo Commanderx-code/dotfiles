@@ -71,6 +71,7 @@ function helpme --description "Show Commander shortcuts, tools, and Config Bible
     echo "  $c""restic-deep-check$n     → deeper Restic verification"
     echo "  $c""restore-system$n        → guided system-state restore"
     echo "  $c""restore-apps$n          → review / restore applications"
+    echo "  $c""restore-grub$n          → GRUB settings: theme, menu, AppArmor"
     echo "  $c""backup-health$n         → when each backup last succeeded"
     echo ""
 
