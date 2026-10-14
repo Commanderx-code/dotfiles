@@ -76,6 +76,53 @@ let
     "gutter:-1"
   ];
 
+  btopTheme = lib.concatStringsSep "\n" (
+    lib.mapAttrsToList (key: value: ''theme[${key}]="${value}"'') {
+      main_bg = c.base;
+      main_fg = c.text;
+      title = c.text;
+      hi_fg = c.cyan;
+      selected_bg = c.surface;
+      selected_fg = c.cyan;
+      inactive_fg = c.muted;
+      graph_text = c.subtext;
+      meter_bg = c.overlay;
+      proc_misc = c.purple;
+      cpu_box = c.purple;
+      mem_box = c.green;
+      net_box = c.pink;
+      proc_box = c.cyan;
+      div_line = c.overlay;
+      temp_start = c.green;
+      temp_mid = c.yellow;
+      temp_end = c.red;
+      cpu_start = c.cyan;
+      cpu_mid = c.purple;
+      cpu_end = c.pink;
+      free_start = c.green;
+      free_mid = c.green;
+      free_end = c.cyan;
+      cached_start = c.blue;
+      cached_mid = c.blue;
+      cached_end = c.purple;
+      available_start = c.yellow;
+      available_mid = c.orange;
+      available_end = c.orange;
+      used_start = c.pink;
+      used_mid = c.red;
+      used_end = c.red;
+      download_start = c.cyan;
+      download_mid = c.blue;
+      download_end = c.purple;
+      upload_start = c.green;
+      upload_mid = c.yellow;
+      upload_end = c.orange;
+      process_start = c.cyan;
+      process_mid = c.purple;
+      process_end = c.pink;
+    }
+  );
+
   fg = color: { foreground = color; };
   bold = color: {
     foreground = color;
@@ -200,6 +247,22 @@ let
     };
   };
   yaml = pkgs.formats.yaml { };
+  btopThemeLine = pkgs.writeShellScript "btop-theme-line" ''
+    set -eu
+    conf=$1
+    line='color_theme = "commander"'
+    [ -L "$conf" ] && exit 0
+    if [ -f "$conf" ]; then
+      if ${pkgs.gnugrep}/bin/grep -q '^color_theme' "$conf"; then
+        ${pkgs.gnused}/bin/sed -i "s|^color_theme *=.*|$line|" "$conf"
+      else
+        printf '%s\n' "$line" >> "$conf"
+      fi
+    else
+      ${pkgs.coreutils}/bin/mkdir -p "$(${pkgs.coreutils}/bin/dirname "$conf")"
+      printf '%s\n' "$line" > "$conf"
+    fi
+  '';
 in
 {
   options.commander.theme = lib.mkOption {
@@ -237,6 +300,7 @@ in
 
     xdg.configFile."eza/theme.yml".source = yaml.generate "eza-theme.yml" ezaTheme;
     xdg.configFile."lazygit/theme.yml".source = yaml.generate "lazygit-theme.yml" lazygitTheme;
+    xdg.configFile."btop/themes/commander.theme".text = btopTheme + "\n";
 
     # Shell side: fzf colours, the bat theme, and lazygit's theme layered over its own config.
     # Sourced after conf.d/fzf.fish, which sets the rest of FZF_DEFAULT_OPTS.
@@ -277,5 +341,10 @@ in
         line-numbers-right-style = c.overlay;
       };
     };
+
+    # btop rewrites btop.conf on exit, so it stays writable: only its theme line is set here.
+    home.activation.btopTheme = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+      run ${btopThemeLine} ${lib.escapeShellArg "${config.xdg.configHome}/btop/btop.conf"}
+    '';
   };
 }

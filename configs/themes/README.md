@@ -64,6 +64,7 @@ with `<leader>th`: the picker saves it as the `"nvim"` entry of
 | delta | Git's pager, with the palette's diff colours |
 | eza | `~/.config/eza/theme.yml` |
 | lazygit | `~/.config/lazygit/theme.yml`, layered over its own `config.yml` |
+| btop | `~/.config/btop/themes/commander.theme`; its `color_theme` line is set on rebuild |
 
 Fish's syntax colours and Fastfetch use the terminal's ANSI colours, so they
 follow without any changes of their own.
