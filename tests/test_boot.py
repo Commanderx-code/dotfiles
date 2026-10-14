@@ -53,7 +53,7 @@ class RestoreGrubTests(unittest.TestCase):
 
     def test_the_settings_turn_apparmor_on_and_name_the_theme(self):
         text = SOURCE.read_text()
-        self.assertRegex(text, r'^GRUB_CMDLINE_LINUX_DEFAULT=".*lsm=landlock,lockdown,yama,integrity,apparmor,bpf.*"$')
+        self.assertRegex(text, r'(?m)^GRUB_CMDLINE_LINUX_DEFAULT=".*lsm=landlock,lockdown,yama,integrity,apparmor,bpf.*"$')
         self.assertIn('GRUB_THEME="/usr/share/grub/themes/garuda-dr460nized/theme.txt"', text)
 
     def test_missing_theme_and_kernel_are_reported_not_fatal(self):
