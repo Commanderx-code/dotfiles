@@ -130,6 +130,10 @@ a monthly integrity check reads 10% of repository data. See the
 [maintenance guide](STRUCTURE.md#backup-maintenance-and-ci) for scheduling,
 health reporting and failure notifications.
 
+Backups and repository jobs run one at a time. A manual `backup-personal` or
+`backup-everything` started while the automatic run is going waits for it to
+finish, and says so, instead of failing on the repository lock.
+
 **System snapshots are local backup data.** `system-backup/` is excluded from Git
 and protected by Restic; a fresh clone does not contain those captures. Recover
 them from your backup before using the system or application restore helpers.

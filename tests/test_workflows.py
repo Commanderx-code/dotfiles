@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+import time
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -68,25 +69,55 @@ class Workflows(unittest.TestCase):
         self.assertNotIn('completed_at', metadata)
         self.assertNotIn('backup complete', result.stdout)
 
-    def test_failed_backup_does_not_start_cooldown(self):
+    def backup_mocks(self, restic='exit 0'):
         mock = self.root / 'bin'
-        mock.mkdir()
-        for name, body in {'mountpoint': 'exit 0', 'flock': 'exit 42',
-                           'restic': 'exit 0', 'kwallet-query': 'exit 0'}.items():
+        mock.mkdir(exist_ok=True)
+        for name, body in {'mountpoint': 'exit 0', 'restic': restic, 'kwallet-query': 'exit 0'}.items():
             file = mock / name
             file.write_text('#!/bin/sh\n' + body + '\n')
             file.chmod(0o755)
-        self.env.update(PATH=str(mock) + os.pathsep + self.env['PATH'],
-                        XDG_RUNTIME_DIR=str(self.root), XDG_STATE_HOME=str(self.root / 'state'),
+        if str(mock) not in self.env['PATH']:
+            self.env.update(PATH=str(mock) + os.pathsep + self.env['PATH'])
+        self.env.update(XDG_RUNTIME_DIR=str(self.root), XDG_STATE_HOME=str(self.root / 'state'),
                         RESTIC_REPOSITORY=str(self.root))
+        self.env.pop('BACKUP_LOCK_HELD', None)
+
+    def test_failed_backup_does_not_start_cooldown(self):
+        self.backup_mocks(restic='exit 42')
         result = self.fish('backup-on-mount.fish')
         self.assertNotEqual(result.returncode, 0)
         stamp = self.root / 'backup-on-mount.stamp'
         self.assertFalse(stamp.exists())
-        (mock / 'flock').write_text('#!/bin/sh\nexit 0\n')
+        self.backup_mocks()
         result = self.fish('backup-on-mount.fish')
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(stamp.exists())
+
+    def test_manual_backup_waits_for_a_running_one(self):
+        self.backup_mocks()
+        lock = self.root / 'backup-personal.lock'
+        # Stands in for the automatic run that starts when the drive mounts.
+        holder = subprocess.Popen(['flock', str(lock), 'sh', '-c', 'sleep 1.5; date +%s.%N'],
+                                  stdout=subprocess.PIPE, text=True)
+        try:
+            for _ in range(100):
+                if lock.exists() and subprocess.run(['flock', '--nonblock', str(lock), 'true']).returncode:
+                    break
+                time.sleep(0.02)
+            result = self.fish('backup-personal.fish')
+            finished = time.time()
+        finally:
+            released = float(holder.communicate()[0])
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn('waiting for it to finish', result.stdout)
+        self.assertIn('Personal backup complete.', result.stdout)
+        self.assertGreaterEqual(finished, released)
+
+    def test_backups_run_straight_away_when_nothing_else_is(self):
+        self.backup_mocks()
+        result = self.fish('backup-personal.fish')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertNotIn('waiting', result.stdout)
 
     def test_pre_restore_copy_failure_aborts(self):
         # Exercise the actual helper with a failing privileged copy, never sudo.

@@ -30,6 +30,14 @@ if not test -d "$REPO"
     exit 0
 end
 
+# Hold the backup lock for the whole run: the backup, then maintenance and the
+# deep check. A manual backup started meanwhile waits for all of it, and this
+# run waits for a manual one that is already going.
+if not set -q BACKUP_LOCK_HELD
+    set -x BACKUP_LOCK_HELD 1
+    exec flock "$LOCK" fish --no-config (status filename) $argv
+end
+
 # Avoid duplicate personal backups, but still retry overdue maintenance.
 set -l recent 0
 if test -f "$STAMP"
@@ -43,9 +51,12 @@ if test -f "$STAMP"
     end
 end
 
-# Never allow two personal backups to run simultaneously.
 if test $recent -eq 0
-    flock -n "$LOCK" "$HOME/.local/bin/backup-personal"; or exit $status
+    set -l backup (path dirname (status filename))/backup-personal.fish
+    if not test -f "$backup"
+        set backup "$HOME/.local/bin/backup-personal"
+    end
+    fish --no-config "$backup"; or exit $status
     # Only successful backups start the cooldown.
     touch "$STAMP"; or exit 1
 end
