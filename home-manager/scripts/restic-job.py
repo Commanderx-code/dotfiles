@@ -14,6 +14,20 @@ import time
 INTERVALS = {'maintenance': 7 * 86400, 'deep-check': 30 * 86400}
 
 
+def backup_lock():
+    """Wait for the lock that manual and on-mount backups hold, unless the caller has it."""
+    runtime = os.environ.get('XDG_RUNTIME_DIR')
+    if os.environ.get('BACKUP_LOCK_HELD') or not runtime:
+        return None
+    handle = (Path(runtime) / 'backup-personal.lock').open('a')
+    try:
+        fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        print('A backup is running; waiting for it to finish...', flush=True)
+        fcntl.flock(handle, fcntl.LOCK_EX)
+    return handle
+
+
 def run_job(job, if_due=False):
     repo = os.environ['RESTIC_REPOSITORY']
     mount = os.environ['BACKUP_MOUNT']
@@ -31,6 +45,9 @@ def run_job(job, if_due=False):
     identity = hashlib.sha256(os.fsencode(str(Path(repo).resolve()))).hexdigest()
     state = state_home / 'dotfiles/restic' / identity
     state.mkdir(parents=True, exist_ok=True)
+    # Pruning and checking lock the repository exclusively, so a backup running
+    # at the same time would fail; held until this function returns.
+    backup = backup_lock()  # noqa: F841
     with (state / 'maintenance.lock').open('a') as lock:
         # Waiting lets simultaneous timer and mount triggers recheck the timestamp.
         fcntl.flock(lock, fcntl.LOCK_EX)

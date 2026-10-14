@@ -68,9 +68,21 @@ sys.exit(int(sys.argv[2]))
         self.assertEqual(transaction.capture(destination, [sys.executable, '-c', 'pass'], 'system'), 1)
         self.assertTrue(metadata.exists())
 
+    def test_repository_jobs_take_the_backup_lock_unless_the_caller_holds_it(self):
+        import fcntl
+        with patch.dict(os.environ, {'XDG_RUNTIME_DIR': str(self.root), 'BACKUP_LOCK_HELD': '1'}):
+            self.assertIsNone(restic_job.backup_lock())
+        with patch.dict(os.environ, {'XDG_RUNTIME_DIR': str(self.root)}):
+            os.environ.pop('BACKUP_LOCK_HELD', None)
+            held = restic_job.backup_lock()
+            self.addCleanup(held.close)
+            with (self.root / 'backup-personal.lock').open('a') as other, self.assertRaises(BlockingIOError):
+                fcntl.flock(other, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
     def test_restic_due_dates_only_advance_after_full_success(self):
         env = dict(RESTIC_REPOSITORY=str(self.root), BACKUP_MOUNT=str(self.root),
-                   XDG_STATE_HOME=str(self.root / 'state'), RESTIC_WALLET='wallet',
+                   XDG_STATE_HOME=str(self.root / 'state'), XDG_RUNTIME_DIR=str(self.root),
+                   RESTIC_WALLET='wallet',
                    RESTIC_WALLET_FOLDER='folder with spaces', RESTIC_WALLET_ENTRY='entry')
         calls = []
         mounted, check_status = True, 0
