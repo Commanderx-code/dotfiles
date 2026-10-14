@@ -65,10 +65,13 @@ It also offers a set of everyday apps, which you can decline: Brave Origin,
 LibreOffice, GitHub CLI, bottom, yt-dlp, System Monitor and Stacer, plus Proton
 Pass, Proton Mail, RustDesk and Mission Center from Flathub.
 
-On a machine that uses SDDM it offers the login screen as well: the SilentSDDM
+On a machine that has SDDM it offers the login screen as well: the SilentSDDM
 theme from the AUR with the presets in `sddm/` applied by `restore-sddm`. That
-also turns Num Lock on at the login screen and automatic login off. Preview the
-result with `/usr/share/sddm/themes/silent/test.sh` before restarting.
+also turns Num Lock on at the login screen and automatic login off. When another
+display manager runs the login screen, as Plasma Login Manager does on newer
+Garuda installs, saying yes also disables it and enables SDDM, since only SDDM
+shows the theme; the change takes effect at the next reboot. Preview the result
+with `/usr/share/sddm/themes/silent/test.sh` before restarting.
 
 On a machine that boots with GRUB it offers the boot setup: the GRUB settings in
 `grub/grub` (the Garuda dr460nized theme, a two-second menu and the kernel
