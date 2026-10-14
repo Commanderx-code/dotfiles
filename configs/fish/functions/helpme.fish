@@ -41,7 +41,7 @@ function helpme --description "Show Commander shortcuts, tools, and Config Bible
     echo "$b$g🔎 Search / fzf$n"
     echo "  $c""Ctrl-P$n                → fuzzy open file"
     echo "  $c""Ctrl-F$n                → ripgrep search → open in your editor"
-    echo "  $c""Ctrl-H$n                → fuzzy shell history"
+    echo "  $c""Ctrl-R$n                → fuzzy shell history"
     echo "  $c** + Tab$n              → fuzzy path completion"
     echo "  history                 → fuzzy shell history"
     echo "  $c""fdi$n                   → pick a file and open it in your editor"

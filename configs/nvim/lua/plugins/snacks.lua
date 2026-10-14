@@ -27,10 +27,12 @@ return {
         layout = { preset = "vertical" },
         layouts = { vertical = { layout = { width = 0.8 } } },
         win = {
-          input = { keys = {
-            ["<c-j>"] = { "list_down", mode = { "n", "i" } },
-            ["<c-k>"] = { "list_up", mode = { "n", "i" } },
-          } },
+          input = {
+            keys = {
+              ["<c-j>"] = { "list_down", mode = { "n", "i" } },
+              ["<c-k>"] = { "list_up", mode = { "n", "i" } },
+            },
+          },
           list = { keys = { ["<c-j>"] = "list_down", ["<c-k>"] = "list_up" } },
         },
         sources = {
@@ -40,10 +42,18 @@ return {
             follow_file = true,
             git_status = true,
             layout = { preset = "sidebar", layout = { position = "left" } },
-            icons = { git = {
-              added = "A", modified = "M", deleted = "X", renamed = "=>",
-              untracked = "?", ignored = "[/]", staged = "S", unmerged = "Y",
-            } },
+            icons = {
+              git = {
+                added = "A",
+                modified = "M",
+                deleted = "X",
+                renamed = "=>",
+                untracked = "?",
+                ignored = "[/]",
+                staged = "S",
+                unmerged = "Y",
+              },
+            },
             win = {
               input = { border = "rounded" },
               list = {
@@ -52,9 +62,7 @@ return {
                   ["O"] = "explorer_open",
                   ["Y"] = function(picker)
                     local item = picker:current()
-                    if item then
-                      vim.fn.setreg("+", Snacks.picker.util.path(item), "c")
-                    end
+                    if item then vim.fn.setreg("+", Snacks.picker.util.path(item), "c") end
                   end,
                 },
               },
