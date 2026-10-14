@@ -160,6 +160,10 @@ if [[ -f /etc/default/grub ]]; then
   echo '  The GRUB settings in grub/: the Garuda dr460nized theme, a two-second menu and'
   echo '  the kernel parameter that turns AppArmor on, with the AppArmor service enabled.'
   echo '  They apply at the next reboot.'
+  if pacman -Qq plymouth >/dev/null 2>&1; then
+    echo '  Also the Boot Splash Screen page in System Settings, to pick the Plymouth theme'
+    echo '  shown while the system starts.'
+  fi
   read -r -p 'Set these up too? [Y/n] ' answer
   boot_theme=true
   [[ "$answer" == [nN]* ]] && boot_theme=false
@@ -196,6 +200,7 @@ if "$login_theme"; then
 fi
 if "$boot_theme"; then
   echo '  Boot:           the GRUB settings and theme in grub/, AppArmor on at the next reboot'
+  pacman -Qq plymouth >/dev/null 2>&1 && echo '                  and the Boot Splash Screen page in System Settings'
 fi
 if "$firewall"; then
   echo '  Firewall:       UFW on, incoming blocked, outgoing allowed'
@@ -274,6 +279,9 @@ fi
 "$boot_theme" && packages+=(apparmor)
 # The theme is a Garuda package; restore-grub says so when a plain Arch lacks it.
 "$boot_theme" && pacman -Si grub-theme-garuda-dr460nized >/dev/null 2>&1 && packages+=(grub-theme-garuda-dr460nized)
+# The Boot Splash Screen page in System Settings only makes sense with Plymouth,
+# which Garuda installs and plain Arch does not.
+"$boot_theme" && pacman -Qq plymouth >/dev/null 2>&1 && packages+=(plymouth-kcm)
 "$firewall" && packages+=(ufw gufw)
 run sudo pacman -S --needed "${packages[@]}"
 # Command suggestions read a per-user package file list, which starts out missing.
