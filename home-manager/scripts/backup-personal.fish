@@ -7,6 +7,18 @@ if not test -f "$settings_file"
 end
 source "$settings_file"; or exit 1
 
+# One backup or repository job at a time. Mounting the drive starts an automatic
+# run, so a manual one waits for it instead of failing on Restic's own
+# repository lock. BACKUP_LOCK_HELD marks a caller that already holds this lock.
+set -l LOCK "$XDG_RUNTIME_DIR/backup-personal.lock"
+if not set -q BACKUP_LOCK_HELD; and set -q XDG_RUNTIME_DIR; and command -q flock
+    if not flock --nonblock "$LOCK" true
+        echo "Another backup or repository check is running; waiting for it to finish..."
+    end
+    set -x BACKUP_LOCK_HELD 1
+    exec flock "$LOCK" fish --no-config (status filename) $argv
+end
+
 set -l REPO "$RESTIC_REPOSITORY"
 set -l PASSWORD_COMMAND (string join -- " " kwallet-query -f (string escape -- "$RESTIC_WALLET_FOLDER") -r (string escape -- "$RESTIC_WALLET_ENTRY") (string escape -- "$RESTIC_WALLET"))
 
