@@ -78,6 +78,16 @@ in
       "${pkgs.ffmpeg}/bin/ffmpeg"
     ];
   };
+  # The standalone kitten from the kitty releases: fzf-preview draws image
+  # previews with `kitten icat` in Ghostty, which has no Sixel support.
+  kitten = binary {
+    name = "kitten";
+    helpText = "kitten serves as a launcher";
+    version = "0.49.2";
+    url = "https://github.com/kovidgoyal/kitty/releases/download/v0.49.2/kitten-linux-amd64";
+    sha256 = "2a803b4d411f327cc41b7193cb529f6de06ae3b169a346b3060212bbfeafc8bc";
+    unpack = ''cp "$src" "$out/libexec/kitten"'';
+  };
   # This is OreoMuncher45's Spotify TUI, not the unrelated pkgs.cassette app.
   cassette = binary {
     name = "cassette";
