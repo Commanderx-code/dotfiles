@@ -17,10 +17,7 @@ show_skipped = false
 # Only notify when something fails.
 notify_end = "on_failure"
 
-# Prefer nh for Home Manager/Nix when available.
-nix_handler = "autodetect"
-
-# Disable things we don't want Topgrade managing.
+# Nix itself is upgraded with Home Manager below, not as its own step.
 disable = [
   "nix",
   "snap",
@@ -59,11 +56,6 @@ arguments = "--rebase --autostash"
 use_sudo = false
 
 
-[python]
-# Update pip-installed packages through pip-review.
-enable_pip_review = true
-
-
 [cargo]
 # Check Cargo packages installed from Git as well.
 git = true
@@ -76,13 +68,3 @@ quiet = false
 channels = [
   "stable",
 ]
-
-
-[go]
-# Update Go-installed tools through gup.
-gup_exclude = []
-
-
-[vscode]
-# Use the default VS Code profile.
-profile = ""
