@@ -4,7 +4,7 @@ Myfish is the source of truth for portable Fish functions. Edit
 `Commanderx-code/Myfish/modules/fish/functions/`, commit, and push there once.
 The rest of the publication pipeline is automatic:
 
-1. Myfish validates the commit on Linux, Apple Silicon, and Intel Mac.
+1. Myfish validates the commit on Linux and Apple Silicon macOS.
 2. Dotfiles' **Sync shared Fish from Myfish** workflow checks at minutes 7 and 37
    each hour, on demand, and after successful dotfiles validation. GitHub may
    delay scheduled runs. Only a successful check of Myfish's current main commit
@@ -21,12 +21,12 @@ The rest of the publication pipeline is automatic:
 ## Ownership and workstation differences
 
 `configs/fish/shared-source.json` records the imported Myfish revision, file
-hashes, and four explicit workstation overrides. Imported functions have a source
+hashes, and three explicit workstation overrides. Imported functions have a source
 comment at the top. CI rejects direct changes to these copies. Their fixes belong
 in Myfish, so Linux and macOS are checked before dotfiles receives them.
 
 Your other startup snippets, personal functions, the direct `rgi`
-shortcut, expanded text-search roots, key bindings, and LAN server command remain
+shortcut, expanded text-search roots, and LAN server command remain
 owned by dotfiles. The overrides are deliberate differences, not shared copies.
 To make another function workstation-specific, record the reason in `overrides`
 and remove its entry from `files` in the same reviewed commit before editing it.

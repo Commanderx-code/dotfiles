@@ -1,9 +1,7 @@
 return {
   {
     "folke/snacks.nvim",
-    init = function()
-      require("config.dashboard_hidebars").setup()
-    end,
+    init = function() require("config.dashboard_hidebars").setup() end,
     opts = {
       dashboard = {
         enabled = true,
@@ -43,7 +41,12 @@ return {
             { icon = " ", key = "r", desc = "Recent Files", action = function() LazyVim.pick("oldfiles")() end },
             { icon = " ", key = "g", desc = "Find Text", action = function() LazyVim.pick("live_grep")() end },
             { icon = " ", key = "c", desc = "Config", action = function() LazyVim.pick.config_files()() end },
-            { icon = " ", key = "s", desc = "Restore Session", action = function() require("persistence").load() end },
+            {
+              icon = " ",
+              key = "s",
+              desc = "Restore Session",
+              action = function() require("persistence").load() end,
+            },
             { icon = " ", key = "x", desc = "Lazy Extras", action = ":LazyExtras" },
             { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
@@ -55,7 +58,12 @@ return {
           function()
             local stats = require("lazy").stats()
             return {
-              text = { { ("⚡ Neovim loaded %d/%d plugins in %.2fms"):format(stats.loaded, stats.count, stats.startuptime), hl = "Comment" } },
+              text = {
+                {
+                  ("⚡ Neovim loaded %d/%d plugins in %.2fms"):format(stats.loaded, stats.count, stats.startuptime),
+                  hl = "Comment",
+                },
+              },
               align = "center",
               padding = 1,
             }

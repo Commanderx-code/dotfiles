@@ -5,7 +5,6 @@
   "overrides": {
     "rgi.fish": "Accepts ripgrep arguments instead of prompting for a query.",
     "fzf_rg_search.fish": "Searches the workstation local-bin directory as well as the current directory.",
-    "fish_user_key_bindings.fish": "Workstation Ctrl-R and history bindings.",
     "serve.fish": "LAN-accessible server with the workstation Python fallback."
   },
   "files": {
@@ -19,6 +18,7 @@
     "extract.fish": "d091ce067d2a88f97b9d9e43cf4c6bd3247e36a48c6584628d5c6b713f3295df",
     "fcd.fish": "f7807d11e02ce3ae0847beec4da731c27baae3a621ac6b0667a337077fb4cd14",
     "fdi.fish": "2651806fc57e6282ee67976f423b1ae7035b0359ddae72f120b49c948b7154af",
+    "fish_user_key_bindings.fish": "f328702843acf5cf09ca2aec08e1b62edb8aa3071bcbb26d3083cddc8687b606",
     "fzf_open_file.fish": "0aff21d65671a9c31f44f78557cf0a8a4df05e15e5ccb7cc449842806092ebcf",
     "gcom.fish": "8dd5a0245debfd165c7ef02334a38e5853b66872726eda6704bc9e822ddd0bb5",
     "lazyg.fish": "e527b32dbaafbfd5bb3b6dafef996566195e855097e9b4ca47252de8d10c4831",

@@ -1,3 +1,5 @@
 indent_type = "Spaces"
 indent_width = 2
 column_width = 120
+# Keep short functions and guards on one line, as the files are written.
+collapse_simple_statement = "Always"
