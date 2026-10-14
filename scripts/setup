@@ -132,7 +132,10 @@ fi
 login_shell=$(getent passwd "$USER" | cut -d: -f7)
 shell_changed=false
 login_theme_installed=false
+display_manager_switched=false
 boot_theme_installed=false
+# The unit behind the login screen, such as sddm.service or plasmalogin.service.
+display_manager=$(basename "$(readlink -f /etc/systemd/system/display-manager.service 2>/dev/null)")
 
 echo
 echo '==> Everyday apps'
@@ -148,6 +151,15 @@ if [[ -x /usr/bin/sddm ]]; then
   echo '==> Login screen'
   echo '  The SilentSDDM theme with the presets and backgrounds in sddm/. It also turns'
   echo '  Num Lock on at the login screen and automatic login off.'
+  if [[ "$display_manager" != sddm.service ]]; then
+    # Only SDDM shows the theme; Garuda now enables Plasma Login Manager instead.
+    if [[ -n "$display_manager" ]]; then
+      echo "  Your login screen is run by $display_manager, which ignores SDDM themes, so"
+      echo '  this also switches the login screen to SDDM at the next reboot.'
+    else
+      echo '  No login screen service is enabled, so this also enables SDDM.'
+    fi
+  fi
   read -r -p 'Install it too? [Y/n] ' answer
   login_theme=true
   [[ "$answer" == [nN]* ]] && login_theme=false
@@ -197,6 +209,7 @@ if "$apps"; then
 fi
 if "$login_theme"; then
   echo '  Login screen:   SilentSDDM with the presets in sddm/'
+  [[ "$display_manager" == sddm.service ]] || echo '                  with SDDM enabled as the login screen'
 fi
 if "$boot_theme"; then
   echo '  Boot:           the GRUB settings and theme in grub/, AppArmor on at the next reboot'
@@ -404,6 +417,19 @@ if "$login_theme"; then
   else
     echo 'The login screen was not changed; run paru -S sddm-silent-theme-git and restore-sddm later.' >&2
   fi
+  # The theme only appears when SDDM runs the login screen. Another display
+  # manager stays installed (Garuda's desktop package depends on it) but is
+  # disabled, and enable --force takes over its display-manager.service alias.
+  if [[ "$display_manager" != sddm.service ]] && { "$dry_run" || "$login_theme_installed"; }; then
+    if [[ -n "$display_manager" ]]; then
+      run sudo systemctl disable "$display_manager"
+    fi
+    if run sudo systemctl enable --force sddm.service; then
+      display_manager_switched=true
+    else
+      echo 'SDDM was not enabled; run sudo systemctl enable --force sddm.service later.' >&2
+    fi
+  fi
 fi
 
 if "$boot_theme"; then
@@ -521,6 +547,9 @@ fi
 echo '  - hm-rebuild applies later changes to this repository.'
 if "$login_theme_installed"; then
   echo '  - Preview the login screen before restarting: /usr/share/sddm/themes/silent/test.sh'
+fi
+if "$display_manager_switched"; then
+  echo "  - Reboot to get the SDDM login screen; $display_manager stays installed but disabled."
 fi
 if "$boot_theme_installed"; then
   echo '  - Reboot to see the GRUB theme; aa-enabled then prints Yes.'
