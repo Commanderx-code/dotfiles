@@ -59,7 +59,7 @@ existing Ghostty config is left alone. When the login shell is not Fish, it runs
 The Fish configuration calls a few system tools that Home Manager does not
 provide, and the script installs those too: `pacman-contrib` and `paru` for the
 update commands, `pkgfile` for command suggestions (with its first package list),
-`ksshaskpass`, `libnotify`, `7zip`, `unrar` and `poppler`.
+`ksshaskpass`, `libnotify`, `7zip`, `unrar`, `poppler` and `ffmpeg`.
 
 It also offers a set of everyday apps, which you can decline: Brave Origin,
 LibreOffice, GitHub CLI, bottom, yt-dlp, System Monitor and Stacer, plus Proton
