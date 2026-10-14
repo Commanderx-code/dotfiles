@@ -70,6 +70,13 @@ theme from the AUR with the presets in `sddm/` applied by `restore-sddm`. That
 also turns Num Lock on at the login screen and automatic login off. Preview the
 result with `/usr/share/sddm/themes/silent/test.sh` before restarting.
 
+On a machine that boots with GRUB it offers the boot setup: the GRUB theme in
+`grub/` and the kernel parameter that turns AppArmor on, applied by
+`restore-grub`, with the AppArmor service enabled. It also offers the UFW
+firewall with incoming connections blocked, outgoing allowed and logging on low
+(KDE Connect, when installed, is allowed from the local network), plus `gufw` to
+manage it from a window. Each is a separate yes/no question.
+
 With an external drive mounted it also installs Restic, stores a repository
 password in KDE Wallet and creates the repository. Without one, run it again once
 the drive is attached. `scripts/setup --dry-run` asks the same questions and only
@@ -112,6 +119,7 @@ For individual application configurations and Linux setup menus, see
 | `backup-health` | Review locally recorded backup status without unlocking KWallet. |
 | `restore-system --dry-run` | Preview available system configuration restore sources. |
 | `restore-apps --dry-run` | Preview application inventory recovery. |
+| `restore-grub` | Install the GRUB theme and the AppArmor boot setting, then regenerate the boot menu. |
 
 Zellij starts manually in locked mode; **Ctrl+G** unlocks its controls. See the
 [terminal notes](configs/ghostty/README.md) for shortcuts and project workflows,
@@ -153,6 +161,7 @@ credential recovery, staged restores and verification.
 configs/          Fish, Fastfetch, Starship, Neovim, terminal configuration and palettes
 home-manager/     Flake, machine settings, package modules and operational scripts
 sddm/             SilentSDDM customization assets and presets
+grub/             GRUB theme installed by restore-grub
 scripts/check     Repository validation entry point
 tests/            Configuration and workflow checks
 STRUCTURE.md      Configuration ownership, maintenance and backup behavior
