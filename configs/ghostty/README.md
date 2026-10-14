@@ -186,16 +186,15 @@ abbreviations, Starship prompt, zoxide, completions, and fzf bindings used in
 other terminals. No separate Ghostty copy of the Fish configuration is needed.
 The welcome message and Fastfetch startup run in both Ghostty and Konsole.
 
-Fastfetch uses the original `~/.config/fastfetch/config.jsonc` unchanged: colored
-boxed sections, the 24-column Arch logo on the left, and the full information
-and color palette. The adaptive formatter is no longer used or installed.
-Use a wide window (roughly 135 columns or more) for the fixed-width boxes;
-they do not fit the 100-column startup window cleanly.
+Fastfetch uses `~/.config/fastfetch/config.jsonc` unchanged: four tree-style
+sections, the Garuda eagle on the left, a rainbow ghost row, and the full
+information. Nothing reshapes it for the window size, so a wide window
+(roughly 135 columns or more) shows it best.
 
 The welcome prints once. There is no resize signal handler: repeatedly drawing
 a fetch taller than the window pushes duplicate pages into scrollback and can
 interfere with Starship's multi-line prompt. Widen the window before running
-`fastfetch` again; old output does not re-layout its boxes. Open a new tab to
+`fastfetch` again; old output is not redrawn. Open a new tab to
 load the restored default without touching existing scrollback. All Fastfetch
 arguments pass through unchanged to the native CLI.
 
