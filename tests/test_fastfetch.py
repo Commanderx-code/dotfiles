@@ -1,5 +1,4 @@
 import fcntl
-import importlib.util
 import json
 import os
 from pathlib import Path
@@ -17,9 +16,6 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('fastfetch_layout', ROOT / 'home-manager/scripts/fastfetch-layout.py')
-renderer = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(renderer)
 BASE = json.loads((ROOT / 'configs/fastfetch/config.jsonc').read_text())
 
 
@@ -71,68 +67,22 @@ def visible_test_screen(data):
                      for y in range(max((p[0] for p in cells), default=0) + 1))
 
 
-class LayoutTests(unittest.TestCase):
-    def test_layouts_remove_fixed_cursor_positions_and_borders(self):
-        for columns, rows in [(40, 20), (60, 30), (100, 27), (200, 60)]:
-            config = renderer.layout(BASE, columns, rows)
-            for module in config['modules']:
-                self.assertNotIn('\x1b', module.get('key', '') + module.get('format', ''))
-                self.assertNotIn('╮', module.get('format', ''))
-            self.assertFalse(config['display']['disableLinewrap'])
-
-    def test_normal_window_stacks_logo_without_shrinking_it(self):
-        config = renderer.layout(BASE, 100, 27)
-        self.assertEqual(config['logo']['width'], 24)
-        self.assertEqual(config['logo']['position'], 'top')
-        self.assertNotIn('height', config['logo'])
-        self.assertEqual(config['modules'][0], {'type': 'custom', 'format': '\r'})
-        self.assertNotIn('bottom', config['logo']['padding'])
-
-    def test_every_window_keeps_the_four_tree_sections(self):
-        for columns in (40, 100, 190):
-            config = renderer.layout(BASE, columns, 40)
-            headings = [m['key'] for m in config['modules'] if 'key' in m and not m['key'].startswith('│')]
-            self.assertEqual(len(headings), 4)
-            self.assertTrue(all('─' not in heading for heading in headings))
-
-    def test_every_window_keeps_all_fields_and_palette(self):
-        originals = [module for module in BASE['modules'] if isinstance(module, dict) and 'key' in module]
-        for columns, rows in [(30, 12), (80, 24), (100, 27), (100, 40), (190, 40), (200, 60)]:
-            config = renderer.layout(BASE, columns, rows)
-            fields = [module for module in config['modules'] if 'key' in module]
-            self.assertEqual([m['type'] for m in fields], [m['type'] for m in originals])
-            self.assertEqual([m.get('format') for m in fields], [m.get('format') for m in originals])
-            self.assertTrue(any('󰮯' in module.get('format', '') for module in config['modules']))
-
-    def test_height_does_not_change_information(self):
-        self.assertEqual(renderer.layout(BASE, 100, 24)['modules'],
-                         renderer.layout(BASE, 100, 60)['modules'])
-
-    def test_tiny_pane_omits_only_image(self):
-        config = renderer.layout(BASE, 30, 12)
-        self.assertEqual(config['logo']['type'], 'none')
-        self.assertIn('memory', [module['type'] for module in config['modules']])
-        self.assertIn('uptime', [module['type'] for module in config['modules']])
-
-    def test_full_layout_keeps_details_and_original_config_is_unchanged(self):
-        config = renderer.layout(BASE, 200, 60)
-        self.assertEqual(config['logo']['position'], 'left')
-        self.assertIn('icons', [module['type'] for module in config['modules']])
-        self.assertIn('player', [module['type'] for module in config['modules']])
-        self.assertNotIn('height', BASE['logo'])
+class WelcomeTests(unittest.TestCase):
+    def test_config_keeps_the_four_tree_sections_and_ghost_row(self):
+        modules = [module for module in BASE['modules'] if isinstance(module, dict)]
+        headings = [m['key'] for m in modules if 'key' in m and not m['key'].startswith('│')]
+        self.assertEqual(len(headings), 4)
+        self.assertTrue(all('─' not in heading for heading in headings))
+        self.assertTrue(any('󰮯' in module.get('format', '') for module in modules))
 
     @unittest.skipUnless(shutil.which('fastfetch'), 'Fastfetch required')
-    def test_native_fastfetch_accepts_generated_layouts(self):
-        for columns, rows in [(40, 20), (100, 27), (200, 60)]:
-            config = renderer.layout(BASE, columns, rows)
-            result = subprocess.run(['fastfetch', '--config', '-', '--logo', 'none', '--pipe', 'true'],
-                                    input=json.dumps(config), capture_output=True, text=True, timeout=15)
-            self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertFalse(result.stderr, result.stderr)
-            self.assertIn('DISTRO', result.stdout)
-            self.assertIn('Memory', result.stdout)
-            self.assertIn('Uptime', result.stdout)
-            self.assertIn('󰮯', result.stdout)
+    def test_native_fastfetch_accepts_the_config(self):
+        result = subprocess.run(['fastfetch', '--config', '-', '--logo', 'none', '--pipe', 'true'],
+                                input=json.dumps(BASE), capture_output=True, text=True, timeout=15)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(result.stderr, result.stderr)
+        for expected in ('DISTRO', 'Memory', 'Uptime', '󰮯'):
+            self.assertIn(expected, result.stdout)
 
     @unittest.skipUnless(shutil.which('fish'), 'Fish required')
     def test_resize_never_reprints_welcome(self):

@@ -46,7 +46,6 @@ function helpme --description "Show Commander shortcuts, tools, and Config Bible
     echo "  history                 → fuzzy shell history"
     echo "  $c""fdi$n                   → pick a file and open it in your editor"
     echo "  $c""rgi <pattern>$n         → pick a ripgrep match and open it"
-    echo "  $c""br$n                    → broot file tree (cd on exit)"
     echo ""
 
     echo "$b$g🪟 Workspaces (Zellij)$n"
