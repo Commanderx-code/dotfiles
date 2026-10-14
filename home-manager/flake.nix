@@ -37,13 +37,15 @@
     }:
     let
       machine = builtins.fromJSON (builtins.readFile ./machine.json);
-      system = machine.system;
+      inherit (machine) system;
       pkgs = nixpkgs.legacyPackages.${system};
     in
     {
       formatter.${system} = pkgs.nixfmt;
       packages.${system} = import ./terminal-tools.nix { inherit pkgs; };
       devShells.${system}.default = pkgs.mkShell {
+        # Test runs otherwise leave __pycache__ folders in the checkout.
+        PYTHONDONTWRITEBYTECODE = "1";
         packages = with pkgs; [
           fish
           jq
@@ -52,6 +54,7 @@
           shellcheck
           actionlint
           nixfmt
+          stylua
           neovim
           eza
           ripgrep
@@ -60,8 +63,7 @@
       homeConfigurations.${machine.username} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         extraSpecialArgs = {
-          inherit machine;
-          inherit nixgl;
+          inherit machine nixgl;
           zapfast = zapfast.packages.${system}.default;
         };
 

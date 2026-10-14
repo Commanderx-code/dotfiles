@@ -34,9 +34,7 @@ return {
           severity = { min = vim.diagnostic.severity.WARN },
           format = function(diagnostic)
             local message = diagnostic.message:match("[^\r\n]+") or ""
-            if vim.fn.strchars(message) > 60 then
-              return vim.fn.strcharpart(message, 0, 59) .. "…"
-            end
+            if vim.fn.strchars(message) > 60 then return vim.fn.strcharpart(message, 0, 59) .. "…" end
             return message
           end,
         },

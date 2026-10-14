@@ -17,7 +17,7 @@ it as `~/.config/dotfiles/machine.json`; operational scripts read the same JSON 
 | `home-manager/modules/plasma.nix` | plasma-manager declares only the palette's colour scheme and the fixed-width font; other Plasma settings stay with System Settings (`overrideConfig` is off). |
 | `configs/starship/` | The prompt layout, imported from Myfish (see [shared updates](FISH-SYNC.md)); `modules/starship.nix` swaps in the palette's colours. |
 | `configs/fastfetch/` | Home Manager deploys prompt and Fastfetch configuration/assets. Fish uses the tree-style Fastfetch layout with its side logo; the welcome prints once, with no resize redraw or scrollback clearing. |
-| `configs/konsole/` | Home Manager installs Konsole settings and the Garuda profile, which uses the palette's generated Commander scheme; Sweet stays installed as an alternative. |
+| `configs/konsole/` | Home Manager links Konsole's settings and the Garuda profile as writable files in the checkout, so changes made in Konsole land here to commit; the profile uses the palette's generated Commander scheme and Sweet stays installed as an alternative. |
 | `home-manager/modules/zellij.nix` | Imported by the terminal module; owns Zellij, pinned zjstatus/Harpoon/Zesh, layouts in the palette's colours and locked mode without autostart. Fish `zwork`/`zdev` functions provide project and development workspaces. |
 | `configs/ghostty/spotatui.conf` | Home Manager installs an optional Ghostty profile, not a replacement for the main Ghostty configuration. |
 | `configs/ghostty/config` | Starting appearance preset (`theme = commander`), copied to the writable live Ghostty config for SpookiUI editing; see [Ghostty notes](configs/ghostty/README.md). |

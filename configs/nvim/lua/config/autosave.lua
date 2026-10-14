@@ -66,7 +66,9 @@ function M.setup(opts)
   vim.api.nvim_create_autocmd("VimLeavePre", {
     group = group,
     callback = function()
-      for buf in pairs(pending) do cancel(buf) end
+      for buf in pairs(pending) do
+        cancel(buf)
+      end
     end,
   })
 end
