@@ -73,10 +73,12 @@ result with `/usr/share/sddm/themes/silent/test.sh` before restarting.
 On a machine that boots with GRUB it offers the boot setup: the GRUB settings in
 `grub/grub` (the Garuda dr460nized theme, a two-second menu and the kernel
 parameter that turns AppArmor on), installed by `restore-grub` with the previous
-file kept beside them, and the AppArmor service enabled. It also offers the UFW
-firewall with incoming connections blocked, outgoing allowed and logging on low
-(KDE Connect, when installed, is allowed from the local network), plus `gufw` to
-manage it from a window. Each is a separate yes/no question.
+file kept beside them, and the AppArmor service enabled. When Plymouth is
+installed, as on Garuda, that step also adds the Boot Splash Screen page to
+System Settings for choosing the theme shown while the system starts. It also
+offers the UFW firewall with incoming connections blocked, outgoing allowed and
+logging on low (KDE Connect, when installed, is allowed from the local network),
+plus `gufw` to manage it from a window. Each is a separate yes/no question.
 
 With an external drive mounted it also installs Restic, stores a repository
 password in KDE Wallet and creates the repository. Without one, run it again once
