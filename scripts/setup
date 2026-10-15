@@ -134,6 +134,7 @@ shell_changed=false
 login_theme_installed=false
 display_manager_switched=false
 boot_theme_installed=false
+boot_splash_installed=false
 # The unit behind the login screen, such as sddm.service or plasmalogin.service.
 display_manager=$(basename "$(readlink -f /etc/systemd/system/display-manager.service 2>/dev/null)")
 
@@ -172,13 +173,21 @@ if [[ -f /etc/default/grub ]]; then
   echo '  The GRUB settings in grub/: the Garuda dr460nized theme, a two-second menu and'
   echo '  the kernel parameter that turns AppArmor on, with the AppArmor service enabled.'
   echo '  They apply at the next reboot.'
-  if pacman -Qq plymouth >/dev/null 2>&1; then
-    echo '  Also the Boot Splash Screen page in System Settings, to pick the Plymouth theme'
-    echo '  shown while the system starts.'
-  fi
   read -r -p 'Set these up too? [Y/n] ' answer
   boot_theme=true
   [[ "$answer" == [nN]* ]] && boot_theme=false
+fi
+
+boot_splash=false
+if pacman -Qq plymouth >/dev/null 2>&1; then
+  echo
+  echo '==> Boot splash'
+  echo "  The Plymouth theme named in plymouth/theme ($(head -n 1 "$repo/plymouth/theme")), shown"
+  echo '  while the system starts, rebuilt into the boot images, plus the Boot Splash Screen'
+  echo '  page in System Settings for picking another.'
+  read -r -p 'Set it up too? [Y/n] ' answer
+  boot_splash=true
+  [[ "$answer" == [nN]* ]] && boot_splash=false
 fi
 
 echo
@@ -213,7 +222,9 @@ if "$login_theme"; then
 fi
 if "$boot_theme"; then
   echo '  Boot:           the GRUB settings and theme in grub/, AppArmor on at the next reboot'
-  pacman -Qq plymouth >/dev/null 2>&1 && echo '                  and the Boot Splash Screen page in System Settings'
+fi
+if "$boot_splash"; then
+  echo '  Boot splash:    the Plymouth theme in plymouth/theme and the Boot Splash Screen settings page'
 fi
 if "$firewall"; then
   echo '  Firewall:       UFW on, incoming blocked, outgoing allowed'
@@ -292,9 +303,9 @@ fi
 "$boot_theme" && packages+=(apparmor)
 # The theme is a Garuda package; restore-grub says so when a plain Arch lacks it.
 "$boot_theme" && pacman -Si grub-theme-garuda-dr460nized >/dev/null 2>&1 && packages+=(grub-theme-garuda-dr460nized)
-# The Boot Splash Screen page in System Settings only makes sense with Plymouth,
-# which Garuda installs and plain Arch does not.
-"$boot_theme" && pacman -Qq plymouth >/dev/null 2>&1 && packages+=(plymouth-kcm)
+# The Boot Splash Screen page in System Settings; it needs Plymouth, which Garuda
+# installs and plain Arch does not.
+"$boot_splash" && packages+=(plymouth-kcm)
 "$firewall" && packages+=(ufw gufw)
 run sudo pacman -S --needed "${packages[@]}"
 # Command suggestions read a per-user package file list, which starts out missing.
@@ -446,6 +457,18 @@ if "$boot_theme"; then
   fi
 fi
 
+if "$boot_splash"; then
+  echo
+  echo '==> Boot splash'
+  # restore-plymouth selects the theme and rebuilds the boot images with the
+  # machine's own initramfs tool; the System Settings page cannot do that on Garuda.
+  if run env "DOTFILES_DIR=$repo" "$repo/home-manager/scripts/restore-plymouth.sh"; then
+    boot_splash_installed=true
+  else
+    echo 'The boot splash was not changed; run restore-plymouth later.' >&2
+  fi
+fi
+
 if "$firewall"; then
   echo
   echo '==> Firewall'
@@ -553,6 +576,10 @@ if "$display_manager_switched"; then
 fi
 if "$boot_theme_installed"; then
   echo '  - Reboot to see the GRUB theme; aa-enabled then prints Yes.'
+fi
+if "$boot_splash_installed"; then
+  echo '  - Reboot to see the boot splash. After picking another theme in System Settings,'
+  echo '    run restore-plymouth --rebuild so it reaches the boot images.'
 fi
 if "$backup"; then
   echo '  - backup-personal runs your first backup; later ones start when the drive mounts.'
