@@ -121,7 +121,7 @@ flake build can include them.
 
 For a guided, portable terminal setup, see [Myfish](https://github.com/Commanderx-code/Myfish).
 For individual application configurations and Linux setup menus, see
-[Commander Toolbox](https://github.com/Commanderx-code/commander-toolbox).
+[HelixForge](https://github.com/Commanderx-code/Helix-Forge).
 
 ## Everyday commands
 
@@ -132,7 +132,7 @@ For individual application configurations and Linux setup menus, see
 | `pkg-owner <command>` | Inspect whether a command comes from Pacman, Nix or another location. |
 | `pkg-install <package>` | Help choose between Home Manager and system package management. |
 | `zellij` | Start an optional terminal session. |
-| `commander-toolbox` / `toolbox` | Open [Commander Toolbox](https://github.com/Commanderx-code/commander-toolbox), fetching its newest release first. |
+| `helixforge` / `toolbox` | Open [HelixForge](https://github.com/Commanderx-code/Helix-Forge), fetching its newest release first. |
 | `zapfast` | Native WhatsApp client, built from its upstream flake and run through nixGL. |
 | `netwatch` / `tfm` / `cassette` | Network dashboard, visual file manager and Spotify player; see the [setup notes](configs/terminal-tools/README.md). |
 | `zwork` / `zdev` | Pick a project session or open an editor, shell and Git workspace. |
@@ -215,7 +215,7 @@ GitHub Actions runs the same build check on pushes and pull requests.
 | Repository | Role |
 | :--- | :--- |
 | [Myfish](https://github.com/Commanderx-code/Myfish) | Portable Fish, Bash and Zsh setup for Linux and macOS. |
-| [Commander Toolbox](https://github.com/Commanderx-code/commander-toolbox) | Linux setup menus and individual dotfiles installers. |
+| [HelixForge](https://github.com/Commanderx-code/Helix-Forge) | Linux setup menus and individual dotfiles installers; replaces Commander Toolbox. |
 | [Config Bible](https://github.com/Commanderx-code/config-bible) | Workstation handbook with web and desktop viewers. |
 
 Config Bible owns and installs its own commands, desktop launcher, and optional
@@ -223,8 +223,8 @@ Home Manager module. Follow its repository README for installation. The full
 configuration and maintenance reference for these dotfiles lives in
 [STRUCTURE.md](STRUCTURE.md).
 
-## Toolbox integration
+## HelixForge integration
 
-Changes on `main` are picked up automatically after CI succeeds. Add new exported
+Changes on `main` are picked up by HelixForge automatically after CI succeeds. Add new exported
 tools to [toolbox.json](toolbox.json); see [publishing tools](TOOLBOX.md) for package
 names, config paths and the update workflow.

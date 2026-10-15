@@ -1,4 +1,4 @@
-"""Exercise the Toolbox launcher against a local stand-in for the release downloads."""
+"""Exercise the HelixForge launcher against a local stand-in for the release downloads."""
 import hashlib
 import os
 from pathlib import Path
@@ -8,7 +8,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 LAUNCHER = ROOT / 'home-manager/scripts/toolbox-launcher.sh'
-ASSET = 'commander-toolbox-linux-x86_64'
+ASSET = 'helixforge-linux-x86_64'
 # Serves files from $RELEASE by the URL's last component and logs each request.
 CURL = '''#!/bin/sh
 for argument in "$@"; do
@@ -37,7 +37,7 @@ class ToolboxLauncherTests(unittest.TestCase):
         curl.chmod(0o755)
         self.env = dict(os.environ, HOME=str(self.home), XDG_DATA_HOME=str(self.home / 'data'),
                         RELEASE=str(self.release), PATH=str(tools) + os.pathsep + os.environ['PATH'])
-        self.installed = self.home / 'data/commander-toolbox' / ASSET
+        self.installed = self.home / 'data/helixforge' / ASSET
 
     def publish(self, version, checksum=None):
         body = f'#!/bin/sh\necho "toolbox {version} $*"\n'.encode()
@@ -85,7 +85,7 @@ class ToolboxLauncherTests(unittest.TestCase):
 
     def test_personal_launcher_takes_precedence(self):
         self.publish('one')
-        personal = self.home / '.local/bin/commander-toolbox'
+        personal = self.home / '.local/bin/helixforge'
         personal.parent.mkdir(parents=True)
         personal.write_text('#!/bin/sh\necho "personal $*"\n')
         personal.chmod(0o755)
