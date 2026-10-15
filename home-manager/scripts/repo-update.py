@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fast-forward clean source checkouts to tested main revisions; rebuild Toolbox."""
+"""Fast-forward clean source checkouts to tested main revisions; rebuild HelixForge."""
 import argparse
 import fcntl
 import json
@@ -43,14 +43,24 @@ def safe_checkout(root, name):
     return None
 
 
+TOOLBOX = 'Helix-Forge'
+# The local checkout may use the repository name or a lowercase directory name.
+CHECKOUT_NAMES = {TOOLBOX: ('Helix-Forge', 'helixforge')}
+
+
+def checkout_root(projects, name):
+    candidates = [projects / directory for directory in CHECKOUT_NAMES.get(name, (name,))]
+    return next((root for root in candidates if root.exists()), candidates[0])
+
+
 def released_toolbox(head, request=api):
-    tag = 'toolbox-' + revision(head)[:12]
+    tag = 'helixforge-' + revision(head)[:12]
     # Listing avoids treating an expected unpublished revision as an API error.
-    releases = request(f'repos/{OWNER}/commander-toolbox/releases?per_page=100')
+    releases = request(f'repos/{OWNER}/{TOOLBOX}/releases?per_page=100')
     for release in releases:
         if release['tag_name'] == tag and not release['draft'] and not release['prerelease']:
             names = {asset['name'] for asset in release['assets']}
-            return {'commander-toolbox-linux-x86_64', 'SHA256SUMS'} <= names
+            return {'helixforge-linux-x86_64', 'SHA256SUMS'} <= names
     return False
 
 
@@ -63,7 +73,7 @@ def update(root, name, apply=False, request=api):
     head = revision(git(root, 'rev-parse', 'origin/main'))
     if git(root, 'rev-list', '--count', 'origin/main..HEAD') != '0':
         return {'repository': name, 'status': 'skipped', 'reason': 'local commits ahead of or diverged from origin/main'}
-    eligible = released_toolbox(head, request) if name == 'commander-toolbox' else tested(name, head, request)
+    eligible = released_toolbox(head, request) if name == TOOLBOX else tested(name, head, request)
     if not eligible:
         return {'repository': name, 'status': 'waiting', 'reason': 'remote main is awaiting successful validation or release'}
     result = {'repository': name, 'before': before, 'revision': head,
@@ -78,16 +88,16 @@ def update(root, name, apply=False, request=api):
 
 
 def build_toolbox(root, head, state):
-    binary = root / 'target/debug/commander-toolbox'
+    binary = root / 'target/debug/helixforge'
     if state.get('toolbox_built') == head and binary.is_file():
         return False
-    reason = safe_checkout(root, 'commander-toolbox')
+    reason = safe_checkout(root, TOOLBOX)
     if reason or git(root, 'rev-parse', 'HEAD') != head:
-        raise RuntimeError('Toolbox checkout changed before build: ' + (reason or 'different commit'))
-    subprocess.run(['cargo', 'build', '--locked', '--package', 'linutil_tui'], cwd=root, check=True, timeout=1200)
+        raise RuntimeError('HelixForge checkout changed before build: ' + (reason or 'different commit'))
+    subprocess.run(['cargo', 'build', '--locked', '--package', 'helixforge'], cwd=root, check=True, timeout=1200)
     subprocess.run([str(binary), '--help'], cwd=root, check=True, stdout=subprocess.DEVNULL, timeout=30)
-    if safe_checkout(root, 'commander-toolbox') or git(root, 'rev-parse', 'HEAD') != head:
-        raise RuntimeError('Toolbox checkout changed during build; not marking this revision built')
+    if safe_checkout(root, TOOLBOX) or git(root, 'rev-parse', 'HEAD') != head:
+        raise RuntimeError('HelixForge checkout changed during build; not marking this revision built')
     state['toolbox_built'] = head
     return True
 
@@ -110,9 +120,9 @@ def main():
         results = []
         for name in SOURCES:
             try:
-                root = args.projects_dir / name
+                root = checkout_root(args.projects_dir, name)
                 result = update(root, name, args.apply)
-                if args.apply and name == 'commander-toolbox' and result['status'] in ('current', 'updated'):
+                if args.apply and name == TOOLBOX and result['status'] in ('current', 'updated'):
                     result['rebuilt'] = build_toolbox(root, result['revision'], state)
             except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
                 result = {'repository': name, 'status': 'error', 'reason': str(error)}
