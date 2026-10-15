@@ -167,11 +167,25 @@ if [[ -x /usr/bin/sddm ]]; then
 fi
 
 boot_theme=false
+# GRUB keeps its settings in /etc/default/grub; a Limine machine, such as a
+# CachyOS install, has /etc/default/limine for its entry tool or the limine command.
+boot_loader=''
 if [[ -f /etc/default/grub ]]; then
+  boot_loader=grub
+elif [[ -f /etc/default/limine ]] || command -v limine >/dev/null; then
+  boot_loader=limine
+fi
+if [[ -n "$boot_loader" ]]; then
   echo
   echo '==> Boot'
-  echo '  The GRUB settings in grub/: the Garuda dr460nized theme, a two-second menu and'
-  echo '  the kernel parameter that turns AppArmor on, with the AppArmor service enabled.'
+  if [[ "$boot_loader" == grub ]]; then
+    echo '  The GRUB settings in grub/: the Garuda dr460nized theme, a two-second menu and'
+    echo '  the kernel parameter that turns AppArmor on, with the AppArmor service enabled.'
+  else
+    echo '  The Limine boot menu look in limine/: the CachyOS wallpaper and colours and a'
+    echo '  two-second menu, plus the kernel parameter that turns AppArmor on, with the'
+    echo '  AppArmor service enabled.'
+  fi
   echo '  They apply at the next reboot.'
   read -r -p 'Set these up too? [Y/n] ' answer
   boot_theme=true
@@ -220,8 +234,10 @@ if "$login_theme"; then
   echo '  Login screen:   SilentSDDM with the presets in sddm/'
   [[ "$display_manager" == sddm.service ]] || echo '                  with SDDM enabled as the login screen'
 fi
-if "$boot_theme"; then
+if [[ "$boot_loader" == grub ]] && "$boot_theme"; then
   echo '  Boot:           the GRUB settings and theme in grub/, AppArmor on at the next reboot'
+elif "$boot_theme"; then
+  echo '  Boot:           the Limine boot menu look in limine/, AppArmor on at the next reboot'
 fi
 if "$boot_splash"; then
   echo '  Boot splash:    the Plymouth theme in plymouth/theme and the Boot Splash Screen settings page'
@@ -302,7 +318,7 @@ fi
 "$backup" && packages+=(restic)
 "$boot_theme" && packages+=(apparmor)
 # The theme is a Garuda package; restore-grub says so when a plain Arch lacks it.
-"$boot_theme" && pacman -Si grub-theme-garuda-dr460nized >/dev/null 2>&1 && packages+=(grub-theme-garuda-dr460nized)
+[[ "$boot_loader" == grub ]] && "$boot_theme" && pacman -Si grub-theme-garuda-dr460nized >/dev/null 2>&1 && packages+=(grub-theme-garuda-dr460nized)
 # The Boot Splash Screen page in System Settings; it needs Plymouth, which Garuda
 # installs and plain Arch does not.
 "$boot_splash" && packages+=(plymouth-kcm)
@@ -447,13 +463,20 @@ if "$boot_theme"; then
   echo
   echo '==> Boot'
   # restore-grub installs grub/grub as /etc/default/grub, keeping the previous
-  # file beside it, and regenerates the GRUB menu.
-  if run env "DOTFILES_DIR=$repo" "$repo/home-manager/scripts/restore-grub.sh"; then
+  # file beside it, and regenerates the GRUB menu. restore-limine merges the
+  # look in limine/ into limine.conf and the AppArmor parameter into
+  # /etc/default/limine, then lets the entry tool regenerate the entries.
+  if [[ "$boot_loader" == grub ]]; then
+    restore_boot="$repo/home-manager/scripts/restore-grub.sh"
+  else
+    restore_boot="$repo/home-manager/scripts/restore-limine.sh"
+  fi
+  if run env "DOTFILES_DIR=$repo" "$restore_boot"; then
     # The service loads the profiles; it starts working once the kernel boots with AppArmor.
     run sudo systemctl enable apparmor
     boot_theme_installed=true
   else
-    echo 'The boot settings were not changed; run restore-grub later.' >&2
+    echo "The boot settings were not changed; run $(basename "$restore_boot" .sh) later." >&2
   fi
 fi
 
@@ -575,7 +598,7 @@ if "$display_manager_switched"; then
   echo "  - Reboot to get the SDDM login screen; $display_manager stays installed but disabled."
 fi
 if "$boot_theme_installed"; then
-  echo '  - Reboot to see the GRUB theme; aa-enabled then prints Yes.'
+  echo '  - Reboot to see the boot menu; aa-enabled then prints Yes.'
 fi
 if "$boot_splash_installed"; then
   echo '  - Reboot to see the boot splash. After picking another theme in System Settings,'
