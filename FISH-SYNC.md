@@ -15,8 +15,8 @@ The rest of the publication pipeline is automatic:
 4. The import job explicitly dispatches dotfiles validation on the new commit.
    GitHub bot-token pushes do not otherwise trigger push workflows. A later sync
    run retries a missing dispatch, but does not automatically retry failed tests.
-5. Toolbox's existing source sync adopts the tested commits, builds and publishes
-   its release at its next scheduled run (minutes 17 and 47).
+5. HelixForge's source sync adopts the tested commits, builds and publishes its
+   release at its next scheduled run (minutes 17 and 47).
 
 ## Ownership and workstation differences
 
@@ -62,14 +62,14 @@ Home Manager installs `repo-update`:
 
 ```sh
 repo-update          # fetch and report available, validated updates
-repo-update --apply  # fast-forward eligible clean checkouts and rebuild Toolbox
+repo-update --apply  # fast-forward eligible clean checkouts and rebuild HelixForge
 ```
 
-The updater handles Myfish, dotfiles, and commander-toolbox beside the configured
-dotfiles directory. It requires the expected origin and a branch tracking
+The updater handles Myfish, dotfiles, and HelixForge (a `Helix-Forge` or
+`helixforge` checkout) beside the configured dotfiles directory. It requires the expected origin and a branch tracking
 `origin/main`, and skips dirty, detached, ahead/diverged, or in-progress Git work.
 It never stashes, rebases, commits, force-pushes, or switches branches. Git also
-refuses to overwrite ignored files during the fast-forward. Toolbox requires a
+refuses to overwrite ignored files during the fast-forward. HelixForge requires a
 complete published release and is rebuilt for the existing source-checkout
 launcher. Failed builds are retried on a later run; the build marker is written
 only after a successful build and help smoke test.
@@ -81,7 +81,7 @@ results are stored in `$XDG_STATE_HOME/repo-update/state.json` (by default
 `~/.local/state/repo-update/state.json`). Manage the follow-up in Codex Scheduled.
 
 Repository updates do not activate Home Manager or run installers. Apply reviewed
-workstation configuration with `hm-rebuild`; reopen Toolbox to use updated menus.
+workstation configuration with `hm-rebuild`; reopen HelixForge to use updated menus.
 The present migration is applied once during setup.
 
 ## Checks and recovery
@@ -95,7 +95,7 @@ Use **Run workflow** on
 [Sync shared Fish from Myfish](https://github.com/Commanderx-code/dotfiles/actions/workflows/sync-myfish.yml)
 for an immediate import, then inspect
 [dotfiles validation](https://github.com/Commanderx-code/dotfiles/actions/workflows/check.yml)
-and [Toolbox source sync](https://github.com/Commanderx-code/commander-toolbox/actions/workflows/sync-sources.yml).
+and [HelixForge source sync](https://github.com/Commanderx-code/Helix-Forge/actions/workflows/sync-sources.yml).
 Failed checks keep downstream consumers on their prior tested version. GitHub
 may disable scheduled workflows in inactive public repositories; re-enable them
 in Actions if needed. No cross-repository secret is required.
