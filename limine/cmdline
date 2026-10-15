@@ -1,0 +1,4 @@
+# Kernel parameters restore-limine sets in KERNEL_CMDLINE[default] of
+# /etc/default/limine, one per line; a parameter replaces an existing one with
+# the same name. This is the parameter that turns AppArmor on, as in grub/grub.
+lsm=landlock,lockdown,yama,integrity,apparmor,bpf
