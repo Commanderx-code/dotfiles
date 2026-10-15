@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
-# Install the boot menu look kept in limine/ (the wallpaper and the appearance
-# settings in limine/limine.conf) into the machine's limine.conf, and the kernel
-# parameters in limine/cmdline into /etc/default/limine, where the Limine entry
-# tool reads them on CachyOS. The boot entries themselves are never touched.
+# Install a boot menu look kept in limine/themes (a wallpaper and appearance
+# settings) into the machine's limine.conf, and the kernel parameters in
+# limine/cmdline into /etc/default/limine, where the Limine entry tool reads
+# them on CachyOS. The boot entries themselves are never touched.
+#
+#   restore-limine [garuda|cachyos] [--menu-only]
+#
+# Without a look the choice comes from ~/.config/dotfiles/boot-theme, then
+# from limine/theme.
 set -euo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
@@ -18,24 +23,40 @@ LIMINE_DEFAULT="${LIMINE_DEFAULT_FILE:-/etc/default/limine}"
 WALLPAPER=dotfiles-splash.png
 
 menu_only=false
-case "${1:-}" in
-  '') ;;
-  --menu-only) menu_only=true ;;
-  --help | -h)
-    echo 'Usage: restore-limine [--menu-only]'
-    echo 'Installs the boot menu look in limine/ and, unless --menu-only, the kernel'
-    echo 'parameters in limine/cmdline through /etc/default/limine.'
-    exit 0
-    ;;
-  *) echo "Unknown argument: $1" >&2; exit 1 ;;
+look=''
+for argument in "$@"; do
+  case "$argument" in
+    --menu-only) menu_only=true ;;
+    --help | -h)
+      echo 'Usage: restore-limine [garuda|cachyos] [--menu-only]'
+      echo 'Installs a boot menu look from limine/themes and, unless --menu-only, the'
+      echo 'kernel parameters in limine/cmdline through /etc/default/limine.'
+      exit 0
+      ;;
+    garuda | cachyos) look=$argument ;;
+    *) echo "Unknown argument: $argument" >&2; exit 1 ;;
+  esac
+done
+# The look: the argument, the machine's choice, or the repository's default.
+look_file="${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/boot-theme"
+if [[ -z "$look" && -s "$look_file" ]]; then
+  look="$(head -n 1 "$look_file" | tr -d '[:space:]')"
+fi
+if [[ -z "$look" ]]; then
+  look="$(head -n 1 "$SOURCE_DIR/theme" | tr -d '[:space:]')"
+fi
+case "$look" in
+  garuda | cachyos) ;;
+  *) echo "Unknown boot menu look '$look'; the looks are garuda and cachyos." >&2; exit 1 ;;
 esac
-
-for file in limine.conf "$WALLPAPER" cmdline; do
-  if [[ ! -f "$SOURCE_DIR/$file" ]]; then
-    echo "Limine settings were not found at: $SOURCE_DIR/$file" >&2
+LOOK_DIR="$SOURCE_DIR/themes/$look"
+for file in "$LOOK_DIR/limine.conf" "$LOOK_DIR/splash.png" "$SOURCE_DIR/cmdline"; do
+  if [[ ! -f "$file" ]]; then
+    echo "Limine settings were not found at: $file" >&2
     exit 1
   fi
 done
+echo "Boot menu look: $look"
 
 # limine.conf lives on the boot partition, which may be readable by root only.
 find_limine_conf() {
@@ -66,17 +87,17 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
 # The wallpaper goes beside limine.conf, where boot():/ resolves.
-if sudo test -f "$conf_dir/$WALLPAPER" && sudo cmp -s "$SOURCE_DIR/$WALLPAPER" "$conf_dir/$WALLPAPER"; then
+if sudo test -f "$conf_dir/$WALLPAPER" && sudo cmp -s "$LOOK_DIR/splash.png" "$conf_dir/$WALLPAPER"; then
   :
 else
-  sudo install -m644 -- "$SOURCE_DIR/$WALLPAPER" "$conf_dir/$WALLPAPER"
+  sudo install -m644 -- "$LOOK_DIR/splash.png" "$conf_dir/$WALLPAPER"
   echo "Installed $conf_dir/$WALLPAPER"
 fi
 
 # The copy lands in this user's work directory; only the read needs root.
 # shellcheck disable=SC2024
 sudo cat -- "$conf" > "$work/current.conf"
-python3 -I "$RENDER" appearance "$work/current.conf" "$SOURCE_DIR/limine.conf" > "$work/limine.conf"
+python3 -I "$RENDER" appearance "$work/current.conf" "$LOOK_DIR/limine.conf" > "$work/limine.conf"
 if cmp -s "$work/limine.conf" "$work/current.conf"; then
   echo "Boot menu already current: $conf"
 else

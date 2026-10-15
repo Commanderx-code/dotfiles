@@ -28,15 +28,18 @@ class RestoreGrubTests(unittest.TestCase):
         self.grub.parent.mkdir(parents=True)
         self.log = self.tmp / 'update.log'
         root = self.tmp / 'root'
-        (root / 'usr/share/grub/themes/garuda-dr460nized').mkdir(parents=True)
-        (root / 'usr/share/grub/themes/garuda-dr460nized/theme.txt').write_text('')
+        self.themes = root / 'usr/share/grub/themes'
+        (self.themes / 'garuda-dr460nized').mkdir(parents=True)
+        (self.themes / 'garuda-dr460nized/theme.txt').write_text('')
         (root / 'boot').mkdir()
         (root / 'boot/vmlinuz-linux-garuda').write_text('')
+        # No machine choice in ~/.config/dotfiles/boot-theme, so grub/theme decides.
         self.env = dict(os.environ, PATH=f'{binaries}:{os.environ["PATH"]}', DOTFILES_DIR=str(ROOT),
-                        GRUB_DEFAULT_FILE=str(self.grub), GRUB_THEME_ROOT=str(root), GRUB_UPDATE_LOG=str(self.log))
+                        GRUB_DEFAULT_FILE=str(self.grub), GRUB_THEME_ROOT=str(root), GRUB_THEMES_DIR=str(self.themes),
+                        GRUB_UPDATE_LOG=str(self.log), XDG_CONFIG_HOME=str(self.tmp / 'config'))
 
-    def run_script(self):
-        return subprocess.run(['bash', str(SCRIPT)], env=self.env, capture_output=True, text=True, check=True)
+    def run_script(self, *args):
+        return subprocess.run(['bash', str(SCRIPT), *args], env=self.env, capture_output=True, text=True, check=True)
 
     def test_settings_are_installed_verbatim_with_a_backup_once(self):
         self.grub.write_text('GRUB_DEFAULT=0\nGRUB_THEME="/usr/share/grub/themes/cachyos/theme.txt"\n')
@@ -50,6 +53,26 @@ class RestoreGrubTests(unittest.TestCase):
         result = self.run_script()
         self.assertIn('already current', result.stdout)
         self.assertEqual(backup.read_text(), 'GRUB_DEFAULT=0\nGRUB_THEME="/usr/share/grub/themes/cachyos/theme.txt"\n')
+
+    def test_the_cachyos_look_installs_the_theme_and_names_it(self):
+        self.grub.write_text('GRUB_DEFAULT=0\n')
+        (self.themes / 'cachyos').mkdir()
+        (self.themes / 'cachyos/theme.txt').write_text('')
+        result = self.run_script('cachyos')
+        expected = SOURCE.read_text().replace('GRUB_THEME="/usr/share/grub/themes/garuda-dr460nized/theme.txt"',
+                                              'GRUB_THEME="/usr/share/grub/themes/cachyos/theme.txt"')
+        self.assertNotEqual(expected, SOURCE.read_text())
+        self.assertEqual(self.grub.read_text(), expected)
+        self.assertEqual((self.themes / 'cachyos/background.png').read_bytes(), (ROOT / 'grub/themes/cachyos/background.png').read_bytes())
+        self.assertTrue((self.themes / 'cachyos/icons/garuda.png').is_file())
+        self.assertIn('Boot menu look: cachyos', result.stdout)
+        self.assertEqual(result.stderr, '')
+        # The machine's remembered choice applies when no argument is given.
+        (self.tmp / 'config/dotfiles').mkdir(parents=True)
+        (self.tmp / 'config/dotfiles/boot-theme').write_text('cachyos\n')
+        self.assertIn('already current', self.run_script().stdout)
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.run_script('neon')
 
     def test_the_settings_turn_apparmor_on_and_name_the_theme(self):
         text = SOURCE.read_text()

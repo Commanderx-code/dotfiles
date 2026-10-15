@@ -129,6 +129,7 @@ if "$backup" || [[ -z "$wallet_entry" ]]; then
   wallet_entry=$(basename -- "$backup_mount")
 fi
 
+config_home=${XDG_CONFIG_HOME:-$HOME/.config}
 login_shell=$(getent passwd "$USER" | cut -d: -f7)
 shell_changed=false
 login_theme_installed=false
@@ -178,21 +179,40 @@ elif [[ -f /etc/default/grub ]]; then
 elif command -v limine >/dev/null; then
   boot_loader=limine
 fi
+boot_look=''
 if [[ -n "$boot_loader" ]]; then
   echo
   echo '==> Boot'
   if [[ "$boot_loader" == grub ]]; then
-    echo '  The GRUB settings in grub/: the Garuda dr460nized theme, a two-second menu and'
-    echo '  the kernel parameter that turns AppArmor on, with the AppArmor service enabled.'
+    echo '  The GRUB settings in grub/: a boot menu look, a two-second menu and the kernel'
+    echo '  parameter that turns AppArmor on, with the AppArmor service enabled.'
   else
-    echo '  The Limine boot menu look in limine/: the CachyOS wallpaper and colours and a'
-    echo '  two-second menu, plus the kernel parameter that turns AppArmor on, with the'
-    echo '  AppArmor service enabled.'
+    echo '  The Limine boot menu look in limine/: a wallpaper and colours and a two-second'
+    echo '  menu, plus the kernel parameter that turns AppArmor on, with the AppArmor'
+    echo '  service enabled.'
   fi
   echo '  They apply at the next reboot.'
   read -r -p 'Set these up too? [Y/n] ' answer
   boot_theme=true
   [[ "$answer" == [nN]* ]] && boot_theme=false
+  if "$boot_theme"; then
+    # The look is remembered per machine, so restore-grub and restore-limine keep it.
+    boot_look_file="$config_home/dotfiles/boot-theme"
+    if [[ -s "$boot_look_file" ]]; then
+      boot_look=$(head -n 1 "$boot_look_file" | tr -d '[:space:]')
+    else
+      boot_look=$(head -n 1 "$repo/$boot_loader/theme" | tr -d '[:space:]')
+    fi
+    default_choice=1
+    [[ "$boot_look" == cachyos ]] && default_choice=2
+    echo '  Looks: 1) Garuda dr460nized  2) CachyOS'
+    read -r -p "Which look? [$default_choice] " answer
+    case "${answer:-$default_choice}" in
+      1) boot_look=garuda ;;
+      2) boot_look=cachyos ;;
+      *) echo "Keeping $boot_look." ;;
+    esac
+  fi
 fi
 
 boot_splash=false
@@ -238,9 +258,9 @@ if "$login_theme"; then
   [[ "$display_manager" == sddm.service ]] || echo '                  with SDDM enabled as the login screen'
 fi
 if [[ "$boot_loader" == grub ]] && "$boot_theme"; then
-  echo '  Boot:           the GRUB settings and theme in grub/, AppArmor on at the next reboot'
+  echo "  Boot:           the GRUB settings in grub/ with the $boot_look look, AppArmor on at the next reboot"
 elif "$boot_theme"; then
-  echo '  Boot:           the Limine boot menu look in limine/, AppArmor on at the next reboot'
+  echo "  Boot:           the Limine boot menu in limine/ with the $boot_look look, AppArmor on at the next reboot"
 fi
 if "$boot_splash"; then
   echo '  Boot splash:    the Plymouth theme in plymouth/theme and the Boot Splash Screen settings page'
@@ -321,7 +341,7 @@ fi
 "$backup" && packages+=(restic)
 "$boot_theme" && packages+=(apparmor)
 # The theme is a Garuda package; restore-grub says so when a plain Arch lacks it.
-[[ "$boot_loader" == grub ]] && "$boot_theme" && pacman -Si grub-theme-garuda-dr460nized >/dev/null 2>&1 && packages+=(grub-theme-garuda-dr460nized)
+[[ "$boot_loader" == grub && "$boot_look" == garuda ]] && "$boot_theme" && pacman -Si grub-theme-garuda-dr460nized >/dev/null 2>&1 && packages+=(grub-theme-garuda-dr460nized)
 # The Boot Splash Screen page in System Settings; it needs Plymouth, which Garuda
 # installs and plain Arch does not.
 "$boot_splash" && packages+=(plymouth-kcm)
@@ -402,7 +422,6 @@ fi
 
 echo
 echo '==> Ghostty'
-config_home=${XDG_CONFIG_HOME:-$HOME/.config}
 ghostty_config="$config_home/ghostty/config"
 if [[ -e "$ghostty_config" || -L "$ghostty_config" ]]; then
   echo "Keeping the existing $ghostty_config."
@@ -474,7 +493,13 @@ if "$boot_theme"; then
   else
     restore_boot="$repo/home-manager/scripts/restore-limine.sh"
   fi
-  if run env "DOTFILES_DIR=$repo" "$restore_boot"; then
+  if "$dry_run"; then
+    echo "Would write $boot_look to $config_home/dotfiles/boot-theme."
+  else
+    mkdir -p "$config_home/dotfiles"
+    printf '%s\n' "$boot_look" > "$config_home/dotfiles/boot-theme"
+  fi
+  if run env "DOTFILES_DIR=$repo" "$restore_boot" "$boot_look"; then
     # The service loads the profiles; it starts working once the kernel boots with AppArmor.
     run sudo systemctl enable apparmor
     boot_theme_installed=true
