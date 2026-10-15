@@ -85,6 +85,17 @@ default_git_email=$(saved gitEmail)
 git_email=$(ask 'Git author email' "${default_git_email:-$(git config --global user.email 2>/dev/null || true)}")
 
 echo
+echo '==> Terminal and tools'
+echo '  Nix and the Home Manager configuration: Fish, Starship, Fastfetch and Neovim'
+echo '  from this repository, the Nerd Fonts, and the backup and restore commands'
+echo '  (backup-personal, hm-rebuild, restore-sddm and the others). Without them the'
+echo '  system applications, login screen, boot menu, boot splash and firewall are'
+echo '  still set up; the terminal can come from Myfish or the toolbox later.'
+read -r -p 'Install Nix and Home Manager too? [Y/n] ' answer
+home_manager=true
+[[ "$answer" == [nN]* ]] && home_manager=false
+
+echo
 echo '==> Backup drive'
 backup=false
 wallet=$(saved wallet)
@@ -96,7 +107,10 @@ drives=()
 for directory in "/run/media/$USER"/*/; do
   [[ -d "$directory" ]] && mountpoint -q "${directory%/}" && drives+=("${directory%/}")
 done
-if ((${#drives[@]} == 0)); then
+if ! "$home_manager"; then
+  backup_mount=${backup_mount:-/run/media/$USER/Backup}
+  echo 'The backup commands come with Home Manager, so Restic setup is skipped.'
+elif ((${#drives[@]} == 0)); then
   backup_mount=${backup_mount:-/run/media/$USER/Backup}
   echo 'No external drive is mounted, so Restic setup is skipped.'
   echo 'Attach and unlock your backup drive, then run this script again.'
@@ -247,9 +261,13 @@ if "$backup"; then
 else
   echo '  Backups:        not set up in this run'
 fi
-echo '  Installs:       Zed, Ghostty, Konsole, KWallet, GnuPG, Nix and the Home Manager configuration'
-echo '  Languages:      Rust, Go, Python and Node.js, which the Neovim tools are built with'
-echo '  Shell helpers:  the Pacman tools, archive tools and notifier that the Fish commands call'
+if "$home_manager"; then
+  echo '  Installs:       Zed, Ghostty, Konsole, KWallet, GnuPG, Nix and the Home Manager configuration'
+  echo '  Languages:      Rust, Go, Python and Node.js, which the Neovim tools are built with'
+  echo '  Shell helpers:  the Pacman tools, archive tools and notifier that the Fish commands call'
+else
+  echo '  Installs:       Zed, Ghostty, Konsole, KWallet and GnuPG; no Nix or Home Manager'
+fi
 if "$apps"; then
   echo '  Everyday apps:  the browser, office, monitoring, Proton and remote desktop apps listed above'
 fi
@@ -319,17 +337,20 @@ fi
 
 echo
 echo '==> System applications'
-packages=(git fish zed ghostty konsole kwallet qt6-tools gnupg)
-# Mason builds Neovim's language servers, formatters and debuggers with these.
-packages+=(rustup go python npm base-devel unzip)
-# Any installed Node.js serves; Pacman would otherwise ask to replace it.
-command -v node >/dev/null || packages+=(nodejs-lts-jod)
-# iwgetid gives the welcome its Wi-Fi name without asking NetworkManager.
-packages+=(wireless_tools)
-# Called by the Fish configuration: checkupdates and paccache (update, cleanup),
-# command suggestions, the SSH key prompt, finished-command notifications,
-# archive extraction, PDF previews and video previews.
-packages+=(pacman-contrib pkgfile ksshaskpass libnotify 7zip unrar poppler ffmpeg)
+packages=(git zed ghostty konsole kwallet qt6-tools gnupg)
+if "$home_manager"; then
+  packages+=(fish)
+  # Mason builds Neovim's language servers, formatters and debuggers with these.
+  packages+=(rustup go python npm base-devel unzip)
+  # Any installed Node.js serves; Pacman would otherwise ask to replace it.
+  command -v node >/dev/null || packages+=(nodejs-lts-jod)
+  # iwgetid gives the welcome its Wi-Fi name without asking NetworkManager.
+  packages+=(wireless_tools)
+  # Called by the Fish configuration: checkupdates and paccache (update, cleanup),
+  # command suggestions, the SSH key prompt, finished-command notifications,
+  # archive extraction, PDF previews and video previews.
+  packages+=(pacman-contrib pkgfile ksshaskpass libnotify 7zip unrar poppler ffmpeg)
+fi
 # upgrade and full-upgrade-devel use paru, which Garuda's repositories carry
 # and plain Arch's do not.
 pacman -Si paru >/dev/null 2>&1 && packages+=(paru)
@@ -347,18 +368,20 @@ fi
 "$boot_splash" && packages+=(plymouth-kcm)
 "$firewall" && packages+=(ufw gufw)
 run sudo pacman -S --needed "${packages[@]}"
-# Command suggestions read a per-user package file list, which starts out missing.
-pkgfile_cache=${XDG_CACHE_HOME:-$HOME/.cache}/pkgfile
-if [[ ! -d "$pkgfile_cache" ]]; then
-  run mkdir -p "$pkgfile_cache"
-  run pkgfile --cachedir "$pkgfile_cache" --update ||
-    echo "The package file list was not downloaded; run pkgfile --cachedir $pkgfile_cache --update later." >&2
-fi
-# The rustup package ships no compiler until a toolchain is chosen.
-if "$dry_run"; then
-  echo 'Would select the stable Rust toolchain if none is set.'
-elif ! rustup default >/dev/null 2>&1; then
-  rustup default stable
+if "$home_manager"; then
+  # Command suggestions read a per-user package file list, which starts out missing.
+  pkgfile_cache=${XDG_CACHE_HOME:-$HOME/.cache}/pkgfile
+  if [[ ! -d "$pkgfile_cache" ]]; then
+    run mkdir -p "$pkgfile_cache"
+    run pkgfile --cachedir "$pkgfile_cache" --update ||
+      echo "The package file list was not downloaded; run pkgfile --cachedir $pkgfile_cache --update later." >&2
+  fi
+  # The rustup package ships no compiler until a toolchain is chosen.
+  if "$dry_run"; then
+    echo 'Would select the stable Rust toolchain if none is set.'
+  elif ! rustup default >/dev/null 2>&1; then
+    rustup default stable
+  fi
 fi
 
 if "$apps"; then
@@ -376,6 +399,7 @@ if "$apps"; then
   fi
 fi
 
+if "$home_manager"; then
 echo
 echo '==> Nix'
 load_nix() {
@@ -419,12 +443,20 @@ else
   # Garuda ships its own Fish and terminal settings; keep them beside the new ones.
   HOME_MANAGER_BACKUP_EXT=before-dotfiles "$generation/activate"
 fi
+else
+  echo
+  echo '==> Nix and Home Manager'
+  echo 'Skipped; run scripts/setup again to add them later.'
+fi
 
 echo
 echo '==> Ghostty'
 ghostty_config="$config_home/ghostty/config"
 if [[ -e "$ghostty_config" || -L "$ghostty_config" ]]; then
   echo "Keeping the existing $ghostty_config."
+elif ! "$home_manager"; then
+  # The preset reads the palette theme and tab bar that Home Manager writes.
+  echo 'The Ghostty preset needs the Home Manager theme files; the toolbox Ghostty entry installs it without them.'
 elif "$dry_run"; then
   echo "Would copy the Ghostty preset to $ghostty_config."
 else
@@ -443,7 +475,9 @@ run kwriteconfig6 --file kdeglobals --group General --key TerminalService com.mi
 echo
 echo '==> Login shell'
 # Terminals open the login shell, and the Fish configuration is the one set up here.
-if [[ "$login_shell" == */fish ]]; then
+if ! "$home_manager"; then
+  echo 'Left alone: the Fish configuration comes with Home Manager.'
+elif [[ "$login_shell" == */fish ]]; then
   echo 'Fish is already the login shell.'
 elif run chsh -s /usr/bin/fish; then
   shell_changed=true
@@ -618,7 +652,11 @@ if "$shell_changed"; then
 else
   echo '  - Close every terminal window and open a new one.'
 fi
-echo '  - hm-rebuild applies later changes to this repository.'
+if "$home_manager"; then
+  echo '  - hm-rebuild applies later changes to this repository.'
+else
+  echo '  - For the terminal without Nix: Myfish, or the Dotfiles entries in the toolbox.'
+fi
 if "$login_theme_installed"; then
   echo '  - Preview the login screen before restarting: /usr/share/sddm/themes/silent/test.sh'
 fi
@@ -634,6 +672,6 @@ if "$boot_splash_installed"; then
 fi
 if "$backup"; then
   echo '  - backup-personal runs your first backup; later ones start when the drive mounts.'
-else
+elif "$home_manager"; then
   echo '  - Run scripts/setup again with your backup drive attached to set up Restic.'
 fi
