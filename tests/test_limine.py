@@ -12,7 +12,8 @@ SCRIPT = ROOT / 'home-manager/scripts/restore-limine.sh'
 spec = importlib.util.spec_from_file_location('limine_config', ROOT / 'home-manager/scripts/limine-config.py')
 limine = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(limine)
-FRAGMENT = (ROOT / 'limine/limine.conf').read_text()
+FRAGMENT = (ROOT / 'limine/themes/cachyos/limine.conf').read_text()
+GARUDA = (ROOT / 'limine/themes/garuda/limine.conf').read_text()
 MACHINE = '''# Limine boot loader configuration
 timeout: 5
 remember_last_entry: yes
@@ -81,14 +82,16 @@ class RestoreLimineTests(unittest.TestCase):
         self.default.write_text('ESP_PATH="/boot"\nKERNEL_CMDLINE[default]="quiet splash"\n')
         self.log = self.tmp / 'calls.log'
         self.env = dict(os.environ, PATH=f'{binaries}:{os.environ["PATH"]}', DOTFILES_DIR=str(ROOT),
-                        LIMINE_CONF=str(self.conf), LIMINE_DEFAULT_FILE=str(self.default), LIMINE_LOG=str(self.log))
+                        LIMINE_CONF=str(self.conf), LIMINE_DEFAULT_FILE=str(self.default), LIMINE_LOG=str(self.log),
+                        XDG_CONFIG_HOME=str(self.tmp / 'config'))
 
     def run_script(self, *args):
         return subprocess.run(['bash', str(SCRIPT), *args], env=self.env, capture_output=True, text=True, check=True)
 
     def test_menu_wallpaper_and_parameters_are_installed_with_backups_once(self):
         result = self.run_script()
-        self.assertEqual((self.boot / 'dotfiles-splash.png').read_bytes(), (ROOT / 'limine/dotfiles-splash.png').read_bytes())
+        self.assertEqual((self.boot / 'dotfiles-splash.png').read_bytes(), (ROOT / 'limine/themes/cachyos/splash.png').read_bytes())
+        self.assertIn('Boot menu look: cachyos', result.stdout)
         self.assertEqual(self.conf.read_text(), limine.merge_appearance(MACHINE, FRAGMENT))
         self.assertEqual(self.conf.with_name('limine.conf.before-dotfiles').read_text(), MACHINE)
         self.assertIn('lsm=landlock,lockdown,yama,integrity,apparmor,bpf', self.default.read_text())
@@ -101,6 +104,18 @@ class RestoreLimineTests(unittest.TestCase):
         self.assertIn('already current', result.stdout)
         self.assertEqual(self.log.read_text(), 'regenerated\n')
         self.assertEqual(self.conf.with_name('limine.conf.before-dotfiles').read_text(), MACHINE)
+
+    def test_the_garuda_look_and_the_remembered_choice(self):
+        result = self.run_script('garuda', '--menu-only')
+        self.assertEqual(self.conf.read_text(), limine.merge_appearance(MACHINE, GARUDA))
+        self.assertIn('term_foreground_bright: 02ccfc', self.conf.read_text())
+        self.assertEqual((self.boot / 'dotfiles-splash.png').read_bytes(), (ROOT / 'limine/themes/garuda/splash.png').read_bytes())
+        self.assertIn('Boot menu look: garuda', result.stdout)
+        (self.tmp / 'config/dotfiles').mkdir(parents=True)
+        (self.tmp / 'config/dotfiles/boot-theme').write_text('garuda\n')
+        self.assertIn('already current', self.run_script('--menu-only').stdout)
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.run_script('neon')
 
     def test_menu_only_leaves_the_kernel_parameters_alone(self):
         self.run_script('--menu-only')

@@ -74,16 +74,19 @@ shows the theme; the change takes effect at the next reboot. Preview the result
 with `/usr/share/sddm/themes/silent/test.sh` before restarting.
 
 On a machine that boots with GRUB it offers the boot setup: the GRUB settings in
-`grub/grub` (the Garuda dr460nized theme, a two-second menu and the kernel
-parameter that turns AppArmor on), installed by `restore-grub` with the previous
-file kept beside them, and the AppArmor service enabled. It also offers the UFW
+`grub/grub` (a two-second menu, the kernel parameter that turns AppArmor on and
+a boot menu look, either the Garuda dr460nized theme or the CachyOS theme kept
+in `grub/themes`), installed by `restore-grub` with the previous file kept
+beside them, and the AppArmor service enabled. The look is asked for and
+remembered in `~/.config/dotfiles/boot-theme`; see [grub/README.md](grub/README.md). It also offers the UFW
 firewall with incoming connections blocked, outgoing allowed and logging on low
 (KDE Connect, when installed, is allowed from the local network), plus `gufw` to
 manage it from a window. Each is a separate yes/no question. On a machine that
 boots with Limine instead, such as a CachyOS install, the boot question offers
-the Limine boot menu look in `limine/` (the CachyOS wallpaper and colours, a
-two-second menu) and the same AppArmor parameter, installed by `restore-limine`;
-see [limine/README.md](limine/README.md).
+the Limine boot menu in `limine/` with the same two looks (the CachyOS one or a
+Garuda dr460nized one, as a wallpaper and colours with a two-second menu) and the
+same AppArmor parameter, installed by `restore-limine`; see
+[limine/README.md](limine/README.md).
 
 When Plymouth is installed, as on Garuda, it offers the boot splash too: the
 theme named in `plymouth/theme`, selected by `restore-plymouth` and rebuilt into
@@ -134,8 +137,8 @@ For individual application configurations and Linux setup menus, see
 | `backup-health` | Review locally recorded backup status without unlocking KWallet. |
 | `restore-system --dry-run` | Preview available system configuration restore sources. |
 | `restore-apps --dry-run` | Preview application inventory recovery. |
-| `restore-grub` | Install the repository's GRUB settings (theme, menu, AppArmor), then regenerate the boot menu. |
-| `restore-limine` | On a Limine machine, merge the boot menu look in `limine/` into `limine.conf` and the AppArmor parameter into `/etc/default/limine`; `--menu-only` skips the parameter. |
+| `restore-grub` | Install the repository's GRUB settings (menu, AppArmor and the `garuda` or `cachyos` look), then regenerate the boot menu. |
+| `restore-limine` | On a Limine machine, merge the `garuda` or `cachyos` boot menu look into `limine.conf` and the AppArmor parameter into `/etc/default/limine`; `--menu-only` skips the parameter. |
 | `restore-plymouth` | Select the boot splash named in `plymouth/theme` and rebuild the boot images; `--rebuild` keeps the current theme. |
 
 Zellij starts manually in locked mode; **Ctrl+G** unlocks its controls. See the
@@ -178,8 +181,8 @@ credential recovery, staged restores and verification.
 configs/          Fish, Fastfetch, Starship, Neovim, terminal configuration and palettes
 home-manager/     Flake, machine settings, package modules and operational scripts
 sddm/             SilentSDDM customization assets and presets
-grub/             GRUB settings installed by restore-grub
-limine/           Limine boot menu look and kernel parameters, applied by restore-limine
+grub/             GRUB settings and the CachyOS theme, installed by restore-grub
+limine/           Limine boot menu looks and kernel parameters, applied by restore-limine
 plymouth/         Boot splash theme name, and optional theme folders, applied by restore-plymouth
 scripts/check     Repository validation entry point
 tests/            Configuration and workflow checks
