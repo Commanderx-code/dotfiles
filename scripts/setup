@@ -167,12 +167,15 @@ if [[ -x /usr/bin/sddm ]]; then
 fi
 
 boot_theme=false
-# GRUB keeps its settings in /etc/default/grub; a Limine machine, such as a
-# CachyOS install, has /etc/default/limine for its entry tool or the limine command.
+# A Limine machine, such as a CachyOS install, has /etc/default/limine for its
+# entry tool. It is checked first because the grub package leaves
+# /etc/default/grub behind even where GRUB is not the boot loader.
 boot_loader=''
-if [[ -f /etc/default/grub ]]; then
+if [[ -f /etc/default/limine ]]; then
+  boot_loader=limine
+elif [[ -f /etc/default/grub ]]; then
   boot_loader=grub
-elif [[ -f /etc/default/limine ]] || command -v limine >/dev/null; then
+elif command -v limine >/dev/null; then
   boot_loader=limine
 fi
 if [[ -n "$boot_loader" ]]; then
