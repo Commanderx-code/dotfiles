@@ -79,7 +79,11 @@ parameter that turns AppArmor on), installed by `restore-grub` with the previous
 file kept beside them, and the AppArmor service enabled. It also offers the UFW
 firewall with incoming connections blocked, outgoing allowed and logging on low
 (KDE Connect, when installed, is allowed from the local network), plus `gufw` to
-manage it from a window. Each is a separate yes/no question.
+manage it from a window. Each is a separate yes/no question. On a machine that
+boots with Limine instead, such as a CachyOS install, the boot question offers
+the Limine boot menu look in `limine/` (the CachyOS wallpaper and colours, a
+two-second menu) and the same AppArmor parameter, installed by `restore-limine`;
+see [limine/README.md](limine/README.md).
 
 When Plymouth is installed, as on Garuda, it offers the boot splash too: the
 theme named in `plymouth/theme`, selected by `restore-plymouth` and rebuilt into
@@ -131,6 +135,7 @@ For individual application configurations and Linux setup menus, see
 | `restore-system --dry-run` | Preview available system configuration restore sources. |
 | `restore-apps --dry-run` | Preview application inventory recovery. |
 | `restore-grub` | Install the repository's GRUB settings (theme, menu, AppArmor), then regenerate the boot menu. |
+| `restore-limine` | On a Limine machine, merge the boot menu look in `limine/` into `limine.conf` and the AppArmor parameter into `/etc/default/limine`; `--menu-only` skips the parameter. |
 | `restore-plymouth` | Select the boot splash named in `plymouth/theme` and rebuild the boot images; `--rebuild` keeps the current theme. |
 
 Zellij starts manually in locked mode; **Ctrl+G** unlocks its controls. See the
@@ -174,6 +179,7 @@ configs/          Fish, Fastfetch, Starship, Neovim, terminal configuration and 
 home-manager/     Flake, machine settings, package modules and operational scripts
 sddm/             SilentSDDM customization assets and presets
 grub/             GRUB settings installed by restore-grub
+limine/           Limine boot menu look and kernel parameters, applied by restore-limine
 plymouth/         Boot splash theme name, and optional theme folders, applied by restore-plymouth
 scripts/check     Repository validation entry point
 tests/            Configuration and workflow checks

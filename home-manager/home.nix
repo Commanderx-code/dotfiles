@@ -55,6 +55,7 @@
         restore-sddm = ./scripts/restore-sddm.sh;
         restore-grub = ./scripts/restore-grub.sh;
         restore-plymouth = ./scripts/restore-plymouth.sh;
+        restore-limine = ./scripts/restore-limine.sh;
         backup-system-state = ./scripts/backup-system-state.fish;
         backup-secrets = ./scripts/backup-secrets.fish;
         backup-personal = ./scripts/backup-personal.fish;
