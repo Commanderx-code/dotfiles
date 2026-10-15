@@ -44,7 +44,11 @@ scripts/setup
 its plan and waits for `APPLY`. It then rewrites `machine.json` for your account,
 installs Zed, Ghostty and the other system applications with Pacman, installs Nix
 when missing, and builds and activates Home Manager. Existing files that Home
-Manager replaces are kept with a `.before-dotfiles` suffix.
+Manager replaces are kept with a `.before-dotfiles` suffix. Nix and Home Manager
+can be declined: the script then still sets up the system applications and, below,
+the login screen, boot menu, boot splash and firewall, and leaves the terminal to
+[Myfish](https://github.com/Commanderx-code/Myfish) or the toolbox; the Fish login
+shell, Neovim toolchains and Restic backups are skipped with them.
 
 Commits and tags are signed with `~/.ssh/id_ed25519` when that key exists. For
 GitHub to show them as verified, add the public key to your account once as a
