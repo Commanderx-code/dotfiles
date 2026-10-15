@@ -1,25 +1,28 @@
-# Publishing tools to Commander Toolbox
+# Publishing tools to HelixForge
 
-`toolbox.json` is this repository's exported Toolbox menu. Commit the configuration
-and its catalog entry together, then push to `main`. Toolbox checks for updates
-at minutes 17 and 47 each hour and adopts the current source revision only after
-this repository's `check.yml` push workflow succeeds. Failed or unfinished checks
-leave the previous Toolbox source version in place. GitHub may delay scheduled runs.
+`toolbox.json` is this repository's exported menu for
+[HelixForge](https://github.com/Commanderx-code/Helix-Forge), which replaced
+Commander Toolbox. Commit the configuration and its catalog entry together, then
+push to `main`. HelixForge checks for updates at minutes 17 and 47 each hour and
+adopts the current source revision only after this repository's `check.yml` push
+workflow succeeds. Failed or unfinished checks leave the previous source version
+in place. GitHub may delay scheduled runs.
 
-Toolbox regenerates its menus, runs compatibility tests, builds the Linux x86_64
-application, and publishes a release with a checksum. Existing installations pick
-up the new menu after updating Toolbox; run the relevant installer to apply the
-configuration. Installing an application locally does not export it automatically.
+HelixForge renders each exported entry as a catalog file, runs its checks,
+builds the Linux x86_64 application, and publishes a release with a checksum.
+Existing installations pick up the new entries the next time `helixforge` (or
+`toolbox`) starts; run the entry to apply the configuration. Installing an
+application locally does not export it automatically.
 
 ## Update an existing tool
 
 Edit its tracked configuration or installer and push normally. Built-in catalog
-entries retain their dedicated Toolbox installers. Myfish's shell entries run the
+entries keep their dedicated HelixForge installers. Myfish's shell entries run the
 updated Myfish installer, including any new tools it manages.
 
 NetWatch, TFM and Spotify Cassette use dedicated Nix handlers. Their pinned
 packages live in [home-manager/terminal-tools.nix](home-manager/terminal-tools.nix),
-shared by Home Manager and Toolbox; see the [setup notes](configs/terminal-tools/README.md).
+shared by Home Manager and HelixForge; see the [setup notes](configs/terminal-tools/README.md).
 
 ## Export a new application configuration
 
@@ -44,7 +47,7 @@ adding an actual `configs/btop/btop.conf` file:
 ```
 
 - `id`: stable lowercase identifier with letters, numbers and hyphens.
-- `name`: unique menu label across Toolbox; `description` explains the install.
+- `name`: unique menu label across HelixForge; `description` explains the install.
 - `packages`: distro package names, separately for each supported package manager.
   An empty array supports configuration-only installation on that manager; omit a
   manager to reject it. Nala uses the `apt-get` entry. Packages must exist in the
@@ -53,32 +56,33 @@ adding an actual `configs/btop/btop.conf` file:
   Targets are relative to `$XDG_CONFIG_HOME` (normally `~/.config`). Export only the
   configuration needed by the tool. Symlinks and paths outside the repo are rejected.
 
-Toolbox displays the new entry automatically. Its installer asks for `APPLY`,
-validates all paths, installs the declared packages, then copies configuration
-with backups. Home Manager-owned symlinks are refused before package changes.
-Directory exports replace the destination directory with a backup; use individual
-files to preserve unrelated files alongside them. Multiple file copies are not a
-single transaction: earlier successful copies retain their backups if a later copy
-fails.
+HelixForge lists the new entry under Configurations > Dotfiles. Its installer
+asks for `APPLY`, validates all paths, installs the declared packages, then
+copies configuration with backups. HelixForge also refuses, before anything
+runs, an entry whose target is a Home Manager symlink. Directory exports replace
+the destination directory with a backup; use individual files to preserve
+unrelated files alongside them. Multiple file copies are not a single
+transaction: earlier successful copies keep their backups if a later copy fails.
 
-The `builtin` type references an existing dedicated Toolbox handler. Keep those
-entries when editing the catalog. Tools requiring custom system services, boot
-changes or a special installer still need an appropriate Toolbox handler; this
-catalog's generic installer manages distro packages and user configuration only.
+The `builtin` type references an existing dedicated HelixForge handler. Keep
+those entries when editing the catalog. Tools requiring custom system services,
+boot changes or a special installer still need an appropriate HelixForge
+handler; this catalog's generic installer manages distro packages and user
+configuration only.
 
 ## Check the automation
 
-Open [Toolbox source synchronization](https://github.com/Commanderx-code/commander-toolbox/actions/workflows/sync-sources.yml).
-**Run workflow** checks immediately. The workflow summary/log shows which source
+Open [HelixForge source synchronization](https://github.com/Commanderx-code/Helix-Forge/actions/workflows/sync-sources.yml).
+**Run workflow** checks immediately. The workflow log shows which source
 revision was accepted or is waiting for CI. Builds appear under
-[Toolbox releases](https://github.com/Commanderx-code/commander-toolbox/releases).
+[HelixForge releases](https://github.com/Commanderx-code/Helix-Forge/releases).
 No extra cross-repository token is needed for these public repositories.
 
 GitHub disables scheduled workflows in public repos after 60 days without repo
-activity; re-enable the workflow in Actions if necessary. New source repositories
-must be explicitly connected to the sync workflow; it watches dotfiles and Myfish.
+activity; re-enable the workflow in Actions if necessary. HelixForge watches
+dotfiles and Myfish; new source repositories need an explicit integration.
 
 Shared portable Fish functions are maintained in Myfish and imported automatically
 after successful CI. See [shared Fish updates](FISH-SYNC.md) for source ownership
 and automatic local checkout updates. Bot-created imports use explicitly
-dispatched `check.yml` validation before Toolbox can adopt them.
+dispatched `check.yml` validation before HelixForge can adopt them.

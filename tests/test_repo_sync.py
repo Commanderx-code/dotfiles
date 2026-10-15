@@ -243,8 +243,17 @@ class LocalUpdateTests(unittest.TestCase):
         self.assertEqual(state['toolbox_built'], self.head)
 
     def test_toolbox_requires_a_complete_published_release(self):
-        good = {'tag_name': 'toolbox-' + self.head[:12], 'draft': False, 'prerelease': False,
-                'assets': [{'name': 'commander-toolbox-linux-x86_64'}, {'name': 'SHA256SUMS'}]}
+        good = {'tag_name': 'helixforge-' + self.head[:12], 'draft': False, 'prerelease': False,
+                'assets': [{'name': 'helixforge-linux-x86_64'}, {'name': 'SHA256SUMS'}]}
         self.assertTrue(updater.released_toolbox(self.head, lambda _: [good]))
-        for release in (dict(good, draft=True), dict(good, assets=[]), dict(good, tag_name='other')):
+        for release in (dict(good, draft=True), dict(good, assets=[]), dict(good, tag_name='other'),
+                        dict(good, tag_name='toolbox-' + self.head[:12])):
             self.assertFalse(updater.released_toolbox(self.head, lambda _: [release]))
+
+    def test_the_helixforge_checkout_may_use_a_lowercase_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            projects = Path(directory)
+            self.assertEqual(updater.checkout_root(projects, 'Helix-Forge'), projects / 'Helix-Forge')
+            (projects / 'helixforge').mkdir()
+            self.assertEqual(updater.checkout_root(projects, 'Helix-Forge'), projects / 'helixforge')
+            self.assertEqual(updater.checkout_root(projects, 'dotfiles'), projects / 'dotfiles')
