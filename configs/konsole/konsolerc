@@ -11,7 +11,7 @@ RememberWindowSize=true
 ShowMenuBarByDefault=false
 
 [MainWindow]
-MenuBar=Enabled
+MenuBar=Disabled
 RestorePositionForNextInstance=true
 StatusBar=Disabled
 
