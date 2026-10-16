@@ -1,7 +1,8 @@
 { config, lib, ... }:
 
 # Plasma settings owned by these dotfiles: the palette's colour scheme, the
-# shared fixed-width font and title bars on maximized windows. Everything else in Plasma (panels, shortcuts, window
+# shared fixed-width font, title bars on maximized windows and the Rounded Corners
+# outline. Everything else in Plasma (panels, shortcuts, window
 # decorations, Kvantum) keeps the settings made in System Settings; plasma-manager
 # writes only the keys declared here (overrideConfig stays off).
 let
@@ -104,5 +105,22 @@ in
     # with the window buttons. This panel has none, so keep the title bar and
     # its minimize, maximize and close buttons.
     kwin.borderlessMaximizedWindows = false;
+    # Rounded Corners effect: a thin outline in palette role 14 instead of
+    # the default 3px one.
+    configFile.kwinrc."Round-Corners" = {
+      ActiveOutlineAlpha = 255;
+      ActiveOutlinePalette = 14;
+      ActiveOutlineUseCustom = false;
+      ActiveOutlineUsePalette = true;
+      InactiveCornerRadius = 20;
+      InactiveOutlineAlpha = 255;
+      InactiveOutlineColor = "29,153,243";
+      InactiveOutlinePalette = 14;
+      InactiveOutlineThickness = 2;
+      InactiveSecondOutlineThickness = 0;
+      OutlineThickness = 2;
+      SecondOutlineThickness = 0;
+      Size = 20;
+    };
   };
 }
