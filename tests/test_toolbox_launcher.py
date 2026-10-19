@@ -9,6 +9,10 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 LAUNCHER = ROOT / 'home-manager/scripts/toolbox-launcher.sh'
 ASSET = 'helixforge-linux-x86_64'
+# Reports $MACHINE as the processor.
+UNAME = '''#!/bin/sh
+[ "$1" = -m ] && echo "$MACHINE"
+'''
 # Serves files from $RELEASE by the URL's last component and logs each request.
 CURL = '''#!/bin/sh
 for argument in "$@"; do
@@ -32,18 +36,20 @@ class ToolboxLauncherTests(unittest.TestCase):
         tools = self.root / 'tools'
         for directory in (self.release, self.home, tools):
             directory.mkdir()
-        curl = tools / 'curl'
-        curl.write_text(CURL)
-        curl.chmod(0o755)
+        for name, body in (('curl', CURL), ('uname', UNAME)):
+            (tools / name).write_text(body)
+            (tools / name).chmod(0o755)
         self.env = dict(os.environ, HOME=str(self.home), XDG_DATA_HOME=str(self.home / 'data'),
-                        RELEASE=str(self.release), PATH=str(tools) + os.pathsep + os.environ['PATH'])
+                        RELEASE=str(self.release), MACHINE='x86_64',
+                        PATH=str(tools) + os.pathsep + os.environ['PATH'])
         self.installed = self.home / 'data/helixforge' / ASSET
 
-    def publish(self, version, checksum=None):
+    def publish(self, version, checksum=None, asset=ASSET):
         body = f'#!/bin/sh\necho "toolbox {version} $*"\n'.encode()
-        (self.release / ASSET).write_bytes(body)
+        (self.release / asset).write_bytes(body)
         checksum = checksum or hashlib.sha256(body).hexdigest()
-        (self.release / 'SHA256SUMS').write_text(f'{checksum}  {ASSET}\n')
+        with (self.release / 'SHA256SUMS').open('a') as sums:
+            sums.write(f'{checksum}  {asset}\n')
         (self.release / 'requests').write_text('')
 
     def launch(self, *arguments):
@@ -76,6 +82,23 @@ class ToolboxLauncherTests(unittest.TestCase):
         result = self.launch()
         self.assertEqual((result.returncode, result.stdout), (0, 'toolbox one \n'))
         self.assertIn('using the installed copy', result.stderr)
+
+    def test_takes_the_build_for_this_processor(self):
+        self.publish('x86', asset=ASSET)
+        self.publish('arm', asset='helixforge-linux-aarch64')
+        self.env['MACHINE'] = 'aarch64'
+        result = self.launch()
+        self.assertEqual((result.returncode, result.stdout), (0, 'toolbox arm \n'), result.stderr)
+        self.assertEqual(self.requests(), ['SHA256SUMS', 'helixforge-linux-aarch64'])
+        self.assertEqual([path.name for path in self.installed.parent.iterdir()], ['helixforge-linux-aarch64'])
+
+    def test_refuses_a_processor_without_a_build(self):
+        self.publish('one')
+        self.env['MACHINE'] = 'riscv64'
+        result = self.launch()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('no build for this processor (riscv64)', result.stderr)
+        self.assertEqual(self.requests(), [])
 
     def test_fails_clearly_without_a_download(self):
         (self.release / 'requests').write_text('')
