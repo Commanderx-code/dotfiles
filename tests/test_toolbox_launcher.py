@@ -1,4 +1,4 @@
-"""Exercise the HelixForge launcher against a local stand-in for the release downloads."""
+"""Exercise the Helix Toolbox launcher against a local stand-in for the release downloads."""
 import hashlib
 import os
 from pathlib import Path
@@ -8,7 +8,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 LAUNCHER = ROOT / 'home-manager/scripts/toolbox-launcher.sh'
-ASSET = 'helixforge-linux-x86_64'
+ASSET = 'helix-toolbox-linux-x86_64'
 # Reports $MACHINE as the processor.
 UNAME = '''#!/bin/sh
 [ "$1" = -m ] && echo "$MACHINE"
@@ -42,7 +42,7 @@ class ToolboxLauncherTests(unittest.TestCase):
         self.env = dict(os.environ, HOME=str(self.home), XDG_DATA_HOME=str(self.home / 'data'),
                         RELEASE=str(self.release), MACHINE='x86_64',
                         PATH=str(tools) + os.pathsep + os.environ['PATH'])
-        self.installed = self.home / 'data/helixforge' / ASSET
+        self.installed = self.home / 'data/helix-toolbox' / ASSET
 
     def publish(self, version, checksum=None, asset=ASSET):
         body = f'#!/bin/sh\necho "toolbox {version} $*"\n'.encode()
@@ -85,12 +85,12 @@ class ToolboxLauncherTests(unittest.TestCase):
 
     def test_takes_the_build_for_this_processor(self):
         self.publish('x86', asset=ASSET)
-        self.publish('arm', asset='helixforge-linux-aarch64')
+        self.publish('arm', asset='helix-toolbox-linux-aarch64')
         self.env['MACHINE'] = 'aarch64'
         result = self.launch()
         self.assertEqual((result.returncode, result.stdout), (0, 'toolbox arm \n'), result.stderr)
-        self.assertEqual(self.requests(), ['SHA256SUMS', 'helixforge-linux-aarch64'])
-        self.assertEqual([path.name for path in self.installed.parent.iterdir()], ['helixforge-linux-aarch64'])
+        self.assertEqual(self.requests(), ['SHA256SUMS', 'helix-toolbox-linux-aarch64'])
+        self.assertEqual([path.name for path in self.installed.parent.iterdir()], ['helix-toolbox-linux-aarch64'])
 
     def test_refuses_a_processor_without_a_build(self):
         self.publish('one')
@@ -108,12 +108,22 @@ class ToolboxLauncherTests(unittest.TestCase):
 
     def test_personal_launcher_takes_precedence(self):
         self.publish('one')
-        personal = self.home / '.local/bin/helixforge'
+        personal = self.home / '.local/bin/helix-toolbox'
         personal.parent.mkdir(parents=True)
         personal.write_text('#!/bin/sh\necho "personal $*"\n')
         personal.chmod(0o755)
         result = self.launch('--mouse')
         self.assertEqual((result.returncode, result.stdout), (0, 'personal --mouse\n'), result.stderr)
+        self.assertEqual(self.requests(), [])
+
+    def test_a_personal_launcher_under_the_old_name_still_counts(self):
+        self.publish('one')
+        personal = self.home / '.local/bin/helixforge'
+        personal.parent.mkdir(parents=True)
+        personal.write_text('#!/bin/sh\necho "old personal $*"\n')
+        personal.chmod(0o755)
+        result = self.launch()
+        self.assertEqual((result.returncode, result.stdout), (0, 'old personal \n'), result.stderr)
         self.assertEqual(self.requests(), [])
 
 
