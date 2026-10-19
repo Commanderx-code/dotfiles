@@ -10,7 +10,8 @@ checks leave the previous source version in place. HelixForge also checks on a
 schedule, but GitHub runs that only every few hours.
 
 HelixForge renders each exported entry as a catalog file, runs its checks,
-builds the Linux x86_64 application, and publishes a release with a checksum.
+builds the Linux x86_64 and aarch64 applications, and publishes a release with
+their checksums; the `toolbox` launcher downloads the one for its processor.
 Existing installations pick up the new entries the next time `helixforge` (or
 `toolbox`) starts; run the entry to apply the configuration. Installing an
 application locally does not export it automatically.
