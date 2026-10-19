@@ -243,17 +243,27 @@ class LocalUpdateTests(unittest.TestCase):
         self.assertEqual(state['toolbox_built'], self.head)
 
     def test_toolbox_requires_a_complete_published_release(self):
-        good = {'tag_name': 'helixforge-' + self.head[:12], 'draft': False, 'prerelease': False,
-                'assets': [{'name': 'helixforge-linux-x86_64'}, {'name': 'SHA256SUMS'}]}
+        good = {'tag_name': 'v1.7.0', 'target_commitish': self.head, 'draft': False, 'prerelease': False,
+                'assets': [{'name': 'helix-toolbox-linux-x86_64'}, {'name': 'SHA256SUMS'}]}
         self.assertTrue(updater.released_toolbox(self.head, lambda _: [good]))
-        for release in (dict(good, draft=True), dict(good, assets=[]), dict(good, tag_name='other'),
-                        dict(good, tag_name='toolbox-' + self.head[:12])):
+        for release in (dict(good, draft=True), dict(good, assets=[]), dict(good, target_commitish='main'),
+                        dict(good, target_commitish='0' * 40),
+                        dict(good, assets=[{'name': 'helixforge-linux-x86_64'}, {'name': 'SHA256SUMS'}])):
             self.assertFalse(updater.released_toolbox(self.head, lambda _: [release]))
 
-    def test_the_helixforge_checkout_may_use_a_lowercase_directory(self):
+    def test_the_toolbox_checkout_may_use_its_old_or_a_lowercase_name(self):
         with tempfile.TemporaryDirectory() as directory:
             projects = Path(directory)
-            self.assertEqual(updater.checkout_root(projects, 'Helix-Forge'), projects / 'Helix-Forge')
+            name = updater.TOOLBOX
+            self.assertEqual(updater.checkout_root(projects, name), projects / 'Helix-toolbox')
             (projects / 'helixforge').mkdir()
-            self.assertEqual(updater.checkout_root(projects, 'Helix-Forge'), projects / 'helixforge')
+            self.assertEqual(updater.checkout_root(projects, name), projects / 'helixforge')
+            (projects / 'helix-toolbox').mkdir()
+            self.assertEqual(updater.checkout_root(projects, name), projects / 'helix-toolbox')
             self.assertEqual(updater.checkout_root(projects, 'dotfiles'), projects / 'dotfiles')
+
+    def test_a_toolbox_checkout_may_keep_its_origin_from_before_the_rename(self):
+        self.command('git', '-C', str(self.local), 'remote', 'set-url', 'origin',
+                     'git@github.com:Commanderx-code/Helix-Forge.git')
+        self.assertNotEqual(updater.safe_checkout(self.local, updater.TOOLBOX), 'unexpected origin URL')
+        self.assertEqual(updater.safe_checkout(self.local, 'dotfiles'), 'unexpected origin URL')

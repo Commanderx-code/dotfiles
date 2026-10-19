@@ -5,7 +5,7 @@ import subprocess
 from urllib.parse import urlencode
 
 OWNER = 'Commanderx-code'
-SOURCES = ('Myfish', 'dotfiles', 'Helix-Forge')
+SOURCES = ('Myfish', 'dotfiles', 'Helix-toolbox')
 
 
 def api(path):
