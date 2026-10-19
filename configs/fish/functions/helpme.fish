@@ -96,7 +96,7 @@ function helpme --description "Show Commander shortcuts, tools, and Config Bible
     echo "  $c""psg <name>$n            → search running processes"
     echo "  $c""extract <file>$n        → extract common archive formats"
     echo "  $c""rice [palette]$n        → switch the colour palette"
-    echo "  $c""toolbox$n               → HelixForge setup menu"
+    echo "  $c""toolbox$n               → Helix Toolbox setup menu"
     echo ""
 
     echo "$b$g📝 Neovim$n"
