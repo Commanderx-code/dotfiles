@@ -9,8 +9,16 @@ if [[ -x "$personal" && ! "$personal" -ef "$0" ]]; then
   exec "$personal" "$@"
 fi
 
+# Releases have a build for each of these processors.
+case $(uname -m) in
+  x86_64) asset=helixforge-linux-x86_64 ;;
+  aarch64 | arm64) asset=helixforge-linux-aarch64 ;;
+  *)
+    echo "HelixForge has no build for this processor ($(uname -m))." >&2
+    exit 1
+    ;;
+esac
 base=https://github.com/Commanderx-code/Helix-Forge/releases/latest/download
-asset=helixforge-linux-x86_64
 directory=${XDG_DATA_HOME:-$HOME/.local/share}/helixforge
 binary=$directory/$asset
 
