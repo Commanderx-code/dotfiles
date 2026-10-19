@@ -17,7 +17,7 @@ function history --wraps history --description 'Fuzzy-pick from history, or run 
         __commander_fish_history $argv
     end
 end
-alias toolbox="helixforge"
+alias toolbox="helix-toolbox"
 
 alias mkdir="mkdir -p"
 alias ping="ping -c 10"

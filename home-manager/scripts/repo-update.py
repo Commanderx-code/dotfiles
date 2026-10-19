@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fast-forward clean source checkouts to tested main revisions; rebuild HelixForge."""
+"""Fast-forward clean source checkouts to tested main revisions; rebuild Helix Toolbox."""
 import argparse
 import fcntl
 import json
@@ -21,8 +21,11 @@ def safe_checkout(root, name):
     if git(root, 'rev-parse', '--show-toplevel') != str(root.resolve()):
         return 'unexpected repository root'
     remote = git(root, 'config', '--get', 'remote.origin.url')
-    expected = f'github.com/{OWNER}/{name}'
-    if remote.removesuffix('.git') not in ('https://' + expected, 'git@' + expected.replace('.com/', '.com:')):
+    allowed = set()
+    for repository in ORIGIN_NAMES.get(name, (name,)):
+        expected = f'github.com/{OWNER}/{repository}'
+        allowed |= {'https://' + expected, 'git@' + expected.replace('.com/', '.com:')}
+    if remote.removesuffix('.git') not in allowed:
         return 'unexpected origin URL'
     if git(root, 'status', '--porcelain', '--untracked-files=all'):
         return 'unfinished local edits'
@@ -43,9 +46,12 @@ def safe_checkout(root, name):
     return None
 
 
-TOOLBOX = 'Helix-Forge'
-# The local checkout may use the repository name or a lowercase directory name.
-CHECKOUT_NAMES = {TOOLBOX: ('Helix-Forge', 'helixforge')}
+TOOLBOX = 'Helix-toolbox'
+# The local checkout may use the repository name or a lowercase directory
+# name, from before the rename to Helix Toolbox (HelixForge) too.
+CHECKOUT_NAMES = {TOOLBOX: ('Helix-toolbox', 'helix-toolbox', 'Helix-Forge', 'helixforge')}
+# GitHub forwards the old name, so a checkout made before the rename may keep it.
+ORIGIN_NAMES = {TOOLBOX: ('Helix-toolbox', 'Helix-Forge')}
 
 
 def checkout_root(projects, name):
@@ -54,13 +60,14 @@ def checkout_root(projects, name):
 
 
 def released_toolbox(head, request=api):
-    tag = 'helixforge-' + revision(head)[:12]
+    head = revision(head)
+    # Releases are tagged vX.Y.Z and name the commit they were built from.
     # Listing avoids treating an expected unpublished revision as an API error.
     releases = request(f'repos/{OWNER}/{TOOLBOX}/releases?per_page=100')
     for release in releases:
-        if release['tag_name'] == tag and not release['draft'] and not release['prerelease']:
+        if release['target_commitish'] == head and not release['draft'] and not release['prerelease']:
             names = {asset['name'] for asset in release['assets']}
-            return {'helixforge-linux-x86_64', 'SHA256SUMS'} <= names
+            return {'helix-toolbox-linux-x86_64', 'SHA256SUMS'} <= names
     return False
 
 
@@ -88,16 +95,16 @@ def update(root, name, apply=False, request=api):
 
 
 def build_toolbox(root, head, state):
-    binary = root / 'target/debug/helixforge'
+    binary = root / 'target/debug/helix-toolbox'
     if state.get('toolbox_built') == head and binary.is_file():
         return False
     reason = safe_checkout(root, TOOLBOX)
     if reason or git(root, 'rev-parse', 'HEAD') != head:
-        raise RuntimeError('HelixForge checkout changed before build: ' + (reason or 'different commit'))
-    subprocess.run(['cargo', 'build', '--locked', '--package', 'helixforge'], cwd=root, check=True, timeout=1200)
+        raise RuntimeError('Helix Toolbox checkout changed before build: ' + (reason or 'different commit'))
+    subprocess.run(['cargo', 'build', '--locked', '--package', 'helix-toolbox'], cwd=root, check=True, timeout=1200)
     subprocess.run([str(binary), '--help'], cwd=root, check=True, stdout=subprocess.DEVNULL, timeout=30)
     if safe_checkout(root, TOOLBOX) or git(root, 'rev-parse', 'HEAD') != head:
-        raise RuntimeError('HelixForge checkout changed during build; not marking this revision built')
+        raise RuntimeError('Helix Toolbox checkout changed during build; not marking this revision built')
     state['toolbox_built'] = head
     return True
 
