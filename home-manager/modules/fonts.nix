@@ -6,5 +6,7 @@
     nerd-fonts.jetbrains-mono
     # Ghostty.
     nerd-fonts.meslo-lg
+    # Ghostty's larger Arch logo in the prompt.
+    nerd-fonts.symbols-only
   ];
 }
