@@ -1,7 +1,7 @@
 {
   "version": 1,
   "repository": "Commanderx-code/Myfish",
-  "revision": "ed2ae2086265ecf3e2c92103f7e29ad9ab36d4ed",
+  "revision": "f7e874a6f5b4e6d25b86ef3116b11ba0370b4696",
   "overrides": {
     "rgi.fish": "Accepts ripgrep arguments instead of prompting for a query.",
     "fzf_rg_search.fish": "Searches the workstation local-bin directory as well as the current directory.",
@@ -28,7 +28,7 @@
   "configs": {
     "configs/starship/starship.toml": {
       "source": "modules/starship.toml",
-      "sha256": "c5eafbb69d741033e6ec8f6df7eae4ebbe609243caa37ee68f244ef8d6181c02"
+      "sha256": "44e71db46282211a72740c6b3902a9ef1a518a1a8f08406e9c613b875df10bb8"
     },
     "configs/fish/conf.d/done.fish": {
       "source": "modules/fish/conf.d/80-done.fish",
