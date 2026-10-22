@@ -77,7 +77,7 @@
   # order and later ones win; this one sorts after garuda.conf. The editor
   # matches conf.d/exports.fish. Takes effect at the next login.
   xdg.configFile."environment.d/zz-workstation.conf".text = ''
-    BROWSER=brave
+    BROWSER=brave-origin
     EDITOR=nvim
     VISUAL=nvim
   '';
