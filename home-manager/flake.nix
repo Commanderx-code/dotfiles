@@ -63,7 +63,7 @@
       homeConfigurations.${machine.username} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         extraSpecialArgs = {
-          inherit machine nixgl;
+          inherit machine nixgl nixpkgs;
           zapfast = zapfast.packages.${system}.default;
         };
 

@@ -1,4 +1,9 @@
-{ machine, lib, ... }:
+{
+  machine,
+  lib,
+  nixpkgs,
+  ...
+}:
 
 {
   imports = [
@@ -26,6 +31,11 @@
   home.stateVersion = "25.05";
 
   programs.home-manager.enable = true;
+
+  # `nix shell nixpkgs#…`, `nix run` and `nix search` use the nixpkgs this
+  # flake pins, not the global registry's (FlakeHub's weekly one), so they get
+  # the same versions Home Manager installs.
+  nix.registry.nixpkgs.flake = nixpkgs;
 
   # No "unread news items" reminder after each rebuild; `home-manager news` still shows them.
   news.display = "silent";
