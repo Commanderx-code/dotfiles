@@ -1,5 +1,25 @@
-{ machine, lib, ... }:
+{ machine, lib, pkgs, ... }:
 
+let
+  # Rejects a commit message that credits an AI tool. Only the message counts:
+  # comment lines go, and so does the diff commit.verbose adds below the scissors.
+  noAiAttribution = pkgs.writeShellApplication {
+    name = "no-ai-attribution";
+    runtimeInputs = [
+      pkgs.gnugrep
+      pkgs.gnused
+    ];
+    text = ''
+      found=$(sed '/^# -\{24\} >8 -\{24\}$/,$d' "$1" | grep -v '^#' \
+        | grep -inE 'co-authored-by:.*(claude|anthropic)|^claude-session:|generated with \[?claude code|noreply@anthropic\.com|claude\.ai/code/session_' || true)
+      if [[ -n "$found" ]]; then
+        echo "commit-msg: remove the AI attribution from the commit message:" >&2
+        printf '  %s\n' "$found" >&2
+        exit 1
+      fi
+    '';
+  };
+in
 {
   programs.git = {
     enable = true;
@@ -29,6 +49,12 @@
       # Show the diff while writing a commit message.
       commit.verbose = true;
       rebase.autoStash = true;
+
+      # A configured hook runs in every repository, alongside its own .git/hooks.
+      hook.no-ai-attribution = {
+        event = "commit-msg";
+        command = "${noAiAttribution}/bin/no-ai-attribution";
+      };
     };
 
     # Written at activation, and only on a machine that has the SSH key; Git
