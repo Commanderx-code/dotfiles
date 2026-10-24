@@ -2,10 +2,10 @@
 
 # Plasma settings owned by these dotfiles: the palette's colour scheme, the
 # shared fixed-width font, title bars on maximized windows, the Rounded Corners
-# outline and the power profile on AC and battery. Everything else in Plasma
-# (panels, shortcuts, window decorations, Kvantum) keeps the settings made in
-# System Settings; plasma-manager writes only the keys declared here
-# (overrideConfig stays off).
+# outline, the power profile on AC and battery, and the Config Bible's Meta+H
+# shortcut. Everything else in Plasma (panels, other shortcuts, window
+# decorations, Kvantum) keeps the settings made in System Settings;
+# plasma-manager writes only the keys declared here (overrideConfig stays off).
 let
   theme = config.commander.theme;
   c = theme.colors;
@@ -109,6 +109,10 @@ in
       battery.powerProfile = "balanced";
       lowBattery.powerProfile = "powerSaving";
     };
+    # Meta+H opens the Config Bible, or brings its open window forward (the
+    # app allows one instance). Works with the pacman package's menu entry
+    # and with the per-user one from install-integration.py alike.
+    shortcuts."services/commander-config-bible.desktop"._launch = "Meta+H";
     # Garuda hides the title bar of a maximized window, expecting a panel widget
     # with the window buttons. This panel has none, so keep the title bar and
     # its minimize, maximize and close buttons.
