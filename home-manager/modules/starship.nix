@@ -11,10 +11,6 @@ in
     enable = true;
     enableFishIntegration = true;
     settings = shared // {
-      # Ghostty's `window-padding-color = extend` paints the left padding in the
-      # color of a row's first cell; a plain leading cell keeps the bar's gray
-      # out of the padding.
-      format = " " + shared.format;
       # Ghostty draws the logo from Symbols Nerd Font, wide enough to fill the
       # space after it; a second space keeps it off the username.
       os = shared.os // {
