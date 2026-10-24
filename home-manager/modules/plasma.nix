@@ -1,10 +1,11 @@
 { config, lib, ... }:
 
 # Plasma settings owned by these dotfiles: the palette's colour scheme, the
-# shared fixed-width font, title bars on maximized windows and the Rounded Corners
-# outline. Everything else in Plasma (panels, shortcuts, window
-# decorations, Kvantum) keeps the settings made in System Settings; plasma-manager
-# writes only the keys declared here (overrideConfig stays off).
+# shared fixed-width font, title bars on maximized windows, the Rounded Corners
+# outline and the power profile on AC and battery. Everything else in Plasma
+# (panels, shortcuts, window decorations, Kvantum) keeps the settings made in
+# System Settings; plasma-manager writes only the keys declared here
+# (overrideConfig stays off).
 let
   theme = config.commander.theme;
   c = theme.colors;
@@ -100,6 +101,13 @@ in
     fonts.fixedWidth = {
       family = "JetBrainsMono Nerd Font Mono";
       pointSize = 10;
+    };
+    # Full speed on AC only: the saved power profile otherwise outlives
+    # unplugging and every reboot.
+    powerdevil = {
+      AC.powerProfile = "performance";
+      battery.powerProfile = "balanced";
+      lowBattery.powerProfile = "powerSaving";
     };
     # Garuda hides the title bar of a maximized window, expecting a panel widget
     # with the window buttons. This panel has none, so keep the title bar and
