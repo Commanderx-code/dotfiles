@@ -15,9 +15,10 @@ config-file = ?background.conf
 # The Nerd Font is already provided by Home Manager.
 font-family = MesloLGS Nerd Font
 font-size = 13
-# The prompt's Arch logo comes from Symbols Nerd Font, which draws it about a
-# fifth larger than Meslo's copy.
+# The prompt's Arch logo comes from Symbols Nerd Font, which draws it larger
+# than Meslo's copy; the lower icon height trims it back to sit with the text.
 font-codepoint-map = U+F303=Symbols Nerd Font
+adjust-icon-height = -18%
 adjust-cell-height = 8%
 # A narrow left padding: the prompt bar's gray fills it, so the bar meets the
 # window edge while text keeps a little room. Leftover space goes to the right
