@@ -19,9 +19,12 @@ font-size = 13
 # fifth larger than Meslo's copy.
 font-codepoint-map = U+F303=Symbols Nerd Font
 adjust-cell-height = 8%
-window-padding-x = 14
+# A narrow left padding: the prompt bar's gray fills it, so the bar meets the
+# window edge while text keeps a little room. Leftover space goes to the right
+# and bottom rather than back to the left.
+window-padding-x = 8,14
 window-padding-y = 12
-window-padding-balance = true
+window-padding-balance = false
 # Full-screen apps such as Neovim paint to the window edge instead of leaving a frame.
 window-padding-color = extend
 

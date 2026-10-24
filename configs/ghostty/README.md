@@ -1,8 +1,8 @@
 # Ghostty
 
 The [starting preset](config) uses the workstation [palette](../themes/README.md)
-(`theme = commander`), MesloLGS Nerd Font at 13 pt, 90% opacity, balanced
-padding, and compact Linux tabs.
+(`theme = commander`), MesloLGS Nerd Font at 13 pt, 90% opacity, a narrow
+left padding, and compact Linux tabs.
 New windows open with a usable grid of 125 columns by 33 rows
 (`window-width = 125`, `window-height = 35`; the integrated tab bar takes two
 of the configured rows). Check the usable grid with `stty size`; display
@@ -53,6 +53,8 @@ its own copy of the image. Delete the file and reload for a plain window.
 `window-padding-color = extend` lets full-screen applications such as Neovim
 paint their background into the window padding, so no frame of the terminal's
 own background shows around them. The shell prompt keeps its normal padding.
+The left padding is only 8 points: the prompt bar's color fills it, so the bar
+meets the window edge. Leftover space is not balanced back onto the left.
 
 The live config loads `gtk-custom-css = ~/.config/ghostty/topbar.css` to give
 only the tab/title bar an opaque background in the palette's darkest shade. The
