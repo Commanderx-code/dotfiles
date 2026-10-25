@@ -56,8 +56,9 @@ class PaletteTests(unittest.TestCase):
         self.assertEqual(prompt['palette'], 'eldritch')
         self.assertEqual(prompt['palettes']['eldritch'], {role: eldritch[key] for role, key in roles.items()})
         # Every colour the layout names is a palette entry, so a swapped palette covers it.
+        # prev_bg and prev_fg are Starship's own: the colors of the block drawn before.
         styles = ' '.join(re.findall(r'(?:bg|fg):(\w+)', (ROOT / 'configs/starship/starship.toml').read_text()))
-        self.assertLessEqual(set(styles.split()), set(roles))
+        self.assertLessEqual(set(styles.split()) - {'prev_bg', 'prev_fg'}, set(roles))
 
 
 class RiceCommandTests(unittest.TestCase):
