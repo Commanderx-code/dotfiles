@@ -1,4 +1,9 @@
-{ machine, lib, pkgs, ... }:
+{
+  machine,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   # Rejects a commit message that credits an AI tool. Only the message counts:
