@@ -1,7 +1,7 @@
 {
   "version": 1,
   "repository": "Commanderx-code/Myfish",
-  "revision": "65664ad02f4f9069c9503246030e4fe9cc6f3610",
+  "revision": "771771af61220851065ae7dda47b8f71439c28ae",
   "overrides": {
     "rgi.fish": "Accepts ripgrep arguments instead of prompting for a query.",
     "fzf_rg_search.fish": "Searches the workstation local-bin directory as well as the current directory.",
@@ -11,11 +11,11 @@
     "__commander_editor.fish": "08e383f4e243283bbbe09a34fa30adfd8c13ff835d7dabf056f3a5a416558870",
     "__commander_find.fish": "ee244df1c4a22edfabfa512bd698fa2e0fa0dcf80d0405273e835ca000d0ba9c",
     "__commander_pick_directory.fish": "d9168d1b4a75f3e84a1d309a0b1bb7fee263e5991f551535c304518153489160",
-    "__fzf_starstar_tab.fish": "eccb1227bc9781e3cbf546bde5bd41c323819b042d50dcffc19a98d6b5b0c9db",
+    "__fzf_starstar_tab.fish": "08eb3d126ee3b1d8f28b8f6055194dea901d9863244488d7e8bef4b04c8ddc34",
     "br.fish": "509b24a5312058c28aae8bc852276c8cbb8367e9fa40b84084055a96e5f46296",
     "cdi.fish": "de02f30dc6d9ea39eb0984e20432e52ccdef1f8c41774eebce5fb49e6f62a630",
     "dirsize.fish": "8f27095b232af773cbc9438f37f700a8899e0e07701268dbfb67f41f3012c171",
-    "extract.fish": "d091ce067d2a88f97b9d9e43cf4c6bd3247e36a48c6584628d5c6b713f3295df",
+    "extract.fish": "1db5fee0472b963778a61bd79152e5b6ad0e7244ce11ede747699064a97ef163",
     "fcd.fish": "f7807d11e02ce3ae0847beec4da731c27baae3a621ac6b0667a337077fb4cd14",
     "fdi.fish": "2651806fc57e6282ee67976f423b1ae7035b0359ddae72f120b49c948b7154af",
     "fish_user_key_bindings.fish": "f328702843acf5cf09ca2aec08e1b62edb8aa3071bcbb26d3083cddc8687b606",
@@ -23,12 +23,12 @@
     "gcom.fish": "8dd5a0245debfd165c7ef02334a38e5853b66872726eda6704bc9e822ddd0bb5",
     "lazyg.fish": "e527b32dbaafbfd5bb3b6dafef996566195e855097e9b4ca47252de8d10c4831",
     "mkcd.fish": "4a8e9138f0a6909b162637ee2c4c71cd68116ca7e5d2b1d147bb360c67b79d01",
-    "psg.fish": "3f713703bae6ca090735ed1de528aee3fbbd9798e6478bf20af7dba7a53be958"
+    "psg.fish": "2f5793b5e61b7ec4ea7e4deadb523c5b099284f44eada11ddd4fe9b6d1e09316"
   },
   "configs": {
     "configs/starship/starship.toml": {
       "source": "modules/starship.toml",
-      "sha256": "c929f89a0c92a8596dbaceef2fb32921a55969f245c44624d0aab741c6c3ade2"
+      "sha256": "9e7178cbd8d204ef5d1c6a1f32559ed03f71c453488bbf7be630d36a16adcbe9"
     },
     "configs/fish/conf.d/done.fish": {
       "source": "modules/fish/conf.d/80-done.fish",
