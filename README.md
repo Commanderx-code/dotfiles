@@ -66,8 +66,9 @@ update commands, `pkgfile` for command suggestions (with its first package list)
 `ksshaskpass`, `libnotify`, `7zip`, `unrar`, `poppler` and `ffmpeg`.
 
 It also offers a set of everyday apps, which you can decline: Brave Origin,
-LibreOffice, GitHub CLI, bottom, yt-dlp, System Monitor and Stacer, plus Proton
-Pass, Proton Mail, RustDesk and Mission Center from Flathub.
+LibreOffice, GitHub CLI, bottom, yt-dlp, System Monitor, Stacer and ZapFast (a
+WhatsApp client, from the AUR), plus Proton Pass, Proton Mail, RustDesk and
+Mission Center from Flathub.
 
 On a machine that has SDDM it offers the login screen as well: the SilentSDDM
 theme from the AUR with the presets in `sddm/` applied by `restore-sddm`. That
