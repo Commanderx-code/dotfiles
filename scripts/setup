@@ -155,8 +155,8 @@ display_manager=$(basename "$(readlink -f /etc/systemd/system/display-manager.se
 
 echo
 echo '==> Everyday apps'
-echo '  Brave Origin, LibreOffice, GitHub CLI, bottom, yt-dlp, System Monitor and Stacer,'
-echo '  plus Proton Pass, Proton Mail, RustDesk and Mission Center from Flathub.'
+echo '  Brave Origin, LibreOffice, GitHub CLI, bottom, yt-dlp, System Monitor, Stacer and'
+echo '  ZapFast, plus Proton Pass, Proton Mail, RustDesk and Mission Center from Flathub.'
 read -r -p 'Install these too? [Y/n] ' answer
 apps=true
 [[ "$answer" == [nN]* ]] && apps=false
@@ -269,7 +269,7 @@ else
   echo '  Installs:       Zed, Ghostty, Konsole, KWallet and GnuPG; no Nix or Home Manager'
 fi
 if "$apps"; then
-  echo '  Everyday apps:  the browser, office, monitoring, Proton and remote desktop apps listed above'
+  echo '  Everyday apps:  the browser, office, monitoring, WhatsApp, Proton and remote desktop apps listed above'
 fi
 if "$login_theme"; then
   echo '  Login screen:   SilentSDDM with the presets in sddm/'
@@ -391,11 +391,12 @@ if "$apps"; then
   run sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo &&
     run sudo flatpak install -y flathub me.proton.Pass me.proton.Mail com.rustdesk.RustDesk io.missioncenter.MissionCenter ||
     echo 'Some Flathub apps were not installed; install them from Discover later.' >&2
-  # Stacer is only in the AUR.
+  # Stacer and the ZapFast WhatsApp client are only in the AUR.
   if "$dry_run" || command -v paru >/dev/null; then
-    run paru -S --needed stacer-bin || echo 'Stacer was not installed; run paru -S stacer-bin later.' >&2
+    run paru -S --needed stacer-bin zapfast-bin ||
+      echo 'Stacer and ZapFast were not installed; run paru -S stacer-bin zapfast-bin later.' >&2
   else
-    echo 'Stacer needs an AUR helper such as paru; skipped.'
+    echo 'Stacer and ZapFast need an AUR helper such as paru; skipped.'
   fi
 fi
 
