@@ -1,7 +1,7 @@
 {
   "version": 1,
   "repository": "Commanderx-code/Myfish",
-  "revision": "771771af61220851065ae7dda47b8f71439c28ae",
+  "revision": "9ef5dce2058b6043da6c8ea9035bac347c25a3b8",
   "overrides": {
     "rgi.fish": "Accepts ripgrep arguments instead of prompting for a query.",
     "fzf_rg_search.fish": "Searches the workstation local-bin directory as well as the current directory.",
