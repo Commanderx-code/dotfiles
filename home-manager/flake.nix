@@ -8,16 +8,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # ZapFast (native WhatsApp client) is not in nixpkgs; build its own flake.
-    zapfast = {
-      url = "github:crmne/zapfast";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # Lets Nix-built GUI apps find graphics drivers on a non-NixOS host.
-    nixgl = {
-      url = "github:nix-community/nixGL";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     # Declares Plasma settings (colour scheme, fonts) from Home Manager.
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
@@ -30,8 +20,6 @@
     {
       nixpkgs,
       home-manager,
-      zapfast,
-      nixgl,
       plasma-manager,
       ...
     }:
@@ -63,8 +51,7 @@
       homeConfigurations.${machine.username} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         extraSpecialArgs = {
-          inherit machine nixgl nixpkgs;
-          zapfast = zapfast.packages.${system}.default;
+          inherit machine nixpkgs;
         };
 
         # Specify your home configuration modules here, for example,

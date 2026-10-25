@@ -134,7 +134,6 @@ For individual application configurations and Linux setup menus, see
 | `zellij` | Start an optional terminal session. |
 | `helix-toolbox` / `htb` / `toolbox` | Open [Helix Toolbox](https://github.com/Commanderx-code/Helix-toolbox), fetching its newest release first. |
 | `htbg` | Open the Helix Toolbox window, from the `helix-toolbox-gui` package. |
-| `zapfast` | Native WhatsApp client, built from its upstream flake and run through nixGL. |
 | `netwatch` / `tfm` / `cassette` | Network dashboard, visual file manager and Spotify player; see the [setup notes](configs/terminal-tools/README.md). |
 | `zwork` / `zdev` | Pick a project session or open an editor, shell and Git workspace. |
 | `backup-personal` | Back up personal files to the configured Restic repository. |
