@@ -219,7 +219,10 @@ class Workflows(unittest.TestCase):
             file.chmod(0o755)
         if str(mock) not in self.env['PATH']:
             self.env.update(PATH=str(mock) + os.pathsep + self.env['PATH'])
-        self.env.update(XDG_RUNTIME_DIR=str(self.root), XDG_STATE_HOME=str(self.root / 'state'),
+        # A home without most personal folders, as on a fresh machine or CI runner.
+        home = self.root / 'home'
+        (home / 'Documents').mkdir(parents=True, exist_ok=True)
+        self.env.update(HOME=str(home), XDG_RUNTIME_DIR=str(self.root), XDG_STATE_HOME=str(self.root / 'state'),
                         RESTIC_WALLET_FOLDER='folder', RESTIC_WALLET_ENTRY='local', RESTIC_WALLET='wallet',
                         OFFSITE_REPOSITORY='s3:https://s3.example.invalid/bucket/home',
                         OFFSITE_WALLET_ENTRY='B2')
@@ -249,9 +252,12 @@ class Workflows(unittest.TestCase):
         self.assertIn(self.env['OFFSITE_REPOSITORY'], arguments)
         self.assertIn('--exclude-caches', arguments)
         self.assertIn('--exclude-larger-than', arguments)
-        self.assertIn(str(Path.home() / 'Downloads'), arguments)
-        self.assertIn('--exclude=' + str(Path.home() / '.claude/.credentials.json'), arguments)
-        self.assertIn('--exclude=' + str(Path.home() / '.cargo/credentials*'), arguments)
+        home = Path(self.env['HOME'])
+        self.assertIn(str(home / 'Downloads'), arguments)
+        self.assertIn(str(home / 'Documents'), arguments)
+        self.assertNotIn(str(home / 'Pictures'), arguments)
+        self.assertIn('--exclude=' + str(home / '.claude/.credentials.json'), arguments)
+        self.assertIn('--exclude=' + str(home / '.cargo/credentials*'), arguments)
         self.offsite_mocks()
         result = self.fish('backup-offsite.fish')
         self.assertEqual(result.returncode, 0, result.stderr)

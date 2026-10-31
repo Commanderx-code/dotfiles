@@ -40,9 +40,15 @@ end
 
 set -g BACKUP_PATHS
 for path in $candidates
-    test -e "$path"; and set -ga BACKUP_PATHS "$path"
+    if test -e "$path"
+        set -ga BACKUP_PATHS "$path"
+    end
 end
 
 # Login tokens stay out of Restic; backup-secrets covers credentials separately.
 # Callers expand this as --exclude=$BACKUP_EXCLUDE_PATTERNS, one option per entry.
 set -g BACKUP_EXCLUDE_PATTERNS "$HOME/.claude/.credentials.json" "$HOME/.cargo/credentials*"
+
+# set keeps the previous $status, so without this a missing candidate above
+# would make sourcing this file report failure.
+true
