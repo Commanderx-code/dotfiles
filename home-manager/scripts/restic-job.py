@@ -22,7 +22,7 @@ def repository(offsite):
             return None
         return {'repo': repo, 'entry': os.environ.get('OFFSITE_WALLET_ENTRY', 'Offsite'),
                 'remote': True, 'lock': 'backup-offsite.lock', 'held': 'OFFSITE_LOCK_HELD'}
-    return {'repo': os.environ['RESTIC_REPOSITORY'], 'entry': os.environ['RESTIC_WALLET_ENTRY'],
+    return {'repo': os.environ['RESTIC_REPOSITORY'], 'entry': os.environ.get('RESTIC_WALLET_ENTRY', ''),
             'remote': False, 'lock': 'backup-personal.lock', 'held': 'BACKUP_LOCK_HELD'}
 
 

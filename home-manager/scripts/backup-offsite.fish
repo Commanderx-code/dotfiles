@@ -137,7 +137,7 @@ restic \
     --exclude "**/node_modules" \
     --exclude "$DOTFILES_DIR/.system-backup-capture-*" \
     --exclude "$DOTFILES_DIR/.system-backup.lock" \
-    $BACKUP_EXCLUDE_ARGUMENTS \
+    --exclude=$BACKUP_EXCLUDE_PATTERNS \
     $EXISTING
 
 if test $status -ne 0
