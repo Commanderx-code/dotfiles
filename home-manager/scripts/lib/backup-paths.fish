@@ -1,5 +1,6 @@
 # Personal directories that every Restic repository receives. Source it after
-# lib/settings.fish; it sets BACKUP_PATHS to the entries that exist right now.
+# lib/settings.fish; it sets BACKUP_PATHS to the entries that exist right now
+# and BACKUP_EXCLUDE_ARGUMENTS to the --exclude options both repositories apply.
 #
 # Applications can register additional repositories without coupling this file
 # to their code. Each file in ~/.config/backup-personal/paths.d/ contains
@@ -40,4 +41,10 @@ end
 set -g BACKUP_PATHS
 for path in $candidates
     test -e "$path"; and set -ga BACKUP_PATHS "$path"
+end
+
+# Login tokens stay out of Restic; backup-secrets covers credentials separately.
+set -g BACKUP_EXCLUDE_ARGUMENTS
+for pattern in "$HOME/.claude/.credentials.json" "$HOME/.cargo/credentials*"
+    set -ga BACKUP_EXCLUDE_ARGUMENTS --exclude "$pattern"
 end

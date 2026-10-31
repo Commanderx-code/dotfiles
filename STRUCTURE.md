@@ -162,7 +162,9 @@ installed on a machine whose `machine.json` lacks `offsiteRepository`.
 
 Personal Restic captures include `~/github` (including unpushed repository work),
 `~/Projects`, `~/.claude` (assistant transcripts and memory), application-registered
-extra paths, and the existing personal folders. `backup-secrets` separately encrypts SSH, GnuPG, and KWallet; GnuPG
+extra paths, and the existing personal folders. Login tokens inside those trees
+(`~/.claude/.credentials.json`, `~/.cargo/credentials*`) are excluded from every
+repository; `backup-secrets` is the place for credentials. `backup-secrets` separately encrypts SSH, GnuPG, and KWallet; GnuPG
 sockets, lock files, and random-seed state are excluded from its archive.
 
 `backup-health` shows locally recorded successful personal backup and maintenance

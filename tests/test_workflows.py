@@ -244,6 +244,8 @@ class Workflows(unittest.TestCase):
         self.assertIn('--exclude-caches', arguments)
         self.assertIn('--exclude-larger-than', arguments)
         self.assertIn(str(Path.home() / 'Downloads'), arguments)
+        self.assertIn(str(Path.home() / '.claude/.credentials.json'), arguments)
+        self.assertIn(str(Path.home() / '.cargo/credentials*'), arguments)
         self.offsite_mocks()
         result = self.fish('backup-offsite.fish')
         self.assertEqual(result.returncode, 0, result.stderr)

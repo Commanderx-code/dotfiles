@@ -70,6 +70,7 @@ restic \
     backup \
     --exclude "$DOTFILES_DIR/.system-backup-capture-*" \
     --exclude "$DOTFILES_DIR/.system-backup.lock" \
+    $BACKUP_EXCLUDE_ARGUMENTS \
     $EXISTING
 
 if test $status -ne 0
