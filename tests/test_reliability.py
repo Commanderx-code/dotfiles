@@ -1,3 +1,4 @@
+import hashlib
 import importlib.util
 import json
 import os
@@ -139,6 +140,86 @@ sys.exit(int(sys.argv[2]))
         self.assertEqual(result.returncode, 1)
         self.assertNotIn('✅ Cleanup complete', result.stdout)
         self.assertEqual(log.read_text().count('paccache -rk3'), 1)
+
+    def test_offsite_jobs_skip_the_mount_and_pass_wallet_credentials(self):
+        repo = 's3:https://s3.example.invalid/bucket/home'
+        env = dict(RESTIC_REPOSITORY=str(self.root), BACKUP_MOUNT=str(self.root / 'absent'),
+                   XDG_STATE_HOME=str(self.root / 'state'), XDG_RUNTIME_DIR=str(self.root),
+                   RESTIC_WALLET='wallet', RESTIC_WALLET_FOLDER='folder', RESTIC_WALLET_ENTRY='local',
+                   OFFSITE_REPOSITORY=repo, OFFSITE_WALLET_ENTRY='B2')
+        calls = []
+        secrets = {'B2-key-id': 'KEYID', 'B2-key': 'SECRET'}
+        def run(command, **kwargs):
+            calls.append((command, kwargs))
+            if command[0] == 'kwallet-query':
+                return subprocess.CompletedProcess(command, 0, secrets.get(command[4], '') + '\n', '')
+            return subprocess.CompletedProcess(command, 0)
+        with patch.dict(os.environ, env), patch.object(restic_job.subprocess, 'run', side_effect=run), \
+             patch.object(restic_job.shutil, 'which', return_value='/mock/tool'):
+            self.assertEqual(restic_job.run_job('maintenance', True, offsite=True), 0)
+            self.assertFalse(any(c[0][0] == 'mountpoint' for c in calls))
+            restic = [c for c in calls if c[0][0] == 'restic']
+            self.assertEqual(len(restic), 2)
+            for command, kwargs in restic:
+                self.assertEqual(command[2], repo)
+                self.assertIn('-r B2 wallet', command[4])
+                self.assertEqual(kwargs['env']['AWS_ACCESS_KEY_ID'], 'KEYID')
+                self.assertEqual(kwargs['env']['AWS_SECRET_ACCESS_KEY'], 'SECRET')
+            self.assertNotIn('AWS_SECRET_ACCESS_KEY', os.environ)
+            stamp = next(self.root.rglob('maintenance.success'))
+            identity = hashlib.sha256(repo.encode()).hexdigest()
+            self.assertEqual(stamp.parent.name, identity)
+            with patch.object(sys, 'argv', ['restic-job', 'record-backup', '--offsite']):
+                self.assertEqual(restic_job.main(), 0)
+            self.assertTrue((stamp.parent / 'backup.success').exists())
+            # A missing credential stops before Restic runs and leaves the date alone.
+            secrets.clear()
+            calls.clear()
+            stale = time.time() - 8 * 86400
+            os.utime(stamp, (stale, stale))
+            self.assertEqual(restic_job.run_job('maintenance', True, offsite=True), 1)
+            self.assertFalse(any(c[0][0] == 'restic' for c in calls))
+            self.assertLess(stamp.stat().st_mtime, time.time() - 7 * 86400)
+        # Without a configured repository the offsite jobs are a quiet no-op.
+        with patch.dict(os.environ, {k: v for k, v in env.items() if not k.startswith('OFFSITE')}), \
+             patch.object(restic_job.subprocess, 'run', side_effect=run):
+            os.environ.pop('OFFSITE_REPOSITORY', None)
+            calls.clear()
+            self.assertEqual(restic_job.run_job('maintenance', True, offsite=True), 0)
+            self.assertEqual(calls, [])
+            with patch.object(sys, 'argv', ['restic-job', 'record-backup', '--offsite']):
+                self.assertEqual(restic_job.main(), 1)
+
+    def test_health_reports_the_offsite_repository_only_when_configured(self):
+        repo = 's3:https://s3.example.invalid/bucket/home'
+        env = dict(RESTIC_REPOSITORY=str(self.root / 'repo'), DOTFILES_DIR=str(self.root),
+                   BACKUP_MOUNT=str(self.root / 'drive'), XDG_STATE_HOME=str(self.root / 'state'))
+        result = subprocess.CompletedProcess([], 0, 'LoadState=loaded\nActiveState=inactive\nResult=success\n')
+        with patch.object(health.subprocess, 'run', return_value=result) as run:
+            self.assertIsNone(health.collect(env)['offsite'])
+            self.assertIsNone(health.offsite_reminder(health.collect(env)))
+            self.assertFalse(any('offsite' in call.args[0][3] for call in run.call_args_list))
+            env['OFFSITE_REPOSITORY'] = repo
+            report = health.collect(env)
+            self.assertEqual(report['offsite']['repository'], repo)
+            self.assertEqual(report['offsite']['jobs']['backup']['status'], 'unknown')
+            self.assertIn('backup-offsite.service', report['offsite']['services'])
+            self.assertEqual(health.offsite_reminder(report),
+                             ('Offsite backup overdue',
+                              'Last successful offsite backup: never recorded. Run backup-health for details.'))
+            state = self.root / 'state/dotfiles/restic' / hashlib.sha256(repo.encode()).hexdigest()
+            state.mkdir(parents=True)
+            for name in ['backup.success', 'maintenance.success', 'deep-check.success']:
+                (state / name).touch()
+            report = health.collect(env)
+            self.assertTrue(all(job['status'] == 'current' for job in report['offsite']['jobs'].values()))
+            self.assertIsNone(health.offsite_reminder(report))
+            old = time.time() - 3 * 86400
+            os.utime(state / 'backup.success', (old, old))
+            report = health.collect(env)
+            self.assertEqual(report['offsite']['jobs']['backup']['status'], 'overdue')
+            self.assertTrue(report['needs_attention'])
+            self.assertIn('3 days ago', health.offsite_reminder(report)[1])
 
     def test_health_reports_unknown_and_success_without_repository_access(self):
         env = dict(RESTIC_REPOSITORY=str(self.root / 'repo'), DOTFILES_DIR=str(self.root),

@@ -1,5 +1,13 @@
-{ machine, pkgs, ... }:
+{
+  machine,
+  pkgs,
+  lib,
+  ...
+}:
 
+let
+  offsite = (machine.offsiteRepository or "") != "";
+in
 {
   home.file.".local/bin/backup-on-mount" = {
     source = ../scripts/backup-on-mount.fish;
@@ -13,6 +21,11 @@
 
   home.file.".local/bin/restic-deep-check" = {
     source = ../scripts/restic-deep-check.fish;
+    executable = true;
+  };
+
+  home.file.".local/bin/backup-offsite" = {
+    source = ../scripts/backup-offsite.fish;
     executable = true;
   };
 
@@ -126,6 +139,93 @@
   systemd.user.timers.restic-deep-check = {
     Unit = {
       Description = "Monthly deep Restic integrity check";
+    };
+
+    Timer = {
+      OnCalendar = "monthly";
+      Persistent = true;
+      RandomizedDelaySec = "1h";
+    };
+
+    Install = {
+      WantedBy = [ "timers.target" ];
+    };
+  };
+
+  # The offsite repository needs no drive, so it runs on a clock: a nightly
+  # backup, weekly pruning and a monthly data sample, each with its own
+  # failure notification. Nothing here exists until machine.json names it.
+  systemd.user.services.backup-offsite = lib.mkIf offsite {
+    Unit = {
+      Description = "Nightly Restic backup to the offsite repository";
+      OnFailure = [ "backup-failure@%n.service" ];
+    };
+
+    Service = {
+      Type = "oneshot";
+      ExecStart = "%h/.local/bin/backup-offsite";
+    };
+  };
+
+  systemd.user.timers.backup-offsite = lib.mkIf offsite {
+    Unit = {
+      Description = "Nightly offsite backup";
+    };
+
+    Timer = {
+      OnCalendar = "*-*-* 03:00:00";
+      Persistent = true;
+      RandomizedDelaySec = "1h";
+    };
+
+    Install = {
+      WantedBy = [ "timers.target" ];
+    };
+  };
+
+  systemd.user.services.restic-maintenance-offsite = lib.mkIf offsite {
+    Unit = {
+      Description = "Prune old offsite Restic snapshots and verify repository";
+      OnFailure = [ "backup-failure@%n.service" ];
+    };
+
+    Service = {
+      Type = "oneshot";
+      ExecStart = "%h/.local/bin/restic-maintenance --offsite --if-due";
+    };
+  };
+
+  systemd.user.timers.restic-maintenance-offsite = lib.mkIf offsite {
+    Unit = {
+      Description = "Weekly offsite Restic repository maintenance";
+    };
+
+    Timer = {
+      OnCalendar = "weekly";
+      Persistent = true;
+      RandomizedDelaySec = "1h";
+    };
+
+    Install = {
+      WantedBy = [ "timers.target" ];
+    };
+  };
+
+  systemd.user.services.restic-deep-check-offsite = lib.mkIf offsite {
+    Unit = {
+      Description = "Deep offsite Restic repository integrity check";
+      OnFailure = [ "backup-failure@%n.service" ];
+    };
+
+    Service = {
+      Type = "oneshot";
+      ExecStart = "%h/.local/bin/restic-deep-check --offsite --if-due";
+    };
+  };
+
+  systemd.user.timers.restic-deep-check-offsite = lib.mkIf offsite {
+    Unit = {
+      Description = "Monthly deep offsite Restic integrity check";
     };
 
     Timer = {

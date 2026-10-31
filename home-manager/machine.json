@@ -10,5 +10,7 @@
   "resticRepository": "/run/media/commander/Linux-Backup/restic",
   "wallet": "kdewallet",
   "walletFolder": "Restic",
-  "walletEntry": "Crucial-X6"
+  "walletEntry": "Crucial-X6",
+  "offsiteRepository": "s3:https://s3.us-east-005.backblazeb2.com/garuda-home-backup/garuda-home",
+  "offsiteWalletEntry": "B2-garuda-home"
 }
