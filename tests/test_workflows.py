@@ -228,6 +228,12 @@ class Workflows(unittest.TestCase):
     def test_offsite_backup_is_a_no_op_until_configured(self):
         self.offsite_mocks()
         self.env.pop('OFFSITE_REPOSITORY')
+        # This workstation's machine.json names a repository; a machine without one must stay quiet.
+        machine = json.loads((ROOT / 'home-manager/machine.json').read_text())
+        machine.pop('offsiteRepository', None)
+        machine.pop('offsiteWalletEntry', None)
+        (self.root / 'machine.json').write_text(json.dumps(machine))
+        self.env['DOTFILES_MACHINE_CONFIG'] = str(self.root / 'machine.json')
         result = self.fish('backup-offsite.fish')
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('not configured', result.stdout)
