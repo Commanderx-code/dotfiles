@@ -33,8 +33,12 @@ set -l ENTRY "$OFFSITE_WALLET_ENTRY"
 set -l wallet_arguments -f "$RESTIC_WALLET_FOLDER"
 set -l PASSWORD_COMMAND (string join -- " " kwallet-query -f (string escape -- "$RESTIC_WALLET_FOLDER") -r (string escape -- "$ENTRY") (string escape -- "$RESTIC_WALLET"))
 
+# kwallet-query reports a missing entry on stdout with exit status 4, so only a
+# successful read counts as a value.
 function read_entry --no-scope-shadowing
-    kwallet-query $wallet_arguments -r "$argv[1]" "$RESTIC_WALLET" 2>/dev/null
+    set -l value (kwallet-query $wallet_arguments -r "$argv[1]" "$RESTIC_WALLET" 2>/dev/null)
+    test $status -eq 0; or return 1
+    printf '%s\n' $value
 end
 
 if contains -- --setup $argv
