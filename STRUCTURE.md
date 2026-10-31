@@ -133,11 +133,38 @@ GitHub Actions runs `nix develop ./home-manager --command ./scripts/check --buil
 on pushes and pull requests, with read-only repository permissions and pinned
 action revisions. It validates and builds without activating Home Manager.
 
+## Offsite repository
+
+`offsiteRepository` and `offsiteWalletEntry` in `machine.json` are optional. When
+the repository is set, `backup-offsite` sends the shared personal path list
+(`scripts/lib/backup-paths.fish`) to it, excluding `~/Downloads`, directories
+marked with `CACHEDIR.TAG` (Cargo registry and `target/`), `node_modules`, and
+files larger than 1 GiB; rescue-media images and release archives stay on the
+local drive only. The repository password is the wallet entry named by
+`offsiteWalletEntry` (default `Offsite`) in the same wallet folder as the local
+repository's; `<entry>-key-id` and `<entry>-key` hold the S3 credentials, which
+`backup-offsite --setup` writes after prompting. Restic encrypts everything
+before upload, so the bucket contents are opaque without that password; keep a
+copy of it outside this machine.
+
+The offsite jobs mirror the local ones: `backup-offsite` runs nightly at 03:00
+with up to an hour of jitter, `restic-maintenance --offsite` applies the same
+retention weekly, and `restic-deep-check --offsite` samples 10% of the data
+monthly. They use their own lock (`backup-offsite.lock`) and record success under
+`$XDG_STATE_HOME/dotfiles/restic/<sha256 of the repository URL>/`, so a local
+drive backup can run at the same time. Without a network connection the backup
+exits quietly and the next run catches up; `backup-health` flags the offsite
+backup after two days and the daily reminder sends a separate notification.
+Each unit has the same `OnFailure` notification as the local jobs. Nothing is
+installed on a machine whose `machine.json` lacks `offsiteRepository`.
+
 ## Backup coverage and health
 
 Personal Restic captures include `~/github` (including unpushed repository work),
-`~/Projects`, application-registered extra paths, and the existing personal
-folders. `backup-secrets` separately encrypts SSH, GnuPG, and KWallet; GnuPG
+`~/Projects`, `~/.claude` (assistant transcripts and memory), application-registered
+extra paths, and the existing personal folders. Login tokens inside those trees
+(`~/.claude/.credentials.json`, `~/.cargo/credentials*`) are excluded from every
+repository; `backup-secrets` is the place for credentials. `backup-secrets` separately encrypts SSH, GnuPG, and KWallet; GnuPG
 sockets, lock files, and random-seed state are excluded from its archive.
 
 `backup-health` shows locally recorded successful personal backup and maintenance

@@ -140,6 +140,7 @@ For individual application configurations and Linux setup menus, see
 | `backup-personal` | Back up personal files to the configured Restic repository. |
 | `backup-everything` | Capture system state and inventories, back up personal files, and encrypt secrets and the Restic recovery credential. |
 | `backup-health` | Review locally recorded backup status without unlocking KWallet. |
+| `backup-offsite` | Back up personal files to the offsite Restic repository; `--setup` stores its credentials. |
 | `restore-system --dry-run` | Preview available system configuration restore sources. |
 | `restore-apps --dry-run` | Preview application inventory recovery. |
 | `restore-grub` | Install the repository's GRUB settings (menu, AppArmor and the `garuda` or `cachyos` look), then regenerate the boot menu. |
@@ -166,6 +167,15 @@ health reporting and failure notifications.
 Backups and repository jobs run one at a time. A manual `backup-personal` or
 `backup-everything` started while the automatic run is going waits for it to
 finish, and says so, instead of failing on the repository lock.
+
+An optional second repository lives off the machine: `offsiteRepository` in
+`machine.json` names a Backblaze B2 bucket through its S3 API, and
+`backup-offsite --setup` stores the S3 key and a generated repository password
+in KDE Wallet and initializes the repository. A nightly timer then backs up the
+same personal paths minus Downloads, build output, dependency caches and files
+over 1 GiB, with its own weekly pruning and monthly data sample. Machines
+without the setting get none of these units. See the
+[maintenance guide](STRUCTURE.md#offsite-repository) for details.
 
 **System snapshots are local backup data.** `system-backup/` is excluded from Git
 and protected by Restic; a fresh clone does not contain those captures. Recover

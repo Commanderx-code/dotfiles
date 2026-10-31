@@ -10,6 +10,7 @@
     set -g COMMANDER_NAME ${lib.escapeShellArg machine.displayName}
   '';
   home.file.".local/share/dotfiles/settings.fish".source = ../scripts/lib/settings.fish;
+  home.file.".local/share/dotfiles/backup-paths.fish".source = ../scripts/lib/backup-paths.fish;
   home.file.".local/bin/backup-health" = {
     source = ../scripts/backup-health.fish;
     executable = true;

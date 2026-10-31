@@ -406,6 +406,33 @@ Check maintenance timers:
 
 ---
 
+# 13b. Restore from the offsite repository
+
+Use this when the Crucial X6 is unavailable or damaged. It needs the offsite
+repository password and the S3 application key, both of which are stored in KDE
+Wallet during normal operation and should also exist in a password manager.
+
+    export AWS_ACCESS_KEY_ID='<S3 key ID>'
+    export AWS_SECRET_ACCESS_KEY='<S3 application key>'
+
+    restic --repo "$(jq -r .offsiteRepository ~/.config/dotfiles/machine.json)" \
+        snapshots
+
+    mkdir -p ~/restic-restore-offsite
+    restic --repo "$(jq -r .offsiteRepository ~/.config/dotfiles/machine.json)" \
+        restore latest --target ~/restic-restore-offsite
+
+Restic prompts for the repository password. On a fresh install without the
+dotfiles configuration, copy the repository URL from Backblaze instead of
+`machine.json`. Downloads, build output, dependency caches and files over 1 GiB
+were never sent offsite; download or rebuild those.
+
+Unset the two variables afterward:
+
+    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+
+---
+
 # 14. Backup commands after recovery
 
 Quick personal backup:
@@ -427,6 +454,11 @@ Deep integrity test:
 Standalone Restic credential backup:
 
     backup-restic-credential
+
+Offsite backup now, or store its credentials again:
+
+    backup-offsite
+    backup-offsite --setup
 
 ---
 

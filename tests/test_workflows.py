@@ -209,6 +209,71 @@ class Workflows(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(len(list(self.root.rglob('backup.success'))), 1)
 
+    def offsite_mocks(self, restic='exit 0'):
+        mock = self.root / 'bin'
+        mock.mkdir(exist_ok=True)
+        wallet = 'case "$4" in *-key-id) echo KEYID;; *-key) echo SECRET;; *) exit 1;; esac'
+        for name, body in {'restic': restic, 'kwallet-query': wallet, 'nm-online': 'exit 0'}.items():
+            file = mock / name
+            file.write_text('#!/bin/sh\n' + body + '\n')
+            file.chmod(0o755)
+        if str(mock) not in self.env['PATH']:
+            self.env.update(PATH=str(mock) + os.pathsep + self.env['PATH'])
+        # A home without most personal folders, as on a fresh machine or CI runner.
+        home = self.root / 'home'
+        (home / 'Documents').mkdir(parents=True, exist_ok=True)
+        self.env.update(HOME=str(home), XDG_RUNTIME_DIR=str(self.root), XDG_STATE_HOME=str(self.root / 'state'),
+                        RESTIC_WALLET_FOLDER='folder', RESTIC_WALLET_ENTRY='local', RESTIC_WALLET='wallet',
+                        OFFSITE_REPOSITORY='s3:https://s3.example.invalid/bucket/home',
+                        OFFSITE_WALLET_ENTRY='B2')
+        self.env.pop('OFFSITE_LOCK_HELD', None)
+
+    def test_offsite_backup_is_a_no_op_until_configured(self):
+        self.offsite_mocks()
+        self.env.pop('OFFSITE_REPOSITORY')
+        # This workstation's machine.json names a repository; a machine without one must stay quiet.
+        machine = json.loads((ROOT / 'home-manager/machine.json').read_text())
+        machine.pop('offsiteRepository', None)
+        machine.pop('offsiteWalletEntry', None)
+        (self.root / 'machine.json').write_text(json.dumps(machine))
+        self.env['DOTFILES_MACHINE_CONFIG'] = str(self.root / 'machine.json')
+        result = self.fish('backup-offsite.fish')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('not configured', result.stdout)
+        self.assertFalse(list(self.root.rglob('backup.success')))
+
+    def test_offsite_backup_records_success_only_after_restic_succeeds(self):
+        self.offsite_mocks(restic='printf "%s\\n" "$@" > "$RESTIC_ARGS_FILE"; exit 42')
+        self.env['RESTIC_ARGS_FILE'] = str(self.root / 'restic-args')
+        result = self.fish('backup-offsite.fish')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(list(self.root.rglob('backup.success')))
+        arguments = (self.root / 'restic-args').read_text().splitlines()
+        self.assertIn(self.env['OFFSITE_REPOSITORY'], arguments)
+        self.assertIn('--exclude-caches', arguments)
+        self.assertIn('--exclude-larger-than', arguments)
+        home = Path(self.env['HOME'])
+        self.assertIn(str(home / 'Downloads'), arguments)
+        self.assertIn(str(home / 'Documents'), arguments)
+        self.assertNotIn(str(home / 'Pictures'), arguments)
+        self.assertIn('--exclude=' + str(home / '.claude/.credentials.json'), arguments)
+        self.assertIn('--exclude=' + str(home / '.cargo/credentials*'), arguments)
+        self.offsite_mocks()
+        result = self.fish('backup-offsite.fish')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        stamps = list(self.root.rglob('backup.success'))
+        self.assertEqual(len(stamps), 1)
+        import hashlib
+        self.assertEqual(stamps[0].parent.name, hashlib.sha256(self.env['OFFSITE_REPOSITORY'].encode()).hexdigest())
+
+    def test_offsite_backup_stops_without_wallet_credentials(self):
+        self.offsite_mocks()
+        (self.root / 'bin/kwallet-query').write_text('#!/bin/sh\nexit 1\n')
+        result = self.fish('backup-offsite.fish')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('backup-offsite --setup', result.stdout)
+        self.assertFalse(list(self.root.rglob('backup.success')))
+
     def test_metadata_tracks_separate_capture_times(self):
         for kind in ('system', 'applications'):
             for status in ('started', 'completed'):
