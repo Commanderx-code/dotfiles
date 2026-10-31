@@ -268,7 +268,9 @@ class Workflows(unittest.TestCase):
 
     def test_offsite_backup_stops_without_wallet_credentials(self):
         self.offsite_mocks()
-        (self.root / 'bin/kwallet-query').write_text('#!/bin/sh\nexit 1\n')
+        # kwallet-query reports a missing entry on stdout, not only through its exit status.
+        (self.root / 'bin/kwallet-query').write_text(
+            '#!/bin/sh\necho "Failed to read entry $4 value from the wallet wallet."\nexit 4\n')
         result = self.fish('backup-offsite.fish')
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('backup-offsite --setup', result.stdout)
