@@ -27,3 +27,19 @@ for i in (seq (count $keys))
         set -gx $variables[$i] "$value"
     end
 end
+
+# Optional: a second, offsite Restic repository such as Backblaze B2 over its S3
+# API. Absent or empty keys leave the variables unset and the offsite commands
+# report that nothing is configured. The wallet entry names the repository
+# password; "<entry>-key-id" and "<entry>-key" hold the S3 credentials.
+set -l optional_keys offsiteRepository offsiteWalletEntry
+set -l optional_variables OFFSITE_REPOSITORY OFFSITE_WALLET_ENTRY
+for i in (seq (count $optional_keys))
+    if not set -q $optional_variables[$i]
+        set -l value (jq -r --arg key "$optional_keys[$i]" '.[$key] | select(type == "string" and length > 0)' "$DOTFILES_MACHINE_CONFIG")
+        test -n "$value"; and set -gx $optional_variables[$i] "$value"
+    end
+end
+if set -q OFFSITE_REPOSITORY; and not set -q OFFSITE_WALLET_ENTRY
+    set -gx OFFSITE_WALLET_ENTRY Offsite
+end

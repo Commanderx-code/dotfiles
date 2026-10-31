@@ -44,46 +44,12 @@ if not test -d "$REPO"
     exit 1
 end
 
-set -l PATHS \
-    "$HOME/Documents" \
-    "$HOME/Desktop" \
-    "$HOME/Downloads" \
-    "$HOME/Pictures" \
-    "$HOME/Videos" \
-    "$HOME/Music" \
-    "$HOME/Projects" \
-    "$HOME/github" \
-    "$HOME/Applications" \
-    "$DOTFILES_DIR" \
-    "$HOME/.cargo"
-
-# Applications can register additional repositories without coupling this helper
-# to their code. Each file contains absolute paths, one per line; # starts a comment.
-set -l config_home "$HOME/.config"
-set -q XDG_CONFIG_HOME; and set config_home "$XDG_CONFIG_HOME"
-set -l paths_directory "$config_home/backup-personal/paths.d"
-if test -d "$paths_directory"
-    for registration in "$paths_directory"/*
-        test -f "$registration"; or continue
-        while read -l extra_path
-            test -n "$extra_path"; or continue
-            string match -q '#*' -- "$extra_path"; and continue
-            if not string match -q '/*' -- "$extra_path"
-                printf 'Backup registration must use an absolute path: %s\n' "$registration" >&2
-                exit 1
-            end
-            contains -- "$extra_path" $PATHS; or set -a PATHS "$extra_path"
-        end < "$registration"
-    end
+set -l paths_file (path dirname (status filename))/lib/backup-paths.fish
+if not test -f "$paths_file"
+    set paths_file "$HOME/.local/share/dotfiles/backup-paths.fish"
 end
-
-set -l EXISTING
-
-for path in $PATHS
-    if test -e "$path"
-        set -a EXISTING "$path"
-    end
-end
+source "$paths_file"; or exit 1
+set -l EXISTING $BACKUP_PATHS
 
 if test (count $EXISTING) -eq 0
     echo "Error: No backup paths exist."
@@ -104,6 +70,7 @@ restic \
     backup \
     --exclude "$DOTFILES_DIR/.system-backup-capture-*" \
     --exclude "$DOTFILES_DIR/.system-backup.lock" \
+    --exclude=$BACKUP_EXCLUDE_PATTERNS \
     $EXISTING
 
 if test $status -ne 0
