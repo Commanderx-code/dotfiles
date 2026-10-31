@@ -139,6 +139,9 @@ restic \
     --exclude-larger-than 1G \
     --exclude "$HOME/Downloads" \
     --exclude "**/node_modules" \
+    --exclude "*.iso" \
+    --exclude "*.img" \
+    --exclude "*.qcow2" \
     --exclude "$DOTFILES_DIR/.system-backup-capture-*" \
     --exclude "$DOTFILES_DIR/.system-backup.lock" \
     --exclude=$BACKUP_EXCLUDE_PATTERNS \

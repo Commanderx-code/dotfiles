@@ -252,6 +252,7 @@ class Workflows(unittest.TestCase):
         self.assertIn(self.env['OFFSITE_REPOSITORY'], arguments)
         self.assertIn('--exclude-caches', arguments)
         self.assertIn('--exclude-larger-than', arguments)
+        self.assertIn('*.iso', arguments)
         home = Path(self.env['HOME'])
         self.assertIn(str(home / 'Downloads'), arguments)
         self.assertIn(str(home / 'Documents'), arguments)
