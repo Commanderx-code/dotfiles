@@ -51,9 +51,9 @@ in
   netwatch = binary {
     name = "netwatch";
     helpText = "netwatch";
-    version = "0.35.4";
-    url = "https://github.com/matthart1983/netwatch/releases/download/v0.35.4/netwatch-linux-x86_64.tar.gz";
-    sha256 = "183272223a09c93fc890f6d5c9b9f71fb4d8883292d94963e10b5fabf1a7a1bd";
+    version = "0.38.0";
+    url = "https://github.com/matthart1983/netwatch/releases/download/v0.38.0/netwatch-linux-x86_64.tar.gz";
+    sha256 = "2d0652d2ad9df2e61115047bb1fb85572fc7dcdf45c6c1c72132c505cd3d73ab";
     unpack = ''tar -xOf "$src" netwatch-linux-x86_64 > "$out/libexec/netwatch"'';
   };
   tfm = binary {
