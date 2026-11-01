@@ -114,7 +114,16 @@ if not test -f "$paths_file"
     set paths_file "$HOME/.local/share/dotfiles/backup-paths.fish"
 end
 source "$paths_file"; or exit 1
-set -l EXISTING $BACKUP_PATHS
+
+# Pictures and the Git checkouts stay on the local drive only: they are the
+# bulk of the data and would push the free offsite tier past its cap.
+set -l EXISTING
+for path in $BACKUP_PATHS
+    if test "$path" = "$HOME/Pictures"; or string match -q -- "$HOME/github" "$path"; or string match -q -- "$HOME/github/*" "$path"
+        continue
+    end
+    set -a EXISTING $path
+end
 
 if test (count $EXISTING) -eq 0
     echo "Error: No backup paths exist."
