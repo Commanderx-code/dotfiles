@@ -137,7 +137,8 @@ action revisions. It validates and builds without activating Home Manager.
 
 `offsiteRepository` and `offsiteWalletEntry` in `machine.json` are optional. When
 the repository is set, `backup-offsite` sends the shared personal path list
-(`scripts/lib/backup-paths.fish`) to it, excluding `~/Downloads`, directories
+(`scripts/lib/backup-paths.fish`) to it, excluding `~/Pictures`, `~/github`
+(every Git checkout, including the dotfiles), `~/Downloads`, directories
 marked with `CACHEDIR.TAG` (Cargo registry and `target/`), `node_modules`,
 disk images (`*.iso`, `*.img`, `*.qcow2`), and files larger than 1 GiB;
 rescue-media images and release archives stay on the local drive only. The repository password is the wallet entry named by

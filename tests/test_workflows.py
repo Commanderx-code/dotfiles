@@ -221,7 +221,8 @@ class Workflows(unittest.TestCase):
             self.env.update(PATH=str(mock) + os.pathsep + self.env['PATH'])
         # A home without most personal folders, as on a fresh machine or CI runner.
         home = self.root / 'home'
-        (home / 'Documents').mkdir(parents=True, exist_ok=True)
+        for name in ('Documents', 'Pictures', 'github/projects/repo'):
+            (home / name).mkdir(parents=True, exist_ok=True)
         self.env.update(HOME=str(home), XDG_RUNTIME_DIR=str(self.root), XDG_STATE_HOME=str(self.root / 'state'),
                         RESTIC_WALLET_FOLDER='folder', RESTIC_WALLET_ENTRY='local', RESTIC_WALLET='wallet',
                         OFFSITE_REPOSITORY='s3:https://s3.example.invalid/bucket/home',
@@ -257,6 +258,8 @@ class Workflows(unittest.TestCase):
         self.assertIn(str(home / 'Downloads'), arguments)
         self.assertIn(str(home / 'Documents'), arguments)
         self.assertNotIn(str(home / 'Pictures'), arguments)
+        self.assertNotIn(str(home / 'github'), arguments)
+        self.assertFalse([a for a in arguments if a.startswith(str(home / 'github'))])
         self.assertIn('--exclude=' + str(home / '.claude/.credentials.json'), arguments)
         self.assertIn('--exclude=' + str(home / '.cargo/credentials*'), arguments)
         self.offsite_mocks()

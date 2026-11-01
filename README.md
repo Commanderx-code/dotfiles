@@ -172,8 +172,9 @@ An optional second repository lives off the machine: `offsiteRepository` in
 `machine.json` names a Backblaze B2 bucket through its S3 API, and
 `backup-offsite --setup` stores the S3 key and a generated repository password
 in KDE Wallet and initializes the repository. A nightly timer then backs up the
-same personal paths minus Downloads, build output, dependency caches and files
-over 1 GiB, with its own weekly pruning and monthly data sample. Machines
+same personal paths minus Pictures, Git checkouts, Downloads, build output,
+dependency caches, disk images and files over 1 GiB, with its own weekly
+pruning and monthly data sample. Machines
 without the setting get none of these units. See the
 [maintenance guide](STRUCTURE.md#offsite-repository) for details.
 

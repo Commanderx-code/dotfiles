@@ -259,7 +259,9 @@ sys.exit(int(sys.argv[2]))
     def test_remind_notifies_only_when_overdue(self):
         env = dict(RESTIC_REPOSITORY=str(self.root / 'repo'), DOTFILES_DIR=str(self.root),
                    BACKUP_MOUNT=str(self.root / 'drive'), XDG_STATE_HOME=str(self.root / 'state'),
-                   BACKUP_NOTIFIER='notifier-fixture')
+                   BACKUP_NOTIFIER='notifier-fixture',
+                   # The developer's shell may export a real offsite repository; keep it out of this count.
+                   OFFSITE_REPOSITORY='')
         units = subprocess.CompletedProcess([], 0, 'LoadState=loaded\nResult=success\n')
         for age, sent in [(10, True), (1, False)]:
             with self.subTest(age=age), patch.dict(os.environ, env), \
