@@ -1,0 +1,12 @@
+[Unit]
+Description=Cap intel_pstate max_perf_pct
+# Without the Intel driver there is nothing to cap, so the unit stays quiet.
+ConditionPathExists=/sys/devices/system/cpu/intel_pstate/max_perf_pct
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo 80 > /sys/devices/system/cpu/intel_pstate/max_perf_pct'
+
+[Install]
+WantedBy=multi-user.target
