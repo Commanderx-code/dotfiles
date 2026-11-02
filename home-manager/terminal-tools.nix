@@ -51,17 +51,17 @@ in
   netwatch = binary {
     name = "netwatch";
     helpText = "netwatch";
-    version = "0.35.4";
-    url = "https://github.com/matthart1983/netwatch/releases/download/v0.35.4/netwatch-linux-x86_64.tar.gz";
-    sha256 = "183272223a09c93fc890f6d5c9b9f71fb4d8883292d94963e10b5fabf1a7a1bd";
+    version = "0.39.0";
+    url = "https://github.com/matthart1983/netwatch/releases/download/v0.39.0/netwatch-linux-x86_64.tar.gz";
+    sha256 = "0db9a87a081a4173a46cdbb4704af995a07f3286dbb8a2295082b18aa5eaab98";
     unpack = ''tar -xOf "$src" netwatch-linux-x86_64 > "$out/libexec/netwatch"'';
   };
   tfm = binary {
     name = "tfm";
     helpText = "terminal file manager";
-    version = "1.1.0";
-    url = "https://github.com/clarkarch/tfm-tui/releases/download/v1.1.0/tfm-x86_64-linux.gz";
-    sha256 = "b3d9a7cf8855501d79cbef230eedc730ec8a84acaaa8cf5b33be5cd9282c6d0e";
+    version = "1.2.0";
+    url = "https://github.com/clarkarch/tfm-tui/releases/download/v1.2.0/tfm-x86_64-linux.gz";
+    sha256 = "5b3db69950a1a12addd14fc3c310fe29805ad0b0295fdf2d484004c518bc4d9f";
     unpack = ''gzip -dc "$src" > "$out/libexec/tfm"'';
     runtime = [
       pkgs.xdg-utils
