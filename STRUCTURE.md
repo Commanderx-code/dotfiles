@@ -171,10 +171,12 @@ sockets, lock files, and random-seed state are excluded from its archive.
 
 `backup-health` shows locally recorded successful personal backup and maintenance
 dates, snapshot metadata, backup service results, and unfinished capture folders.
+A job whose last run failed reads `failed`, however recent its last success was.
 It works offline and never unlocks KWallet. `backup-health --json` provides the
 same information for automation; exit 1 means attention or verification is needed.
 A daily timer runs `backup-health --remind`, which sends a desktop notification
-once the last successful backup is more than three days old.
+when the last backup failed, or once the last successful backup is more than three
+days old.
 Personal backup dates start being recorded after installing this version and
 completing a successful backup. An unknown date is not evidence of a failed backup.
 A personal backup older than 24 hours is flagged for review.
@@ -182,8 +184,11 @@ A personal backup older than 24 hours is flagged for review.
 Automatic personal backup and Restic maintenance services use systemd `OnFailure`
 to display a persistent critical desktop notification. The notification includes
 the failed service name and points to `backup-health`; journals remain available
-when no desktop notification session is running. Manual command failures continue
-to report their errors in the terminal.
+when no desktop notification session is running. `backup-failure@` also touches
+`$XDG_STATE_HOME/dotfiles/restic/failed/<service>`, which `backup-health` compares
+with the job's last success. systemd's own result does not survive a reboot or a
+`reset-failed`. Manual command failures continue to report their errors in the
+terminal.
 
 Captured system files are preserved verbatim, including upstream README files.
 The validator reports broken upstream links inside `system-backup/` without

@@ -33,6 +33,11 @@ in
     Unit.Description = "Notify about backup failure in %i";
     Service = {
       Type = "oneshot";
+      # backup-health compares this with the job's last success.
+      ExecStartPre = [
+        "${pkgs.coreutils}/bin/mkdir -p %S/dotfiles/restic/failed"
+        "${pkgs.coreutils}/bin/touch %S/dotfiles/restic/failed/%i"
+      ];
       ExecStart = "${pkgs.libnotify}/bin/notify-send --urgency=critical --expire-time=0 --app-name=Backups 'Backup service failed' '%i failed. Run backup-health and inspect its journal for details.'";
     };
   };
