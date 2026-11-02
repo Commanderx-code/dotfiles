@@ -146,6 +146,7 @@ For individual application configurations and Linux setup menus, see
 | `restore-grub` | Install the repository's GRUB settings (menu, AppArmor and the `garuda` or `cachyos` look), then regenerate the boot menu. |
 | `restore-limine` | On a Limine machine, merge the `garuda` or `cachyos` boot menu look into `limine.conf` and the AppArmor parameter into `/etc/default/limine`; `--menu-only` skips the parameter. |
 | `restore-plymouth` | Select the boot splash named in `plymouth/theme` and rebuild the boot images; `--rebuild` keeps the current theme. |
+| `restore-power` | Install and enable the CPU turbo cap unit in `power/` and select the `balanced` power profile, so a busy core runs warm instead of at the thermal limit with the fan at full speed. |
 
 Zellij starts manually in locked mode; **Ctrl+G** unlocks its controls. See the
 [terminal notes](configs/ghostty/README.md) for shortcuts and project workflows,
@@ -200,6 +201,7 @@ sddm/             SilentSDDM customization assets and presets
 grub/             GRUB settings and the CachyOS theme, installed by restore-grub
 limine/           Limine boot menu looks and kernel parameters, applied by restore-limine
 plymouth/         Boot splash theme name, and optional theme folders, applied by restore-plymouth
+power/            CPU turbo cap system unit, installed by restore-power
 scripts/check     Repository validation entry point
 tests/            Configuration and workflow checks
 STRUCTURE.md      Configuration ownership, maintenance and backup behavior
