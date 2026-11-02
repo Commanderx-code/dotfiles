@@ -109,6 +109,13 @@ in
               move_to_focused_tab true
             }
           }
+          // Touchdown's NFL ticker in a narrow pane to the right.
+          bind "Alt g" {
+            Run "td" "-status" "-watch" {
+              direction "Right"
+              name "NFL"
+            }
+          }
         }
       }
     '';
