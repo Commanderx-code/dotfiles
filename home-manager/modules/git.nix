@@ -60,6 +60,12 @@ in
         event = "commit-msg";
         command = "${noAiAttribution}/bin/no-ai-attribution";
       };
+
+      # Stops a push that adds a private value; the values stay outside the repositories.
+      hook.push-guard = {
+        event = "pre-push";
+        command = "${pkgs.python3}/bin/python3 ${../scripts/push-guard.py}";
+      };
     };
 
     # Written at activation, and only on a machine that has the SSH key; Git

@@ -54,6 +54,11 @@ Commits and tags are signed with `~/.ssh/id_ed25519` when that key exists. For
 GitHub to show them as verified, add the public key to your account once as a
 signing key: `gh ssh-key add ~/.ssh/id_ed25519.pub --type signing`.
 
+Every `git push` runs `push-guard`, which refuses a push that adds a private value:
+an email, a name, or an address from `homelab.inventory`. The values live in
+`~/.local/share/helix-private`, never in a repository, and a machine without that
+folder gets a warning instead. `git push --no-verify` overrides a false alarm.
+
 It also installs the Rust, Go, Python and Node.js toolchains that Neovim's
 language tools are built with, makes Ghostty the default terminal, and copies the
 [Ghostty preset](configs/ghostty/config) when Ghostty has no config yet. An
