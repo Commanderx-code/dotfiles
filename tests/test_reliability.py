@@ -221,6 +221,47 @@ sys.exit(int(sys.argv[2]))
             self.assertTrue(report['needs_attention'])
             self.assertIn('3 days ago', health.offsite_reminder(report)[1])
 
+    def test_a_failure_newer_than_the_last_success_outranks_its_age(self):
+        repo = 's3:https://s3.example.invalid/bucket/home'
+        env = dict(RESTIC_REPOSITORY=str(self.root / 'repo'), DOTFILES_DIR=str(self.root),
+                   BACKUP_MOUNT=str(self.root / 'drive'), XDG_STATE_HOME=str(self.root / 'state'),
+                   OFFSITE_REPOSITORY=repo)
+        state = self.root / 'state/dotfiles/restic' / hashlib.sha256(repo.encode()).hexdigest()
+        state.mkdir(parents=True)
+        success = state / 'backup.success'
+        success.touch()
+        failed = self.root / 'state/dotfiles/restic/failed'
+        failed.mkdir()
+        (failed / 'backup-offsite.service').touch()
+        now = time.time()
+        os.utime(failed / 'backup-offsite.service', (now, now))
+        os.utime(success, (now - 3600, now - 3600))
+        result = subprocess.CompletedProcess([], 0, 'LoadState=loaded\nResult=success\n', '')
+        with patch.object(health.subprocess, 'run', return_value=result):
+            report = health.collect(env)
+            job = report['offsite']['jobs']['backup']
+            self.assertEqual(job['status'], 'failed')
+            self.assertEqual(report['jobs']['backup']['status'], 'unknown')
+            self.assertTrue(report['needs_attention'])
+            self.assertEqual(health.offsite_reminder(report)[0], 'Offsite backup failed')
+            self.assertIn('failed at', health.job_line('offsite backup', job))
+            os.utime(failed / 'backup-offsite.service', (now - 7200, now - 7200))
+            job = health.collect(env)['offsite']['jobs']['backup']
+            self.assertEqual(job['status'], 'current')
+            self.assertNotIn('failed_at', job)
+
+    def test_a_failure_with_no_success_on_record_is_still_a_failure(self):
+        env = dict(RESTIC_REPOSITORY=str(self.root / 'repo'), DOTFILES_DIR=str(self.root),
+                   BACKUP_MOUNT=str(self.root / 'drive'), XDG_STATE_HOME=str(self.root / 'state'))
+        failed = self.root / 'state/dotfiles/restic/failed'
+        failed.mkdir(parents=True)
+        (failed / 'backup-on-mount.service').touch()
+        result = subprocess.CompletedProcess([], 0, 'LoadState=loaded\nResult=success\n', '')
+        with patch.object(health.subprocess, 'run', return_value=result):
+            report = health.collect(env)
+        self.assertEqual(report['jobs']['backup']['status'], 'failed')
+        self.assertEqual(health.reminder(report)[0], 'Backup failed')
+
     def test_health_reports_unknown_and_success_without_repository_access(self):
         env = dict(RESTIC_REPOSITORY=str(self.root / 'repo'), DOTFILES_DIR=str(self.root),
                    BACKUP_MOUNT=str(self.root / 'drive'), XDG_STATE_HOME=str(self.root / 'state'))
@@ -246,7 +287,8 @@ sys.exit(int(sys.argv[2]))
 
     def test_reminder_waits_a_few_days_and_names_the_next_step(self):
         def report(age, mounted=False):
-            job = {'completed_at': None} if age is None else {'completed_at': 'recorded', 'age_days': age}
+            job = ({'status': 'unknown', 'completed_at': None} if age is None else
+                   {'status': 'overdue', 'completed_at': 'recorded', 'age_days': age})
             return {'jobs': {'backup': job}, 'drive_mounted': mounted}
 
         self.assertIsNone(health.reminder(report(0.5)))
