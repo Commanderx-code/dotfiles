@@ -109,6 +109,39 @@ class PushGuardTests(unittest.TestCase):
     def test_deleting_a_branch_checks_nothing(self):
         self.assertEqual(self.guard(local=ZERO, known=self.git('rev-parse', 'HEAD')).returncode, 0)
 
+    def test_an_added_line_that_looks_like_a_file_header_is_still_read(self):
+        self.write('notes.md', '++ Jordan was here\n')
+        result = self.guard()
+        self.assert_blocked(result, 'notes.md: name')
+        self.assertNotIn('Jordan', result.stderr)
+
+    def test_a_removed_line_that_looks_like_a_header_does_not_end_the_hunk(self):
+        self.write('notes.md', '-- old\nkept\n')
+        self.git('push', '-q', 'origin', 'main')
+        self.write('notes.md', 'host 203.0.113.7\nkept\n')
+        self.assert_blocked(self.guard(), 'notes.md: NAS_IP')
+
+    def test_text_added_in_a_merge_commit_is_read(self):
+        self.git('switch', '-q', '-c', 'topic')
+        self.write('topic.md', 'clean\n')
+        self.git('switch', '-q', 'main')
+        self.write('main.md', 'clean\n')
+        self.git('merge', '-q', '--no-commit', '--no-ff', 'topic')
+        (self.work / 'main.md').write_text('host 203.0.113.7\n')
+        self.git('add', 'main.md')
+        self.git('commit', '-q', '-m', 'Merge topic')
+        self.assert_blocked(self.guard(), 'main.md: NAS_IP')
+
+    def test_an_annotated_tag_is_read_through_nested_tags(self):
+        self.git('tag', '-a', 'inner', '-m', 'Thanks to Jordan')
+        self.git('tag', '-a', 'outer', '-m', 'Clean', 'inner')
+        result = self.guard(local=self.git('rev-parse', 'outer'))
+        self.assert_blocked(result, 'tag details: name')
+
+    def test_a_clean_annotated_tag_passes(self):
+        self.git('tag', '-a', 'v1', '-m', 'A release')
+        self.assertEqual(self.guard(local=self.git('rev-parse', 'v1')).returncode, 0)
+
     def test_a_machine_without_private_values_warns_and_pushes(self):
         self.write('notes.md', 'host 203.0.113.7\n')
         result = self.guard(env={'PUSH_GUARD_DIR': str(self.root / 'absent')})
