@@ -32,6 +32,7 @@
         "settings"
         "keymap"
         "tasks"
+        "debug"
       ]
   );
 }

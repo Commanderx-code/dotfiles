@@ -23,7 +23,9 @@ Open a project folder with `zeditor /path/to/project`. Trust your own project wh
 ## Code assistance
 
 - Rust: rust-analyzer, Clippy checks, formatting, navigation, and type hints. Rust/Cargo/Clippy/rustfmt were already installed.
+- Go: gopls from Nix with gofumpt formatting, plus build, test, test-current-package, and vet tasks. Go itself comes from the system package manager.
 - JavaScript, TypeScript, and React: vtsls, project-aware navigation and completion, and Zed's Prettier integration. Project formatting settings still apply.
+- Astro: the Astro extension, which installs and runs its own language server. Prettier formats `.astro` files.
 - Python: basedpyright completion/type analysis and Ruff diagnostics/formatting. Select the project's interpreter using Zed's toolchain selector. Install project dependencies, including pytest when needed, in that project's environment.
 - Nix: nil completion/navigation and nixfmt formatting.
 - Bash: bash-language-server, ShellCheck, and shfmt. Fish: highlighting, fish_indent formatting, and a syntax-check task.
@@ -31,7 +33,16 @@ Open a project folder with `zeditor /path/to/project`. Trust your own project wh
 
 Formatting runs on save, except for Markdown, where existing line breaks and significant trailing spaces are preserved. Tasks save edited buffers before running. Normal editor saves remain manual. The integrated terminal uses Fish; tabs display file icons, Git status, and errors.
 
-Zed's debugger panel is available. Language-specific debug adapters are downloaded on first use; application launch arguments and project dependencies belong in each project's debug configuration. Debugger sessions were not exercised during this setup.
+## Debugging
+
+Press **F4** or open the debug panel (**Ctrl+Shift+D**) to pick a launch configuration. `debug.json` holds global ones:
+
+- Rust: build with Cargo and debug the binary (CodeLLDB).
+- Go: debug the current file's package, or its tests (Delve from Nix).
+- Node: debug the current file, or `npm run dev` for an Astro or other Vite development server (JavaScript adapter).
+- Python: debug the current file (Debugpy).
+
+Zed downloads CodeLLDB, the JavaScript adapter, and Debugpy on first use; Delve is the Nix copy. Zed also offers configurations it detects in each project, such as Cargo binaries and Go tests. Put launch arguments for one project in that project's `.zed/debug.json`. Fish and shell scripts have no debugger.
 
 ## Codex
 
@@ -45,7 +56,7 @@ See [Zed external agents](https://zed.dev/docs/ai/external-agents) and [OpenAI a
 
 ## Maintenance and restore
 
-Editable settings, keybindings, and tasks are in `configs/zed/` in the dotfiles repository. Home Manager links them into `~/.config/zed/`; changes made in Zed also update these repository files. Review changes before committing them, and keep API keys out of settings.
+Editable settings, keybindings, tasks, and debug configurations are in `configs/zed/` in the dotfiles repository. Home Manager links them into `~/.config/zed/`; changes made in Zed also update these repository files. Review changes before committing them, and keep API keys out of settings.
 
 The supporting packages are declared in `home-manager/modules/zed.nix`. Apply package changes with `hm-rebuild`. Newly created Nix module files must be tracked by Git for normal flake evaluation; the setup's files have been staged but not committed.
 

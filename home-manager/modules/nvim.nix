@@ -14,8 +14,14 @@ let
       ${pkgs.findutils}/bin/find "$nvim_lua_cache" -maxdepth 1 -type f -name '*.luac' -delete
     fi
   '';
+
+  # Debug adapters are referenced by store path only; nothing else needs them on PATH.
+  debugpyPython = pkgs.python3.withPackages (ps: [ ps.debugpy ]);
+  codelldbDir = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb";
+  astroDir = "${pkgs.astro-language-server}/lib/node_modules/astro-language-server";
 in
 {
+  # gotools is not installed whole: it ships a `file` command that would shadow file(1).
   home.packages = with pkgs; [
     neovim
     tree-sitter
@@ -27,6 +33,11 @@ in
     markdownlint-cli2
     markdown-toc
     prettier
+    gopls
+    delve
+    gofumpt
+    golangci-lint
+    astro-language-server
   ];
 
   xdg.configFile."nvim" = {
@@ -63,9 +74,26 @@ in
       {
         "mrcjkb/rustaceanvim",
         opts = { server = { cmd = { "${pkgs.rust-analyzer}/bin/rust-analyzer" } } },
+        -- LazyVim points the adapter at Mason's CodeLLDB; values set here first take precedence.
+        init = function()
+          vim.g.rustaceanvim = vim.tbl_deep_extend("force", vim.g.rustaceanvim or {}, {
+            dap = {
+              adapter = {
+                type = "server",
+                port = "''${port}",
+                host = "127.0.0.1",
+                executable = {
+                  command = "${codelldbDir}/adapter/codelldb",
+                  args = { "--liblldb", "${codelldbDir}/lldb/lib/liblldb.so", "--port", "''${port}" },
+                },
+              },
+            },
+          })
+        end,
       },
       -- Keep language tools and browser preview reproducible through Nix.
       -- basedpyright, ruff and bash-language-server are installed by zed.nix.
+      -- Mason puts its own bin directory first on PATH, so Go and Astro tools use store paths.
       {
         "neovim/nvim-lspconfig",
         opts = {
@@ -75,16 +103,96 @@ in
             basedpyright = { mason = false },
             ruff = { mason = false },
             bashls = { mason = false },
+            gopls = { mason = false, cmd = { "${pkgs.gopls}/bin/gopls" } },
+            astro = {
+              mason = false,
+              cmd = { "${pkgs.astro-language-server}/bin/astro-ls", "--stdio" },
+              -- Prefer the project's TypeScript; fall back to the 6.x copy bundled with astro-ls
+              -- (nixpkgs typescript is 7.x, which no longer ships tsserverlibrary.js).
+              before_init = function(_, config)
+                config.init_options = config.init_options or {}
+                config.init_options.typescript = config.init_options.typescript or {}
+                local typescript = config.init_options.typescript
+                if typescript.tsdk then
+                  return
+                end
+                local tsdk = require("lspconfig.util").get_typescript_server_path(config.root_dir)
+                if tsdk == "" then
+                  tsdk = vim.fn.glob("${astroDir}/node_modules/.pnpm/typescript@*/node_modules/typescript/lib", false, true)[1]
+                end
+                typescript.tsdk = tsdk
+              end,
+            },
           },
         },
       },
       {
+        "neovim/nvim-lspconfig",
+        opts = function(_, opts)
+          local plugins = vim.tbl_get(opts, "servers", "vtsls", "settings", "vtsls", "tsserver", "globalPlugins") or {}
+          for _, plugin in ipairs(plugins) do
+            if plugin.name == "@astrojs/ts-plugin" then
+              plugin.location = "${astroDir}/packages/language-tools/ts-plugin"
+            end
+          end
+        end,
+      },
+      {
         "mason-org/mason.nvim",
         opts = function(_, opts)
-          local provided = { ["markdownlint-cli2"] = true, ["markdown-toc"] = true, prettier = true, ["tree-sitter-cli"] = true }
+          local provided = {
+            ["markdownlint-cli2"] = true,
+            ["markdown-toc"] = true,
+            prettier = true,
+            ["tree-sitter-cli"] = true,
+            goimports = true,
+            gofumpt = true,
+            ["golangci-lint"] = true,
+            delve = true,
+            codelldb = true,
+            ["js-debug-adapter"] = true,
+          }
           opts.ensure_installed = vim.tbl_filter(function(tool) return not provided[tool] end, opts.ensure_installed or {})
         end,
       },
+      {
+        "stevearc/conform.nvim",
+        opts = {
+          formatters = {
+            goimports = { command = "${pkgs.gotools}/bin/goimports" },
+            gofumpt = { command = "${pkgs.gofumpt}/bin/gofumpt" },
+          },
+        },
+      },
+      {
+        "mfussenegger/nvim-lint",
+        opts = { linters = { golangcilint = { cmd = "${pkgs.golangci-lint}/bin/golangci-lint" } } },
+      },
+      {
+        "mfussenegger/nvim-dap",
+        opts = function()
+          local dap = require("dap")
+          for _, adapter in ipairs({ "node", "chrome", "msedge" }) do
+            dap.adapters["pwa-" .. adapter] = {
+              type = "server",
+              host = "localhost",
+              port = "''${port}",
+              executable = { command = "${pkgs.vscode-js-debug}/bin/js-debug", args = { "''${port}" } },
+            }
+          end
+        end,
+      },
+      -- Both load with nvim-dap; `lazy = true` keeps these overrides from loading them at startup.
+      { "leoluz/nvim-dap-go", lazy = true, opts = { delve = { path = "${pkgs.delve}/bin/dlv" } } },
+      {
+        "mfussenegger/nvim-dap-python",
+        lazy = true,
+        config = function()
+          require("dap-python").setup("${debugpyPython}/bin/python")
+        end,
+      },
+      -- Adapters come from Nix; stop mason-nvim-dap from installing its own copies.
+      { "jay-babu/mason-nvim-dap.nvim", opts = { automatic_installation = false } },
       {
         "iamcco/markdown-preview.nvim",
         dir = "${pkgs.vimPlugins.markdown-preview-nvim}",

@@ -1,0 +1,56 @@
+[
+  {
+    "label": "Rust: build and debug binary",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "build": {
+      "command": "cargo",
+      "args": ["build"],
+      "cwd": "$ZED_WORKTREE_ROOT"
+    },
+    "sourceLanguages": ["rust"]
+  },
+  {
+    "label": "Go: debug current package",
+    "adapter": "Delve",
+    "request": "launch",
+    "mode": "debug",
+    "program": "$ZED_DIRNAME",
+    "cwd": "$ZED_WORKTREE_ROOT"
+  },
+  {
+    "label": "Go: debug tests in current package",
+    "adapter": "Delve",
+    "request": "launch",
+    "mode": "test",
+    "program": "$ZED_DIRNAME",
+    "cwd": "$ZED_WORKTREE_ROOT"
+  },
+  {
+    "label": "Node: debug current file",
+    "adapter": "JavaScript",
+    "type": "node",
+    "request": "launch",
+    "program": "$ZED_FILE",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "skipFiles": ["<node_internals>/**"]
+  },
+  {
+    "label": "Node: debug development server (npm run dev)",
+    "adapter": "JavaScript",
+    "type": "node",
+    "request": "launch",
+    "runtimeExecutable": "npm",
+    "runtimeArgs": ["run", "dev"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+  },
+  {
+    "label": "Python: debug current file",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "$ZED_FILE",
+    "cwd": "$ZED_WORKTREE_ROOT"
+  }
+]
