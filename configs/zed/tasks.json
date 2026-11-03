@@ -130,6 +130,42 @@
     "save": "all"
   },
   {
+    "label": "Go: build",
+    "command": "go build ./...",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "save": "all"
+  },
+  {
+    "label": "Go: tests",
+    "command": "go test ./...",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "save": "all"
+  },
+  {
+    "label": "Go: test current package",
+    "command": "go test .",
+    "cwd": "$ZED_DIRNAME",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "save": "all"
+  },
+  {
+    "label": "Go: vet",
+    "command": "go vet ./...",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "save": "all"
+  },
+  {
     "label": "Nix: flake check",
     "command": "nix flake check",
     "cwd": "$ZED_WORKTREE_ROOT",

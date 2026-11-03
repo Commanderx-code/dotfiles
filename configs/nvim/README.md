@@ -6,10 +6,25 @@ LazyVim manages plugins, languages and formatting. Language extras are listed in
 
 Home Manager installs this folder read-only and provides nil, nixfmt, statix,
 marksman, markdownlint-cli2, markdown-toc, prettier, the tree-sitter CLI, and the
-basedpyright, ruff and Bash language servers it shares with Zed. The Markdown rendering and
+basedpyright, ruff and Bash language servers it shares with Zed. Go (gopls, gofumpt,
+goimports, golangci-lint), Astro (astro-ls and its TypeScript plugin) and the debug
+adapters also come from Nix rather than Mason. The Markdown rendering and
 browser-preview plugins are pinned by Nix; their specs are in the generated
 `lua/plugins/nix-dependencies.lua`. Plugin versions are recorded in
 `lazy-lock.json` in this checkout.
+
+## Debugging
+
+Leader-d holds the debugger keys: Leader-db toggles a breakpoint, Leader-dc starts
+or continues, Leader-du toggles the debugger UI. The adapters are:
+
+- Rust: CodeLLDB through rustaceanvim (`:RustLsp debuggables`).
+- Go: Delve through nvim-dap-go; Leader-dc offers the file, its package or a test.
+- TypeScript, JavaScript and Astro: js-debug. Leader-da launches the current file;
+  `.vscode/launch.json` entries are read too.
+- Python: debugpy through nvim-dap-python (Leader-dPt debugs the test method).
+
+Fish and shell scripts have no debugger.
 
 ## Shortcuts
 
