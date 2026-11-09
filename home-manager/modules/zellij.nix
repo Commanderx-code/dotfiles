@@ -16,9 +16,9 @@ let
       sha256 = "282ceab219e56e1908c9fac33907241fe6c3e1ef7d85faab3e5f438cef87b8fe";
     };
     harpoon = {
-      version = "0.3.0";
-      url = "https://github.com/Nacho114/harpoon/releases/download/v0.3.0/harpoon.wasm";
-      sha256 = "7f8cf57a71f1dbbbd115337a31638780d7e18e9b876def1c81c970188caa32f2";
+      version = "0.3.1";
+      url = "https://github.com/Nacho114/harpoon/releases/download/v0.3.1/harpoon.wasm";
+      sha256 = "bdeeacd55e023552319ea7f4bd07bef7903b266666f513f6e96f63086dc0baa6";
     };
     zesh = {
       version = "0.3.0";
