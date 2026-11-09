@@ -51,9 +51,9 @@ in
   netwatch = binary {
     name = "netwatch";
     helpText = "netwatch";
-    version = "0.39.0";
-    url = "https://github.com/matthart1983/netwatch/releases/download/v0.39.0/netwatch-linux-x86_64.tar.gz";
-    sha256 = "0db9a87a081a4173a46cdbb4704af995a07f3286dbb8a2295082b18aa5eaab98";
+    version = "0.40.0";
+    url = "https://github.com/matthart1983/netwatch/releases/download/v0.40.0/netwatch-linux-x86_64.tar.gz";
+    sha256 = "416b5375b8fe2a72fc28a72a9033b6767719b822d5f7ee9c6b1701595e9ab478";
     unpack = ''tar -xOf "$src" netwatch-linux-x86_64 > "$out/libexec/netwatch"'';
   };
   tfm = binary {
@@ -83,9 +83,9 @@ in
   kitten = binary {
     name = "kitten";
     helpText = "kitten serves as a launcher";
-    version = "0.49.2";
-    url = "https://github.com/kovidgoyal/kitty/releases/download/v0.49.2/kitten-linux-amd64";
-    sha256 = "2a803b4d411f327cc41b7193cb529f6de06ae3b169a346b3060212bbfeafc8bc";
+    version = "0.50.0";
+    url = "https://github.com/kovidgoyal/kitty/releases/download/v0.50.0/kitten-linux-amd64";
+    sha256 = "b82707bbbda73c19558bfa2bed2cfacddcce7bcbc2962f37012d22a5cacbb1e7";
     unpack = ''cp "$src" "$out/libexec/kitten"'';
   };
   # This is OreoMuncher45's Spotify TUI, not the unrelated pkgs.cassette app.
