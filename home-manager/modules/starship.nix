@@ -32,6 +32,11 @@ in
       os = shared.os // {
         format = "[$symbol  ]($style)";
       };
+      # Show Python only in real projects. A loose script in a folder, such as
+      # one kept in home, no longer puts the version on every prompt there.
+      python = shared.python // {
+        detect_extensions = [ ];
+      };
       # Touchdown's favorite-team score, right-aligned on the first line. It
       # prints from its local cache, so the prompt never waits on ESPN.
       right_format = "\${custom.nfl}";
